@@ -391,6 +391,15 @@
   .theme-opt .sw i{width:13px;height:22px;display:block;}
   .theme-opt .tn{flex:1;text-align:left;}
 
+  /* toggle switch */
+  .toggle{width:50px;height:30px;border-radius:16px;background:#d6d6d6;position:relative;flex:none;
+    transition:background .18s;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);}
+  .toggle.on{background:var(--accent);}
+  .toggle .knob{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;
+    background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.25);transition:left .18s;}
+  .toggle.on .knob{left:23px;}
+  [data-theme="dark"] .toggle:not(.on){background:rgba(255,255,255,.16);}
+
   /* AURORA CREME */
   [data-theme="aurora"]{--accent:#ff7a1a;--accent-d:#e0610a;--accent-t:#ffe6d2;}
   [data-theme="aurora"] body{background:#e7ddcd;}
@@ -673,6 +682,16 @@ function renderStats(){
     </div>`;
   });
 
+  html+=`<div class="section-title">Sound</div>
+    <div class="statcard">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-size:22px">${soundOn?'🔊':'🔇'}</span>
+        <span style="flex:1;font-weight:800;font-size:14px">Soundeffekte</span>
+        <button class="toggle ${soundOn?'on':''}" onclick="setSound(${!soundOn})" aria-label="Sound umschalten"><span class="knob"></span></button>
+      </div>
+      <button class="btn-del" style="margin-top:12px" onclick="testSound()">Sound testen</button>
+    </div>`;
+
   html+=`<div class="section-title">Design</div><div class="themes">`+
     THEMES.map(t=>`<button class="theme-opt ${currentTheme()===t.id?'sel':''}" data-t="${t.id}" onclick="setTheme('${t.id}')"><span class="sw">${t.sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><span class="tn">${t.name}</span></button>`).join('')+`</div>`;
 
@@ -713,9 +732,10 @@ function toggle(id,btn){
     const nb=document.querySelector('.check[data-h="'+id+'"]')||btn;
     const big=MILESTONES.includes(s);
     ensureAudio();
+    sndCheck();
     celebrateAt(nb,big);
-    if(big){milestoneBanner(s);emberRain();beep();}
-    else toast(s>0?('🔥 '+s+' '+(s===1?'Tag':'Tage')+' Serie'):'Erledigt');
+    if(big){milestoneBanner(s);emberRain();sndMilestone();}
+    else{toast(s>0?('🔥 '+s+' '+(s===1?'Tag':'Tage')+' Serie'):'Erledigt');if(s>0)sndStreak(s);}
   }
 }
 
@@ -760,9 +780,11 @@ function tick(){
     const s=h?currentStreak(h):0;
     const nb=document.querySelector('.check[data-h="'+doneId+'"]');
     const big=MILESTONES.includes(s);
-    toast('🔥 '+doneName+' geschafft!');beep();
+    toast('🔥 '+doneName+' geschafft!');
+    sndCheck();
     celebrateAt(nb,big);
-    if(big){milestoneBanner(s);emberRain();}
+    if(big){milestoneBanner(s);emberRain();sndMilestone();}
+    else if(s>0)sndStreak(s);
   }
 }
 function reconcileTimers(){
@@ -883,22 +905,79 @@ function toast(msg){
   t.textContent=msg;t.classList.add('show');
   clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);
 }
-let audioCtx=null;
-function ensureAudio(){
-  try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
-    if(audioCtx.state==='suspended')audioCtx.resume();}catch(e){}
+let audioCtx=null,master=null,soundOn=true;
+function loadSound(){try{soundOn=localStorage.getItem('streak_sound')!=='off'}catch(e){soundOn=true}}
+function setSound(on){
+  soundOn=on;try{localStorage.setItem('streak_sound',on?'on':'off')}catch(e){}
+  render();
+  if(on){ensureAudio();sndStreak(2);}
 }
-function beep(){
+function testSound(){
+  ensureAudio();
+  const prev=soundOn;soundOn=true;
+  sndCheck();sndStreak(3);
+  soundOn=prev;
+}
+function unlockAudio(){ensureAudio();}
+window.addEventListener('pointerdown',unlockAudio,{once:true});
+window.addEventListener('touchend',unlockAudio,{once:true});
+function ensureAudio(){
+  try{
+    if(!audioCtx){
+      audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+      master=audioCtx.createGain();master.gain.value=0.9;master.connect(audioCtx.destination);
+    }
+    if(audioCtx.state==='suspended')audioCtx.resume();
+  }catch(e){}
+}
+function tone(freq,start,dur,o){
+  if(!audioCtx)return;o=o||{};
+  const t=audioCtx.currentTime+start;
+  const osc=audioCtx.createOscillator(),g=audioCtx.createGain();
+  osc.type=o.type||'sine';osc.frequency.setValueAtTime(freq,t);
+  if(o.glideEnd)osc.frequency.exponentialRampToValueAtTime(o.glideEnd,t+dur);
+  const peak=o.peak||0.2,atk=o.attack||0.006;
+  g.gain.setValueAtTime(0.0001,t);
+  g.gain.exponentialRampToValueAtTime(peak,t+atk);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  osc.connect(g);g.connect(master);osc.start(t);osc.stop(t+dur+0.03);
+}
+function noise(start,dur,peak,hp){
   if(!audioCtx)return;
-  const now=audioCtx.currentTime;
-  [[880,0],[1318.5,0.13]].forEach(([f,d])=>{
-    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-    o.type='sine';o.frequency.value=f;o.connect(g);g.connect(audioCtx.destination);
-    g.gain.setValueAtTime(0.0001,now+d);
-    g.gain.exponentialRampToValueAtTime(0.18,now+d+0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001,now+d+0.42);
-    o.start(now+d);o.stop(now+d+0.45);
+  const t=audioCtx.currentTime+start;
+  const n=Math.max(1,Math.floor(audioCtx.sampleRate*dur));
+  const buf=audioCtx.createBuffer(1,n,audioCtx.sampleRate);
+  const d=buf.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;
+  const src=audioCtx.createBufferSource();src.buffer=buf;
+  const f=audioCtx.createBiquadFilter();f.type='highpass';f.frequency.value=hp||2500;
+  const g=audioCtx.createGain();g.gain.setValueAtTime(peak,t);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  src.connect(f);f.connect(g);g.connect(master);src.start(t);src.stop(t+dur+0.03);
+}
+function sndCheck(){
+  if(!soundOn)return;ensureAudio();if(!audioCtx)return;
+  tone(560,0,0.10,{type:'triangle',peak:0.28,glideEnd:200});
+  noise(0,0.045,0.13,3000);
+}
+function sndStreak(level){
+  if(!soundOn)return;ensureAudio();if(!audioCtx)return;
+  const notes=[523.25,659.25,783.99];           // C major rise
+  const lift=Math.min(Math.max((level||1)-1,0),5)*22;
+  notes.forEach((f,i)=>{
+    tone(f+lift,i*0.058,0.16,{type:'triangle',peak:0.2});
+    tone((f+lift)*2,i*0.058,0.11,{type:'sine',peak:0.05});
   });
+  tone(1046.5+lift,0.18,0.2,{type:'sine',peak:0.12});  // sparkle top
+}
+function sndMilestone(){
+  if(!soundOn)return;ensureAudio();if(!audioCtx)return;
+  [392,523.25,659.25,783.99].forEach((f,i)=>{       // G C E G fanfare
+    tone(f,i*0.085,0.24,{type:'sawtooth',peak:0.12});
+    tone(f,i*0.085,0.24,{type:'sine',peak:0.10});
+  });
+  [523.25,659.25,783.99].forEach(f=>tone(f,0.36,0.55,{type:'triangle',peak:0.12})); // held chord
+  tone(987.77,0.38,0.14,{type:'square',peak:0.06});  // coin sparkle
+  tone(1318.5,0.50,0.24,{type:'sine',peak:0.13});
+  noise(0.36,0.05,0.07,4500);
 }
 /* ---- celebration effects ---- */
 const MILESTONES=[3,7,14,30,50,75,100,150,200,365];
@@ -1120,6 +1199,7 @@ function loadTheme(){
 /* ---- init ---- */
 load();
 loadTheme();
+loadSound();
 reconcileTimers();
 fxInit();
 mascotInit();
