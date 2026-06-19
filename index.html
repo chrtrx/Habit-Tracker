@@ -61,11 +61,12 @@
   .flamebox .lbl{font-size:11px;font-weight:800;color:#c98a3a;text-transform:uppercase;letter-spacing:.4px;}
 
   /* ---------- Tabs ---------- */
-  .tabs{display:flex;gap:8px;padding:12px 18px 4px;background:var(--bg);position:sticky;
+  .tabs{display:flex;gap:6px;padding:12px 14px 4px;background:var(--bg);position:sticky;
         top:0;z-index:19;}
-  .tab{flex:1;padding:10px;border-radius:12px;font-weight:800;font-size:14px;color:var(--muted);
+  .tab{flex:1;padding:10px 4px;border-radius:12px;font-weight:800;font-size:13px;color:var(--muted);
        background:var(--soft);transition:.15s;}
   .tab.active{color:var(--green-dark);background:var(--green-tint);}
+  .tab-gear{flex:0 0 46px;font-size:18px;padding:10px 0;}
 
   /* ---------- Content ---------- */
   main{flex:1;padding:14px 16px 120px;}
@@ -471,6 +472,22 @@
   [data-theme="dark"] .section-title,[data-theme="dark"] .field-label,[data-theme="dark"] .stat .k,
   [data-theme="dark"] .statcard .nums .b,[data-theme="dark"] .week .dlabel,[data-theme="dark"] .week .dval,
   [data-theme="dark"] .empty{color:#94a3c4;}
+
+  /* ---------- Tablet optimization (~iPad portrait and up) ---------- */
+  @media (min-width:700px){
+    .app{max-width:760px;}
+    main{padding:18px 28px 130px;}
+    .stat-row{gap:14px;}
+    .starters{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .starters .starter{margin-bottom:0;}
+    .week{padding:18px 10px;}
+    .themes{grid-template-columns:repeat(4,1fr);}
+    .habit,.statcard,.shared.habit{padding:14px 16px;}
+  }
+  @media (min-width:980px){
+    .app{max-width:900px;}
+    .themes{grid-template-columns:repeat(4,1fr);}
+  }
 </style>
 </head>
 <body>
@@ -496,12 +513,16 @@
   <div class="tabs">
     <button class="tab active" data-tab="today" onclick="setTab('today')">Heute</button>
     <button class="tab" data-tab="stats" onclick="setTab('stats')">Statistik</button>
+    <button class="tab" data-tab="friends" onclick="setTab('friends')">Freunde</button>
+    <button class="tab tab-gear" data-tab="settings" onclick="setTab('settings')" aria-label="Einstellungen">⚙</button>
   </div>
 
   <main>
     <div id="installHost"></div>
     <div id="todayView"></div>
     <div id="statsView" style="display:none"></div>
+    <div id="friendsView" style="display:none"></div>
+    <div id="settingsView" style="display:none"></div>
   </main>
 
   <button class="fab" onclick="openSheet()" aria-label="Habit hinzufügen">+</button>
@@ -550,6 +571,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const KEY='habitTracker_v1';
+function aKey(){return sbUser?KEY+'_'+sbUser.id:KEY;}
 const EMOJIS=['💧','🏃','📚','🧘','🍎','😴','💪','🚴','🎸','✍️','🧹','💊','🎯','🌱','☕','🦷','🧠','🥗','🧴','🎨'];
 const COLORS=['green','blue','purple','orange','red','yellow','teal','pink'];
 const DURATIONS=[0,1,5,10,15,20,30];
@@ -566,8 +588,8 @@ let editId=null, selEmoji=EMOJIS[0], selColor=COLORS[0], selDuration=0, delArmed
 let ticker=null;
 
 /* ---- storage ---- */
-function load(){try{state=JSON.parse(localStorage.getItem(KEY))||{habits:[]}}catch(e){state={habits:[]}}}
-function save(){localStorage.setItem(KEY,JSON.stringify(state));scheduleSync();}
+function load(){try{state=JSON.parse(localStorage.getItem(aKey()))||{habits:[]}}catch(e){state={habits:[]}}}
+function save(){localStorage.setItem(aKey(),JSON.stringify(state));scheduleSync();}
 
 /* ---- dates ---- */
 function pad(n){return String(n).padStart(2,'0')}
@@ -610,6 +632,8 @@ function render(){
   document.getElementById('topStreak').textContent=top;
   renderToday(done,tot);
   renderStats();
+  renderFriends();
+  renderSettings();
   updateMascotMood(done,tot);
 }
 
@@ -623,24 +647,17 @@ function renderToday(done,tot){
   const v=document.getElementById('todayView');
   let html='';
   const hasShared=sbUser&&sbShared.length;
-  if(hasShared){
-    html+='<div class="shared-head">💜 Gemeinsam</div>';
-    sbShared.forEach(h=>html+=sharedCard(h));
-  }
-  if(!tot){
-    if(!hasShared){
-      html+=`<div class="empty" style="padding:34px 12px 14px"><div class="e">🌱</div>
-        <p>Leg los mit deinem ersten Habit.<br>Tippe unten auf <b>+</b> oder wähle einen Vorschlag:</p></div>
-        <div class="starters">${STARTERS.map((s,i)=>`
-          <button class="starter" onclick="addStarter(${i})">
-            <span class="emoji" style="background:var(--${s.color}-tint);color:var(--${s.color})">${s.emoji}</span>
-            <span class="stx">${s.name}${s.duration?` · ⏱ ${s.duration} Min`:''}</span>
-            <span class="add">＋</span>
-          </button>`).join('')}</div>`;
-    }
+  if(!tot&&!hasShared){
+    html+=`<div class="empty" style="padding:34px 12px 14px"><div class="e">🌱</div>
+      <p>Leg los mit deinem ersten Habit.<br>Tippe unten auf <b>+</b> oder wähle einen Vorschlag:</p></div>
+      <div class="starters">${STARTERS.map((s,i)=>`
+        <button class="starter" onclick="addStarter(${i})">
+          <span class="emoji" style="background:var(--${s.color}-tint);color:var(--${s.color})">${s.emoji}</span>
+          <span class="stx">${s.name}${s.duration?` · ⏱ ${s.duration} Min`:''}</span>
+          <span class="add">＋</span>
+        </button>`).join('')}</div>`;
     v.innerHTML=html;return;
   }
-  if(hasShared)html+='<div class="shared-head" style="margin-top:18px">Meine Habits</div>';
   if(done===tot&&tot>0)html+='<div class="alldone">🎉 Alles erledigt für heute. Stark!</div>';
   state.habits.forEach(h=>{
     const on=!!h.history[TODAY];
@@ -676,6 +693,10 @@ function renderToday(done,tot){
       ${btn}
     </div>`;
   });
+  if(hasShared){
+    html+='<div class="shared-head" style="margin-top:18px">Gemeinsame Habits</div>';
+    sbShared.forEach(h=>html+=sharedCard(h));
+  }
   v.innerHTML=html;
 }
 
@@ -724,38 +745,18 @@ function renderStats(){
       <div class="grid30">${grid30(h)}</div>
     </div>`;
   });
+  v.innerHTML=html;
+}
 
-  html+=`<div class="section-title">Sound</div>
-    <div class="statcard">
-      <div style="display:flex;align-items:center;gap:12px">
-        <span style="font-size:22px">${soundOn?'🔊':'🔇'}</span>
-        <span style="flex:1;font-weight:800;font-size:14px">Soundeffekte</span>
-        <button class="toggle ${soundOn?'on':''}" onclick="setSound(${!soundOn})" aria-label="Sound umschalten"><span class="knob"></span></button>
-      </div>
-      <button class="btn-del" style="margin-top:12px" onclick="testSound()">Sound testen</button>
-    </div>`;
-
-  html+=`<div class="section-title">Design</div><div class="themes">`+
-    THEMES.map(t=>`<button class="theme-opt ${currentTheme()===t.id?'sel':''}" data-t="${t.id}" onclick="setTheme('${t.id}')"><span class="sw">${t.sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><span class="tn">${t.name}</span></button>`).join('')+`</div>`;
-
-  html+=`<div class="section-title">Daten</div>
-    <div class="statcard">
-      <p style="font-size:13px;font-weight:700;color:var(--muted);margin:0 0 14px;line-height:1.5">Deine Daten liegen lokal in diesem Browser. Sichere sie als Backup, um sie zu behalten oder auf ein anderes Gerät zu übertragen.</p>
-      <button class="btn" style="background:var(--blue);box-shadow:0 4px 0 var(--blue-dark)" onclick="exportData()">Backup speichern</button>
-      <button class="btn-del" id="importBtn" onclick="importArm()">Backup laden</button>
-      <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importData(event)">
-    </div>`;
-
-  html+=`<div class="section-title">Konto &amp; Sync</div>`;
-  if(sbUser){
-    html+=`<div class="statcard">
-      <p style="font-size:13px;font-weight:700;margin:0 0 10px;line-height:1.5">Angemeldet als <b>${esc(sbUser.email||'')}</b><br><span style="color:var(--muted)">Deine Habits werden zwischen deinen Geräten synchronisiert.</span></p>
-      <button class="btn-del" onclick="authSignOut()">Abmelden</button>
-    </div>`;
-    const code=sbProfile?esc(sbProfile.friend_code||''):'…';
-    const myname=sbProfile?esc(sbProfile.display_name||''):'';
-    html+=`<div class="section-title">Freunde</div>
-    <div class="statcard">
+function renderFriends(){
+  const v=document.getElementById('friendsView');if(!v)return;
+  if(!sbUser){
+    v.innerHTML=`<div class="empty" style="padding:50px 16px"><div class="e">🤝</div><p>Melde dich unter <b>⚙ Einstellungen</b> an,<br>um Freunde hinzuzufügen und gemeinsame Streaks zu sammeln.</p></div>`;
+    return;
+  }
+  const code=sbProfile?esc(sbProfile.friend_code||'…'):'…';
+  const myname=sbProfile?esc(sbProfile.display_name||''):'';
+  let html=`<div class="statcard">
       <p class="field-label" style="margin:0 0 8px">Dein Anzeigename</p>
       <input class="name-input" id="profileName" maxlength="24" placeholder="Name" value="${myname}" style="margin-bottom:10px">
       <button class="btn-del" style="margin-top:0" onclick="sbSaveName()">Namen speichern</button>
@@ -768,14 +769,52 @@ function renderStats(){
       <input class="name-input" id="friendCode" maxlength="6" placeholder="z.B. 4F9A2C" style="margin-bottom:10px;text-transform:uppercase;letter-spacing:2px;font-weight:800">
       <button class="btn" onclick="sbAddFriend()">Hinzufügen</button>
     </div>`;
-    if(sbFriends.length){
-      html+=`<div class="statcard"><p class="field-label" style="margin:0 0 10px">Deine Freunde (${sbFriends.length})</p>`+
-        sbFriends.map(f=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;font-weight:800;font-size:14px"><span style="font-size:18px">🔥</span>${esc(f.display_name||'Freund')}</div>`).join('')+
-        `</div>`;
+  if(sbFriends.length){
+    html+=`<div class="statcard"><p class="field-label" style="margin:0 0 10px">Deine Freunde (${sbFriends.length})</p>`+
+      sbFriends.map(f=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;font-weight:800;font-size:14px"><span style="font-size:18px">🔥</span>${esc(f.display_name||'Freund')}</div>`).join('')+`</div>`;
+  }
+  html+='<div class="section-title">Gemeinsame Habits</div>';
+  if(sbShared.length){
+    sbShared.forEach(h=>html+=sharedCard(h));
+  }else{
+    html+=`<div class="statcard"><p style="font-size:13px;font-weight:700;color:var(--muted);margin:0;line-height:1.5">Noch keine gemeinsamen Habits. Tippe auf <b>+</b> und wähle unten „Gemeinsam mit" einen Freund.</p></div>`;
+  }
+  v.innerHTML=html;
+}
+
+function renderSettings(){
+  const v=document.getElementById('settingsView');if(!v)return;
+  let html=`<div class="section-title">Sound</div>
+    <div class="statcard">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-size:22px">${soundOn?'🔊':'🔇'}</span>
+        <span style="flex:1;font-weight:800;font-size:14px">Soundeffekte</span>
+        <button class="toggle ${soundOn?'on':''}" onclick="setSound(${!soundOn})" aria-label="Sound umschalten"><span class="knob"></span></button>
+      </div>
+      <button class="btn-del" style="margin-top:12px" onclick="testSound()">Sound testen</button>
+    </div>`;
+  html+=`<div class="section-title">Design</div><div class="themes">`+
+    THEMES.map(t=>`<button class="theme-opt ${currentTheme()===t.id?'sel':''}" data-t="${t.id}" onclick="setTheme('${t.id}')"><span class="sw">${t.sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><span class="tn">${t.name}</span></button>`).join('')+`</div>`;
+  html+=`<div class="section-title">Daten</div>
+    <div class="statcard">
+      <p style="font-size:13px;font-weight:700;color:var(--muted);margin:0 0 14px;line-height:1.5">Deine Daten liegen lokal in diesem Browser. Sichere sie als Backup, um sie zu behalten oder auf ein anderes Gerät zu übertragen.</p>
+      <button class="btn" style="background:var(--blue);box-shadow:0 4px 0 var(--blue-dark)" onclick="exportData()">Backup speichern</button>
+      <button class="btn-del" id="importBtn" onclick="importArm()">Backup laden</button>
+      <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importData(event)">
+    </div>`;
+  html+=`<div class="section-title">Konto &amp; Sync</div>`;
+  if(sbUser){
+    html+=`<div class="statcard">
+      <p style="font-size:13px;font-weight:700;margin:0 0 10px;line-height:1.5">Angemeldet als <b>${esc(sbUser.email||'')}</b><br><span style="color:var(--muted)">Deine Habits werden zwischen deinen Geräten synchronisiert.</span></p>
+      <button class="btn-del" onclick="authSignOut()">Abmelden</button>
+    </div>`;
+    if(localHasHabits()){
+      html+=`<div class="statcard"><p style="font-size:13px;font-weight:700;color:var(--muted);margin:0 0 12px;line-height:1.5">Es gibt lokale Habits (vor der Anmeldung). Möchtest du sie in dieses Konto übernehmen?</p>
+        <button class="btn-del" onclick="importLocalToAccount()">Lokale Daten übernehmen</button></div>`;
     }
   }else if(window.supabase){
     html+=`<div class="statcard">
-      <p style="font-size:13px;font-weight:700;color:var(--muted);margin:0 0 12px;line-height:1.5">Melde dich an, um deine Habits über mehrere Geräte zu synchronisieren. Deine bisherigen Daten bleiben erhalten und werden zusammengeführt.</p>
+      <p style="font-size:13px;font-weight:700;color:var(--muted);margin:0 0 12px;line-height:1.5">Melde dich an, um deine Habits über mehrere Geräte zu synchronisieren. Ein neues Konto startet leer.</p>
       <input class="name-input" id="authEmail" type="email" placeholder="E-Mail" autocomplete="email" style="margin-bottom:10px">
       <input class="name-input" id="authPass" type="password" placeholder="Passwort" autocomplete="current-password" style="margin-bottom:12px">
       <button class="btn" onclick="authSignIn()">Anmelden</button>
@@ -883,8 +922,9 @@ function reconcileTimers(){
 function setTab(t){
   tab=t;
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
-  document.getElementById('todayView').style.display=t==='today'?'':'none';
-  document.getElementById('statsView').style.display=t==='stats'?'':'none';
+  ['today','stats','friends','settings'].forEach(name=>{
+    const v=document.getElementById(name+'View');if(v)v.style.display=(t===name?'':'none');
+  });
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -1372,15 +1412,31 @@ async function authSignIn(){
   sbUser=data.user;await onLogin();render();
 }
 async function authSignOut(){
-  if(!sb)return;await sb.auth.signOut();sbUser=null;toast('Abgemeldet');render();
+  if(!sb)return;await sb.auth.signOut();
+  sbUser=null;sbProfile=null;sbFriends=[];sbShared=[];
+  load();reconcileTimers();render();
+  toast('Abgemeldet');
 }
 async function onLogin(){
+  load();              // switch to this account's own local cache (empty for a brand-new account)
   await pullCloud(true);
   await sbEnsureProfile();
   await sbLoadFriends();
   await sbLoadShared();
-  render();
+  reconcileTimers();render();
   toast('Synchronisiert ✓');
+}
+function localHasHabits(){
+  try{const raw=JSON.parse(localStorage.getItem(KEY));return !!(raw&&Array.isArray(raw.habits)&&raw.habits.length);}
+  catch(e){return false;}
+}
+function importLocalToAccount(){
+  if(!sbUser)return;
+  let anon;try{anon=JSON.parse(localStorage.getItem(KEY));}catch(e){anon=null;}
+  if(!anon||!Array.isArray(anon.habits)||!anon.habits.length){toast('Keine lokalen Daten gefunden');return;}
+  state=mergeStates(state,anon);
+  save();render();
+  toast('Lokale Daten übernommen 🎉');
 }
 async function sbEnsureProfile(name){
   if(!sb||!sbUser)return;
@@ -1530,7 +1586,7 @@ async function pullCloud(merge){
     const {data,error}=await sb.from('app_state').select('state').eq('user_id',sbUser.id).maybeSingle();
     if(!error&&data&&data.state&&Array.isArray(data.state.habits)){
       state=merge?mergeStates(state,data.state):data.state;
-      localStorage.setItem(KEY,JSON.stringify(state));
+      localStorage.setItem(aKey(),JSON.stringify(state));
       reconcileTimers();render();ensureTicker();
     }
   }catch(e){}
