@@ -2,11 +2,11 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#ffffff">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#eafadb">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Streak">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -42,7 +42,7 @@
        display:flex;flex-direction:column;position:relative;}
 
   /* ---------- Header ---------- */
-  header{padding:20px 18px 14px;background:var(--bg);border-bottom:2px solid var(--line);
+  header{padding:calc(20px + env(safe-area-inset-top)) 18px 14px;background:var(--bg);border-bottom:2px solid var(--line);
          position:sticky;top:0;z-index:20;}
   .brand{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
   .brand .logo{font-size:24px;}
@@ -130,6 +130,8 @@
   .statcard .nums .b{font-size:11px;font-weight:800;color:var(--muted);}
   .statcard .nums .b span{display:block;font-size:18px;font-weight:900;color:var(--text);margin-top:2px;}
   .statcard .nums .b .fire{color:var(--fire);}
+  .statcard .nums .b .fire.out{color:var(--muted);}
+  .statcard .nums .b .fire.out .flm{filter:grayscale(1) brightness(.8) opacity(.5);}
   .grid30{display:grid;grid-template-columns:repeat(15,1fr);gap:4px;}
   .grid30 .cell{aspect-ratio:1;border-radius:4px;background:var(--soft);}
   .grid30 .cell.future{background:transparent;}
@@ -242,7 +244,7 @@
     border-color:rgba(255,200,140,.6);box-shadow:var(--glass-hi);
   }
 
-  .habit, .statcard, .week, .stat, .install, .starter{
+  .habit, .statcard, .week, .stat, .install, .starter, .insight-card{
     background:var(--glass);
     -webkit-backdrop-filter:var(--blur);
     backdrop-filter:var(--blur);
@@ -454,6 +456,7 @@
   [data-theme="dark"] header,[data-theme="dark"] .tabs{background:rgba(12,20,48,.55);border-color:rgba(255,255,255,.12);}
   [data-theme="dark"] .habit,[data-theme="dark"] .statcard,[data-theme="dark"] .week,
   [data-theme="dark"] .stat,[data-theme="dark"] .install,[data-theme="dark"] .starter,
+  [data-theme="dark"] .insight-card,
   [data-theme="dark"] .theme-opt{background:rgba(22,34,68,.48);border-color:rgba(255,255,255,.13);}
   [data-theme="dark"] .sheet{background:rgba(12,20,46,.72);border-color:rgba(255,255,255,.13);}
   [data-theme="dark"] .name-input{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);color:#e9eef8;}
@@ -467,7 +470,7 @@
   [data-theme="dark"] .habit .name,[data-theme="dark"] .tab,[data-theme="dark"] .stat .v,
   [data-theme="dark"] .statcard .hname,[data-theme="dark"] .statcard .nums .b span,
   [data-theme="dark"] .sheet h2,[data-theme="dark"] .starter .stx,[data-theme="dark"] .alldone,
-  [data-theme="dark"] .install .tx,[data-theme="dark"] .theme-opt{color:#e9eef8;}
+  [data-theme="dark"] .install .tx,[data-theme="dark"] .theme-opt,[data-theme="dark"] .ic-body{color:#e9eef8;}
   [data-theme="dark"] .ring-sub,[data-theme="dark"] .lbl,[data-theme="dark"] .habit .meta,
   [data-theme="dark"] .section-title,[data-theme="dark"] .field-label,[data-theme="dark"] .stat .k,
   [data-theme="dark"] .statcard .nums .b,[data-theme="dark"] .week .dlabel,[data-theme="dark"] .week .dval,
@@ -488,6 +491,17 @@
     .app{max-width:900px;}
     .themes{grid-template-columns:repeat(4,1fr);}
   }
+
+  /* ---------- Insights ---------- */
+  .insight-card{display:flex;align-items:center;gap:12px;background:var(--card);
+        border:2px solid var(--line);border-radius:14px;padding:11px 14px;margin-bottom:10px;
+        box-shadow:0 3px 0 var(--line);}
+  .ic-emoji{font-size:20px;flex:none;width:26px;text-align:center;line-height:1;}
+  .ic-body{flex:1;font-size:13.5px;font-weight:800;line-height:1.35;}
+  .ic-pct{flex:none;font-weight:900;font-size:12.5px;padding:4px 9px;border-radius:10px;white-space:nowrap;}
+  .ic-pct.good{color:var(--green-dark);background:var(--green-tint);}
+  .ic-pct.warn{color:var(--orange-dark);background:var(--orange-tint);}
+  .ic-pct.friend{color:var(--purple-dark);background:var(--purple-tint);}
 
   /* ---------- Friend flame (header, Freunde tab) ---------- */
   .friend-flamebox{display:flex;background:var(--purple-tint);border-color:rgba(206,130,255,.45);}
@@ -645,6 +659,96 @@ function completionRate(h){
   return Math.round(done/total*100);
 }
 
+/* ---- insights ---- */
+function habitRecentRate(h,days){
+  let done=0,poss=0;
+  for(let i=0;i<days;i++){
+    const k=ymd(addDays(parseKey(TODAY),-i));
+    if(h.createdAt<=k){poss++;if(h.history[k])done++;}
+  }
+  return poss?Math.round(done/poss*100):null;
+}
+function periodRate(startAgo,endAgo){ // days-ago range, inclusive, across all habits
+  let done=0,poss=0;
+  for(let i=startAgo;i>=endAgo;i--){
+    const k=ymd(addDays(parseKey(TODAY),-i));
+    state.habits.forEach(h=>{if(h.createdAt<=k){poss++;if(h.history[k])done++;}});
+  }
+  return poss?done/poss:null;
+}
+function weekdayStats(){
+  const names=['Sonntags','Montags','Dienstags','Mittwochs','Donnerstags','Freitags','Samstags'];
+  const done=[0,0,0,0,0,0,0],poss=[0,0,0,0,0,0,0];
+  const earliest=state.habits.reduce((m,h)=>h.createdAt<m?h.createdAt:m,state.habits[0].createdAt);
+  let d=parseKey(earliest);const end=parseKey(TODAY);
+  while(d<=end){
+    const k=ymd(d),wd=d.getDay();
+    state.habits.forEach(h=>{if(h.createdAt<=k){poss[wd]++;if(h.history[k])done[wd]++;}});
+    d=addDays(d,1);
+  }
+  let best=-1,bestRate=-1;
+  for(let i=0;i<7;i++){if(poss[i]>=2){const r=done[i]/poss[i];if(r>bestRate){bestRate=r;best=i;}}}
+  if(best<0)return null;
+  return {day:names[best],pct:Math.round(bestRate*100)};
+}
+function anyHabitStreak(){
+  const earliest=state.habits.reduce((m,h)=>h.createdAt<m?h.createdAt:m,state.habits[0].createdAt);
+  let d=parseKey(earliest);const end=parseKey(TODAY);
+  let run=0,best=0;
+  while(d<=end){
+    const k=ymd(d);
+    const any=state.habits.some(h=>h.createdAt<=k&&h.history[k]);
+    if(any){run++;if(run>best)best=run;}else run=0;
+    d=addDays(d,1);
+  }
+  return {current:run,best};
+}
+function sharedWeekRate(){
+  if(!sbShared||!sbShared.length)return null;
+  let done=0,poss=0;
+  for(let i=0;i<7;i++){
+    const k=ymd(addDays(parseKey(TODAY),-i));
+    sbShared.forEach(h=>{poss++;if(sharedDayComplete(h,k))done++;});
+  }
+  return poss?Math.round(done/poss*100):null;
+}
+function renderInsights(){
+  if(!state.habits.length)return'';
+  const cards=[];
+  const thisW=periodRate(6,0),lastW=periodRate(13,7);
+  if(thisW!==null&&lastW!==null){
+    const diff=Math.round((thisW-lastW)*100);
+    if(diff>4)cards.push({e:'📈',t:`Diese Woche läuft's besser als letzte Woche`,pct:'+'+diff+'%',tone:'good'});
+    else if(diff<-4)cards.push({e:'📉',t:`Diese Woche etwas ruhiger als letzte Woche`,pct:diff+'%',tone:'warn'});
+  }
+  const wd=weekdayStats();
+  if(wd&&wd.pct>=60)cards.push({e:'📅',t:`${wd.day} bist du am konsequentesten`,pct:wd.pct+'%',tone:'good'});
+  if(state.habits.length>=2){
+    const recents=state.habits.map(h=>({h,r:habitRecentRate(h,14)})).filter(x=>x.r!==null);
+    if(recents.length>=2){
+      const top=recents.reduce((a,b)=>b.r>a.r?b:a);
+      const low=recents.reduce((a,b)=>b.r<a.r?b:a);
+      if(top.h.id!==low.h.id&&top.r-low.r>=20){
+        cards.push({e:top.h.emoji,t:`${esc(top.h.name)} läuft richtig gut`,pct:top.r+'%',tone:'good'});
+        cards.push({e:'💪',t:`${esc(low.h.name)} könnte mehr Aufmerksamkeit gebrauchen`,pct:low.r+'%',tone:'warn'});
+      }
+    }
+  }
+  const any=anyHabitStreak();
+  if(any.best>=3)cards.push({e:'🔥',t:`Längste Serie mit mind. 1 Habit pro Tag`,pct:any.best+(any.best===1?' Tag':' Tage'),tone:'good'});
+  if(sbUser&&sbShared.length){
+    const sw=sharedWeekRate();
+    if(sw!==null)cards.push({e:'💜',t:`Eure gemeinsame Erfolgsquote diese Woche`,pct:sw+'%',tone:'friend'});
+  }
+  if(!cards.length)return'';
+  return '<div class="section-title">Einblicke</div>'+
+    cards.map(c=>`<div class="insight-card">
+      <span class="ic-emoji">${c.e}</span>
+      <div class="ic-body">${c.t}</div>
+      <span class="ic-pct ${c.tone}">${c.pct}</span>
+    </div>`).join('');
+}
+
 /* ---- render ---- */
 function render(){
   const done=state.habits.filter(h=>h.history[TODAY]).length;
@@ -736,6 +840,8 @@ function renderStats(){
     <div class="stat"><div class="v" style="color:var(--fire)">${best}</div><div class="k">Rekord</div></div>
   </div>`;
 
+  html+=renderInsights();
+
   // last 7 days bar
   const dayNames=['So','Mo','Di','Mi','Do','Fr','Sa'];
   let counts=[],maxc=1;
@@ -757,13 +863,14 @@ function renderStats(){
   // per habit
   html+='<div class="section-title">Pro Habit</div>';
   state.habits.forEach(h=>{
+    const cs=currentStreak(h);
     html+=`<div class="statcard">
       <div class="head">
         <div class="emoji" style="background:var(--${h.color}-tint,#eee);color:var(--${h.color})">${h.emoji}</div>
         <div class="hname">${esc(h.name)}</div>
       </div>
       <div class="nums">
-        <div class="b">Aktuelle Serie<span class="fire">🔥 ${currentStreak(h)}</span></div>
+        <div class="b">Aktuelle Serie<span class="fire ${cs===0?'out':''}"><span class="flm">🔥</span> ${cs}</span></div>
         <div class="b">Rekord<span>${bestStreak(h)}</span></div>
         <div class="b">Erfüllt<span>${completionRate(h)}%</span></div>
       </div>
@@ -1423,7 +1530,8 @@ function setTheme(id,persist){
   if(persist!==false){try{localStorage.setItem('streak_theme',id)}catch(e){}}
   document.querySelectorAll('.theme-opt').forEach(b=>b.classList.toggle('sel',b.dataset.t===id));
   const m=document.querySelector('meta[name="theme-color"]');
-  if(m)m.setAttribute('content', id==='dark'?'#060a16':'#ffffff');
+  const tc={glass:'#e4ebe6',aurora:'#e7ddcd',berry:'#e7def0',dark:'#060a16'};
+  if(m)m.setAttribute('content', tc[id]||'#eafadb');
 }
 function loadTheme(){
   let t='glass';try{t=localStorage.getItem('streak_theme')||'glass'}catch(e){}
