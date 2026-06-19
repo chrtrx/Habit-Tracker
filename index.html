@@ -391,6 +391,25 @@
   .theme-opt .sw i{width:13px;height:22px;display:block;}
   .theme-opt .tn{flex:1;text-align:left;}
 
+  /* shared habits & hug */
+  .shared-head{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:2px 2px 10px;}
+  .habit.shared{border-color:rgba(206,130,255,.45);}
+  .habit.shared.complete{border-color:rgba(206,130,255,.6);}
+  .shared-emoji{background:var(--purple-tint)!important;color:var(--purple)!important;display:flex;align-items:center;justify-content:center;}
+  .check.cpurple{background-color:var(--purple)!important;box-shadow:0 3px 0 var(--purple-dark),var(--glass-hi)!important;}
+  .hug-scene{display:flex;align-items:flex-end;justify-content:center;position:relative;height:108px;}
+  .hug-scene .mascot{width:78px;height:94px;}
+  .hugA{transform:translateX(13px) rotate(7deg);}
+  .hugB{transform:translateX(-13px) rotate(-7deg);}
+  .hug-flame{position:absolute;top:-6px;left:50%;transform:translateX(-50%) scale(0);transition:transform .3s .15s cubic-bezier(.2,1.4,.4,1);z-index:3;}
+  .ms-overlay.show .hug-flame{transform:translateX(-50%) scale(1);}
+  @media(prefers-reduced-motion:no-preference){
+    .ms-overlay.show .hugA{animation:hugA .6s cubic-bezier(.2,1.3,.4,1);}
+    .ms-overlay.show .hugB{animation:hugB .6s cubic-bezier(.2,1.3,.4,1);}
+  }
+  @keyframes hugA{0%{transform:translateX(44px) rotate(-2deg)}100%{transform:translateX(13px) rotate(7deg)}}
+  @keyframes hugB{0%{transform:translateX(-44px) rotate(2deg)}100%{transform:translateX(-13px) rotate(-7deg)}}
+
   /* toggle switch */
   .toggle{width:50px;height:30px;border-radius:16px;background:#d6d6d6;position:relative;flex:none;
     transition:background .18s;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);}
@@ -497,6 +516,17 @@
     <div class="ms-lbl">Tage Serie!</div>
   </div>
 </div>
+<div class="ms-overlay" id="hug">
+  <div class="ms-card">
+    <div class="hug-scene">
+      <span class="mascot mood-happy hugA" id="hugA" aria-hidden="true"></span>
+      <span class="hug-flame" id="hugFlame" aria-hidden="true"></span>
+      <span class="mascot mood-happy hugB" id="hugB" aria-hidden="true"></span>
+    </div>
+    <div class="ms-num" id="hugNum" style="color:var(--purple)">2</div>
+    <div class="ms-lbl" id="hugLbl">Tage gemeinsam</div>
+  </div>
+</div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="sheet" id="sheet" onclick="event.stopPropagation()">
   <div class="grab"></div>
@@ -509,6 +539,10 @@
   <div class="picker" id="colorPicker"></div>
   <p class="field-label">Dauer (optional)</p>
   <div class="picker" id="durPicker"></div>
+  <div id="shareWrap" style="display:none">
+    <p class="field-label">Gemeinsam mit (optional)</p>
+    <div class="picker" id="sharePicker"></div>
+  </div>
   <button class="btn" id="saveBtn" onclick="saveHabit()" disabled>Speichern</button>
   <button class="btn-del" id="delBtn" style="display:none" onclick="deleteHabit()">Löschen</button>
 </div>
@@ -587,18 +621,26 @@ function mmss(ms){const s=Math.max(0,Math.round(ms/1000));return Math.floor(s/60
 
 function renderToday(done,tot){
   const v=document.getElementById('todayView');
-  if(!tot){
-    v.innerHTML=`<div class="empty" style="padding:34px 12px 14px"><div class="e">🌱</div>
-      <p>Leg los mit deinem ersten Habit.<br>Tippe unten auf <b>+</b> oder wähle einen Vorschlag:</p></div>
-      <div class="starters">${STARTERS.map((s,i)=>`
-        <button class="starter" onclick="addStarter(${i})">
-          <span class="emoji" style="background:var(--${s.color}-tint);color:var(--${s.color})">${s.emoji}</span>
-          <span class="stx">${s.name}${s.duration?` · ⏱ ${s.duration} Min`:''}</span>
-          <span class="add">＋</span>
-        </button>`).join('')}</div>`;
-    return;
-  }
   let html='';
+  const hasShared=sbUser&&sbShared.length;
+  if(hasShared){
+    html+='<div class="shared-head">💜 Gemeinsam</div>';
+    sbShared.forEach(h=>html+=sharedCard(h));
+  }
+  if(!tot){
+    if(!hasShared){
+      html+=`<div class="empty" style="padding:34px 12px 14px"><div class="e">🌱</div>
+        <p>Leg los mit deinem ersten Habit.<br>Tippe unten auf <b>+</b> oder wähle einen Vorschlag:</p></div>
+        <div class="starters">${STARTERS.map((s,i)=>`
+          <button class="starter" onclick="addStarter(${i})">
+            <span class="emoji" style="background:var(--${s.color}-tint);color:var(--${s.color})">${s.emoji}</span>
+            <span class="stx">${s.name}${s.duration?` · ⏱ ${s.duration} Min`:''}</span>
+            <span class="add">＋</span>
+          </button>`).join('')}</div>`;
+    }
+    v.innerHTML=html;return;
+  }
+  if(hasShared)html+='<div class="shared-head" style="margin-top:18px">Meine Habits</div>';
   if(done===tot&&tot>0)html+='<div class="alldone">🎉 Alles erledigt für heute. Stark!</div>';
   state.habits.forEach(h=>{
     const on=!!h.history[TODAY];
@@ -854,13 +896,23 @@ function buildPickers(){
   cp.innerHTML=COLORS.map(c=>`<button class="color-opt ${c===selColor?'sel':''}" style="background:var(--${c})" onclick="pickColor('${c}',this)"></button>`).join('');
   const dp=document.getElementById('durPicker');
   dp.innerHTML=DURATIONS.map(d=>`<button class="dur-opt ${d===selDuration?'sel':''}" onclick="pickDur(${d},this)">${d===0?'Aus':d+' Min'}</button>`).join('');
+  buildSharePicker();
 }
+function buildSharePicker(){
+  const wrap=document.getElementById('shareWrap'),p=document.getElementById('sharePicker');
+  if(!wrap||!p)return;
+  if(editId||!sbUser||!sbFriends.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  p.innerHTML=`<button class="dur-opt ${selShareFriend===null?'sel':''}" onclick="pickShare(null,this)">Nur ich</button>`+
+    sbFriends.map(f=>`<button class="dur-opt ${selShareFriend===f.user_id?'sel':''}" onclick="pickShare('${f.user_id}',this)">${esc(f.display_name||'Freund')}</button>`).join('');
+}
+function pickShare(id,el){selShareFriend=id;document.querySelectorAll('#sharePicker .dur-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
 function pickEmoji(e,el){selEmoji=e;document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
 function pickColor(c,el){selColor=c;document.querySelectorAll('.color-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
 function pickDur(d,el){selDuration=d;document.querySelectorAll('.dur-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
 
 function openSheet(id){
-  delArmed=false;
+  delArmed=false;selShareFriend=null;
   const del=document.getElementById('delBtn');
   del.classList.remove('arm');del.textContent='Löschen';
   if(id){
@@ -891,6 +943,10 @@ function validate(){
 function saveHabit(){
   const name=document.getElementById('nameInput').value.trim();
   if(!name)return;
+  if(!editId&&selShareFriend){
+    sbCreateShared(name,selEmoji,selColor,selShareFriend).then(ok=>{if(ok){toast('Gemeinsamer Habit erstellt 💜');render();}});
+    closeSheet();return;
+  }
   if(editId){
     const h=state.habits.find(x=>x.id===editId);
     h.name=name;h.emoji=selEmoji;h.color=selColor;h.duration=selDuration;
@@ -1187,6 +1243,9 @@ function mascotSVG(p){return `
 function mascotInit(){
   const h=document.getElementById('mascotHeader');if(h)h.innerHTML=mascotSVG('mh');
   const m=document.getElementById('mascotMs');if(m)m.innerHTML=mascotSVG('mm');
+  const ha=document.getElementById('hugA');if(ha)ha.innerHTML=mascotSVG('ha');
+  const hb=document.getElementById('hugB');if(hb)hb.innerHTML=mascotSVG('hb');
+  const hf=document.getElementById('hugFlame');if(hf)hf.innerHTML=purpleFlame(46);
   startBlink();
 }
 function updateMascotMood(done,tot){
@@ -1278,7 +1337,7 @@ function loadTheme(){
 /* ---- account & cloud sync (Supabase) ---- */
 const SB_URL='https://hraemwpbuqzaiwdemlyq.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyYWVtd3BidXF6YWl3ZGVtbHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NTUwMTksImV4cCI6MjA5NzQzMTAxOX0.04fDNU3GbyZBdS9ymFh2_XgOMtU5ARelL_B4V2N_xE8';
-let sb=null,sbUser=null,syncT=null,syncing=false,sbProfile=null,sbFriends=[];
+let sb=null,sbUser=null,syncT=null,syncing=false,sbProfile=null,sbFriends=[],sbShared=[],selShareFriend=null,leaveArmId=null;
 
 function initAuth(){
   if(!window.supabase)return;
@@ -1287,8 +1346,8 @@ function initAuth(){
     if(data&&data.session){sbUser=data.session.user;onLogin();}
     render();
   });
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&sbUser)pullCloud(true);});
-  window.addEventListener('focus',()=>{if(sbUser)pullCloud(true);});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&sbUser){pullCloud(true);sbLoadShared().then(render);}});
+  window.addEventListener('focus',()=>{if(sbUser){pullCloud(true);sbLoadShared().then(render);}});
 }
 function authVals(){
   const ee=document.getElementById('authEmail'),pp=document.getElementById('authPass');
@@ -1319,6 +1378,7 @@ async function onLogin(){
   await pullCloud(true);
   await sbEnsureProfile();
   await sbLoadFriends();
+  await sbLoadShared();
   render();
   toast('Synchronisiert ✓');
 }
@@ -1356,6 +1416,97 @@ async function sbAddFriend(){
     else if(data==='self')toast('Das ist dein eigener Code 🙂');
     else{toast('Freund hinzugefügt! 🎉');await sbLoadFriends();render();}
   }catch(e){toast('Fehler beim Hinzufügen');}
+}
+
+/* shared habits */
+async function sbLoadShared(){
+  if(!sb||!sbUser)return;
+  try{const {data,error}=await sb.rpc('get_shared');if(!error&&Array.isArray(data))sbShared=data;}catch(e){}
+}
+async function sbCreateShared(name,emoji,color,friendId){
+  if(!sb)return false;
+  try{
+    const {error}=await sb.rpc('create_shared_habit',{p_friend:friendId,p_name:name,p_emoji:emoji,p_color:color});
+    if(error){toast(error.message);return false;}
+    await sbLoadShared();return true;
+  }catch(e){toast('Fehler');return false;}
+}
+function sharedDayComplete(h,day){
+  const set={};(h.checkins||[]).forEach(c=>set[c.user_id+'|'+c.day]=true);
+  const mem=h.members||[];
+  return mem.length>0 && mem.every(m=>set[m.user_id+'|'+day]);
+}
+function sharedStreak(h){
+  let s=0,d=new Date();
+  if(!sharedDayComplete(h,ymd(d)))d=addDays(d,-1);
+  while(sharedDayComplete(h,ymd(d))){s++;d=addDays(d,-1);}
+  return s;
+}
+function myShared(h){return (h.checkins||[]).some(c=>c.user_id===sbUser.id&&c.day===TODAY);}
+async function toggleShared(id){
+  const h=sbShared.find(x=>x.id===id);if(!h||!sbUser)return;
+  const mine=myShared(h);
+  if(mine)h.checkins=h.checkins.filter(c=>!(c.user_id===sbUser.id&&c.day===TODAY));
+  else h.checkins.push({user_id:sbUser.id,day:TODAY});
+  const complete=sharedDayComplete(h,TODAY);
+  ensureAudio();render();
+  if(!mine){
+    sndCheck();
+    const fr=(h.members||[]).find(m=>m.user_id!==sbUser.id);
+    if(complete)showHug(sharedStreak(h),fr?(fr.name||'Freund'):'Freund');
+    else toast('Erledigt – warten auf '+(fr?(fr.name||'Freund'):'Freund')+' 💜');
+  }
+  try{await sb.rpc('set_shared_checkin',{p_habit:id,p_day:TODAY,p_done:!mine});}catch(e){toast('Sync-Fehler');}
+  await sbLoadShared();render();
+}
+function leaveShared(id){
+  if(leaveArmId!==id){leaveArmId=id;toast('Nochmal tippen, um zu verlassen');
+    setTimeout(()=>{if(leaveArmId===id)leaveArmId=null;},3000);return;}
+  leaveArmId=null;
+  if(sb)sb.rpc('leave_shared',{p_habit:id}).then(()=>{toast('Verlassen');sbLoadShared().then(render);});
+}
+function purpleFlame(size){
+  size=size||34;
+  return `<svg viewBox="0 0 100 120" width="${size}" height="${Math.round(size*1.18)}" style="overflow:visible"><defs><linearGradient id="pf${size}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6c2ff"/><stop offset=".55" stop-color="#c264ff"/><stop offset="1" stop-color="#9a36e0"/></linearGradient></defs><path d="M50 8 C66 32 82 46 82 76 a32 32 0 0 1 -64 0 C18 54 30 46 39 60 C42 40 40 24 50 8 Z" fill="url(#pf${size})"/></svg>`;
+}
+function purpleBurst(x,y){
+  if(reduceMotion()||!fxCtx)return;
+  const cs=['#ce82ff','#a855f7','#e2b3ff','#ff86d0','#ffffff'];
+  for(let i=0;i<42;i++){const a=Math.random()*6.283,sp=(Math.random()*0.6+0.4)*8.5;
+    fxParticles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-3,r:Math.random()*3+2,life:1,
+      decay:Math.random()*0.012+0.013,color:cs[(Math.random()*cs.length)|0],g:0.07});}
+  fxStart();
+}
+function showHug(streak,friendName){
+  const o=document.getElementById('hug');if(!o)return;
+  document.getElementById('hugNum').textContent=streak;
+  document.getElementById('hugLbl').textContent=(streak===1?'Tag':'Tage')+' gemeinsam mit '+friendName;
+  o.classList.remove('show');void o.offsetWidth;o.classList.add('show');
+  toast('💜 Gemeinsamer Streak mit '+friendName+'!');
+  if(navigator.vibrate)navigator.vibrate([30,40,30,40,70]);
+  sndMilestone();
+  purpleBurst(innerWidth/2,innerHeight*0.42);
+  clearTimeout(o._t);o._t=setTimeout(()=>o.classList.remove('show'),2400);
+}
+function sharedCard(h){
+  const mine=myShared(h);
+  const fr=(h.members||[]).find(m=>m.user_id!==sbUser.id);
+  const fname=fr?(fr.name||'Freund'):'Freund';
+  const fdone=fr?(h.checkins||[]).some(c=>c.user_id===fr.user_id&&c.day===TODAY):false;
+  const complete=sharedDayComplete(h,TODAY);
+  const s=sharedStreak(h);
+  let meta;
+  if(complete)meta=`<span style="color:var(--purple);font-weight:800">💜 ${s} ${s===1?'Tag':'Tage'} gemeinsam</span>`;
+  else meta=`du ${mine?'✓':'○'} · ${esc(fname)} ${fdone?'✓':'○'}`;
+  meta+=` · <span class="metalink" style="color:var(--muted);font-weight:700" onclick="event.stopPropagation();leaveShared('${h.id}')">verlassen</span>`;
+  return `<div class="habit shared ${complete?'complete':''}">
+    <div class="emoji shared-emoji">${complete?purpleFlame(28):esc(h.emoji||'🔥')}</div>
+    <div class="body">
+      <div class="name">${esc(h.name)}</div>
+      <div class="meta">${meta}</div>
+    </div>
+    <button class="check ${mine?'on cpurple':''}" onclick="toggleShared('${h.id}')">✓</button>
+  </div>`;
 }
 function mergeStates(a,b){
   const map={};
