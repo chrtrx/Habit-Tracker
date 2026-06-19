@@ -710,6 +710,27 @@ function renderStats(){
       <p style="font-size:13px;font-weight:700;margin:0 0 10px;line-height:1.5">Angemeldet als <b>${esc(sbUser.email||'')}</b><br><span style="color:var(--muted)">Deine Habits werden zwischen deinen Geräten synchronisiert.</span></p>
       <button class="btn-del" onclick="authSignOut()">Abmelden</button>
     </div>`;
+    const code=sbProfile?esc(sbProfile.friend_code||''):'…';
+    const myname=sbProfile?esc(sbProfile.display_name||''):'';
+    html+=`<div class="section-title">Freunde</div>
+    <div class="statcard">
+      <p class="field-label" style="margin:0 0 8px">Dein Anzeigename</p>
+      <input class="name-input" id="profileName" maxlength="24" placeholder="Name" value="${myname}" style="margin-bottom:10px">
+      <button class="btn-del" style="margin-top:0" onclick="sbSaveName()">Namen speichern</button>
+      <div style="margin-top:14px;padding:12px;border-radius:12px;background:var(--accent-t);text-align:center">
+        <div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Dein Freundescode</div>
+        <div style="font-size:26px;font-weight:900;letter-spacing:4px;margin:4px 0;color:var(--accent-d)">${code}</div>
+        <button class="btn-del" style="margin-top:6px" onclick="sbCopyCode()">Code kopieren</button>
+      </div>
+      <p class="field-label" style="margin:16px 0 8px">Freund per Code hinzufügen</p>
+      <input class="name-input" id="friendCode" maxlength="6" placeholder="z.B. 4F9A2C" style="margin-bottom:10px;text-transform:uppercase;letter-spacing:2px;font-weight:800">
+      <button class="btn" onclick="sbAddFriend()">Hinzufügen</button>
+    </div>`;
+    if(sbFriends.length){
+      html+=`<div class="statcard"><p class="field-label" style="margin:0 0 10px">Deine Freunde (${sbFriends.length})</p>`+
+        sbFriends.map(f=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;font-weight:800;font-size:14px"><span style="font-size:18px">🔥</span>${esc(f.display_name||'Freund')}</div>`).join('')+
+        `</div>`;
+    }
   }else if(window.supabase){
     html+=`<div class="statcard">
       <p style="font-size:13px;font-weight:700;color:var(--muted);margin:0 0 12px;line-height:1.5">Melde dich an, um deine Habits über mehrere Geräte zu synchronisieren. Deine bisherigen Daten bleiben erhalten und werden zusammengeführt.</p>
@@ -1257,7 +1278,7 @@ function loadTheme(){
 /* ---- account & cloud sync (Supabase) ---- */
 const SB_URL='https://hraemwpbuqzaiwdemlyq.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyYWVtd3BidXF6YWl3ZGVtbHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NTUwMTksImV4cCI6MjA5NzQzMTAxOX0.04fDNU3GbyZBdS9ymFh2_XgOMtU5ARelL_B4V2N_xE8';
-let sb=null,sbUser=null,syncT=null,syncing=false;
+let sb=null,sbUser=null,syncT=null,syncing=false,sbProfile=null,sbFriends=[];
 
 function initAuth(){
   if(!window.supabase)return;
@@ -1296,7 +1317,45 @@ async function authSignOut(){
 }
 async function onLogin(){
   await pullCloud(true);
+  await sbEnsureProfile();
+  await sbLoadFriends();
+  render();
   toast('Synchronisiert ✓');
+}
+async function sbEnsureProfile(name){
+  if(!sb||!sbUser)return;
+  try{
+    const {data,error}=await sb.rpc('ensure_profile',name?{p_name:name}:{});
+    if(!error&&data)sbProfile=data;
+  }catch(e){}
+}
+async function sbLoadFriends(){
+  if(!sb||!sbUser)return;
+  try{
+    const {data,error}=await sb.rpc('list_friends');
+    if(!error&&Array.isArray(data))sbFriends=data;
+  }catch(e){}
+}
+async function sbSaveName(){
+  const inp=document.getElementById('profileName');if(!inp)return;
+  const n=inp.value.trim();if(!n){toast('Namen eingeben');return;}
+  await sbEnsureProfile(n);toast('Name gespeichert');render();
+}
+async function sbCopyCode(){
+  if(!sbProfile)return;
+  try{await navigator.clipboard.writeText(sbProfile.friend_code);toast('Code kopiert: '+sbProfile.friend_code);}
+  catch(e){toast('Dein Code: '+sbProfile.friend_code);}
+}
+async function sbAddFriend(){
+  const inp=document.getElementById('friendCode');if(!inp||!sb)return;
+  const code=inp.value.trim();if(!code){toast('Code eingeben');return;}
+  try{
+    const {data,error}=await sb.rpc('redeem_friend_code',{p_code:code});
+    if(error){toast(error.message);return;}
+    if(data==='not_found')toast('Code nicht gefunden');
+    else if(data==='self')toast('Das ist dein eigener Code 🙂');
+    else{toast('Freund hinzugefügt! 🎉');await sbLoadFriends();render();}
+  }catch(e){toast('Fehler beim Hinzufügen');}
 }
 function mergeStates(a,b){
   const map={};
