@@ -762,11 +762,75 @@ header{
   background:linear-gradient(90deg,rgba(200,80,255,.16),rgba(200,80,255,.06))!important;
 }
 </style>
+<style id="level2">
+/* ---- Ember: float in header ---- */
+@media(prefers-reduced-motion:no-preference){
+  #mascotHeader{animation:emberDrift 2.8s ease-in-out infinite;}
+  @keyframes emberDrift{
+    0%,100%{transform:translateY(0) rotate(-.4deg);}
+    50%{transform:translateY(-6px) rotate(.4deg);}
+  }
+}
+/* ---- Ember: bigger in header ---- */
+#mascotHeader{width:64px!important;height:76px!important;}
+
+/* ---- Level badge: num + name stacked ---- */
+.level-badge{flex-direction:column!important;align-items:center!important;padding:5px 11px!important;gap:1px;line-height:1;}
+.level-badge .lv-num{font-size:12px;font-weight:900;line-height:1;}
+.level-badge .lv-name{font-size:8px;font-weight:700;opacity:.82;white-space:nowrap;max-width:72px;overflow:hidden;text-overflow:ellipsis;}
+
+/* ---- Level roadmap ---- */
+.level-road-wrap{
+  overflow-x:auto;scrollbar-width:none;
+  background:var(--glass);
+  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
+  border:1px solid var(--glass-edge);box-shadow:var(--glass-hi),var(--glass-elev);
+  border-radius:22px;padding:16px 16px 18px;margin-bottom:16px;
+}
+.level-road-wrap::-webkit-scrollbar{display:none;}
+.lr-header{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:14px;}
+.lr-track{display:flex;align-items:center;min-width:max-content;}
+.lr-node{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:900;flex:none;position:relative;
+}
+.lr-node.lv-done{background:var(--accent);color:#fff;box-shadow:0 2px 0 var(--accent-d);}
+.lr-node.lv-cur{
+  background:var(--accent);color:#fff;
+  box-shadow:0 0 0 3px rgba(255,255,255,.9),0 0 0 5px var(--accent),0 4px 14px rgba(88,204,2,.45);
+  transform:scale(1.22);z-index:2;
+}
+.lr-node.lv-next{background:rgba(0,0,0,.07);color:var(--muted);}
+.lr-node.lv-mile{font-size:15px;width:36px;height:36px;}
+.lr-line{height:4px;width:16px;flex:none;background:rgba(0,0,0,.1);border-radius:2px;}
+.lr-line.done{background:var(--accent);}
+[data-theme="dark"] .lr-node.lv-next{background:rgba(255,255,255,.1);}
+[data-theme="dark"] .lr-line{background:rgba(255,255,255,.12);}
+
+/* ---- Level-up sparkles ---- */
+.lvlup-sparks{position:absolute;inset:0;pointer-events:none;border-radius:inherit;overflow:hidden;}
+.lvlup-spark{
+  position:absolute;width:9px;height:9px;border-radius:50%;
+  left:50%;top:42%;opacity:0;
+  transform:translate(-50%,-50%);
+}
+@media(prefers-reduced-motion:no-preference){
+  .ms-overlay.show .lvlup-spark{
+    animation:lvlspark 1s ease-out forwards;
+    animation-delay:var(--sd,0s);
+  }
+  @keyframes lvlspark{
+    0%{opacity:1;transform:translate(-50%,-50%) scale(1.3);}
+    100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),calc(-50% + var(--dy,0px))) scale(.25);}
+  }
+}
+</style>
 </head>
 <body>
 <div class="app">
   <header>
-    <div class="brand"><span class="logo">🔥</span><h1>Streak</h1><span class="level-badge" id="levelBadge">Lv.1</span></div>
+    <div class="brand"><span class="logo">🔥</span><h1>Streak</h1><span class="level-badge" id="levelBadge"><span class="lv-num">Lv.1</span><span class="lv-name" id="lvName"></span></span></div>
     <div class="summary">
       <div class="ring">
         <svg width="64" height="64">
@@ -819,7 +883,8 @@ header{
   </div>
 </div>
 <div class="ms-overlay" id="levelup">
-  <div class="ms-card">
+  <div class="ms-card" style="position:relative;overflow:hidden">
+    <div class="lvlup-sparks" id="lvlupSparks"></div>
     <div class="ms-flame"><span class="mascot ms-mascot mood-happy" id="mascotLvl" aria-hidden="true"></span></div>
     <div class="lvlup-badge">Level 2</div>
     <div class="lvlup-sub">Aufsteiger</div>
@@ -1135,6 +1200,17 @@ function renderStats(){
       </div>
     </div>
   </div>`;
+  // Level roadmap
+  const miles={5:'🌟',10:'🌠',15:'👑',20:'🔥'};
+  html+='<div class="level-road-wrap"><div class="lr-header">Level-Pfad</div><div class="lr-track" id="lrTrack">';
+  for(let i=1;i<=LEVEL_XP.length;i++){
+    const isDone=i<lv,isCur=i===lv;
+    const cls=isDone?'lv-done':isCur?'lv-cur':'lv-next';
+    const mile=miles[i];
+    html+=`<div class="lr-node ${cls}${mile?' lv-mile':''}">${mile&&!isDone&&!isCur?mile:i}</div>`;
+    if(i<LEVEL_XP.length)html+=`<div class="lr-line${isDone||isCur?' done':''}"></div>`;
+  }
+  html+='</div></div>';
   html+=`<div class="stat-row">
     <div class="stat"><div class="v">${state.habits.length}</div><div class="k">Habits</div></div>
     <div class="stat"><div class="v">${done}/${state.habits.length}</div><div class="k">heute</div></div>
@@ -1183,6 +1259,16 @@ function renderStats(){
     </div>`;
   });
   v.innerHTML=html;
+  // Scroll roadmap to center current level node
+  requestAnimationFrame(()=>{
+    const track=document.getElementById('lrTrack');
+    if(!track)return;
+    const cur=track.querySelector('.lv-cur');
+    if(cur){
+      const wrap=track.parentElement;
+      wrap.scrollLeft=cur.offsetLeft+cur.offsetWidth/2-wrap.clientWidth/2;
+    }
+  });
 }
 
 function renderFriends(){
@@ -2196,8 +2282,11 @@ function updateXPBar(){
   const{pct}=xpProgress(xp);
   const bar=document.getElementById('xpBar');
   if(bar)bar.style.width=(pct*100)+'%';
-  const badge=document.getElementById('levelBadge');
-  if(badge)badge.textContent='Lv.'+levelFromXP(xp);
+  const lv=levelFromXP(xp);
+  const numEl=document.querySelector('#levelBadge .lv-num');
+  const nameEl=document.getElementById('lvName');
+  if(numEl)numEl.textContent='Lv.'+lv;
+  if(nameEl)nameEl.textContent=LEVEL_NAMES[lv-1]||'';
 }
 function awardXP(amount,el){
   const old=state.xp||0;
@@ -2226,8 +2315,24 @@ function showLevelUp(level){
   o.querySelector('.lvlup-sub').textContent=LEVEL_NAMES[level-1]||'Meister';
   const mm=document.getElementById('mascotLvl');
   if(mm){mm.classList.add('celebrate');clearTimeout(mm._c);mm._c=setTimeout(()=>mm.classList.remove('celebrate'),720);}
+  // Sparkle burst
+  const sparksEl=document.getElementById('lvlupSparks');
+  if(sparksEl&&!reduceMotion()){
+    sparksEl.innerHTML='';
+    const colors=['#58cc02','#ffc800','#1cb0f6','#ff9600','#ce82ff','#ff4b4b','#fff','#ffff00'];
+    for(let i=0;i<14;i++){
+      const s=document.createElement('div');
+      s.className='lvlup-spark';
+      const angle=(i/14)*360;
+      const dist=70+Math.random()*55;
+      const dx=Math.round(Math.cos(angle*Math.PI/180)*dist);
+      const dy=Math.round(Math.sin(angle*Math.PI/180)*dist);
+      s.style.cssText=`--dx:${dx}px;--dy:${dy}px;--sd:${(i*0.035).toFixed(3)}s;background:${colors[i%colors.length]}`;
+      sparksEl.appendChild(s);
+    }
+  }
   o.classList.add('show');
-  clearTimeout(o._t);o._t=setTimeout(()=>o.classList.remove('show'),2500);
+  clearTimeout(o._t);o._t=setTimeout(()=>o.classList.remove('show'),2800);
   if(!reduceMotion())emberRain();
   sndMilestone();
   if(navigator.vibrate)navigator.vibrate([40,50,40,50,80]);
