@@ -519,12 +519,68 @@
   }
   @keyframes ffClapA{0%{transform:translateX(-13px) rotate(-10deg)}55%{transform:translateX(-1px) rotate(-20deg) scale(1.22)}100%{transform:translateX(-3px) rotate(-16deg)}}
   @keyframes ffClapB{0%{transform:translateX(13px) rotate(10deg) scaleX(-1)}55%{transform:translateX(1px) rotate(20deg) scale(1.22) scaleX(-1)}100%{transform:translateX(3px) rotate(16deg) scaleX(-1)}}
+
+  /* ===== XP & Level System ===== */
+  .brand{position:relative;}
+  .level-badge{
+    margin-left:auto;display:inline-flex;align-items:center;
+    background:linear-gradient(135deg,var(--accent),var(--accent-d));
+    color:#fff;border-radius:10px;padding:3px 10px;font-size:11px;font-weight:900;
+    letter-spacing:.3px;box-shadow:0 2px 0 var(--accent-d),inset 0 1px 0 rgba(255,255,255,.4);}
+  .xp-bar-wrap{
+    height:3px;background:rgba(0,0,0,.08);border-radius:0;
+    margin-top:10px;margin-left:-18px;margin-right:-18px;margin-bottom:-14px;
+    overflow:hidden;}
+  .xp-bar{
+    height:100%;border-radius:0;background:var(--accent);
+    transition:width .7s cubic-bezier(.2,1,.3,1);
+    box-shadow:0 0 6px var(--accent);}
+  [data-theme="dark"] .xp-bar-wrap{background:rgba(255,255,255,.08);}
+
+  /* Floating XP text */
+  .xp-float{
+    position:fixed;pointer-events:none;font-size:13px;font-weight:900;
+    color:var(--accent);text-shadow:0 0 10px rgba(0,0,0,.18);z-index:100;white-space:nowrap;
+    animation:xpfloat .9s ease-out forwards;}
+  @keyframes xpfloat{
+    0%{opacity:1;transform:translateY(0) scale(1)}
+    25%{opacity:1;transform:translateY(-10px) scale(1.12)}
+    100%{opacity:0;transform:translateY(-52px) scale(.8)}}
+
+  /* ===== Achievement Cards ===== */
+  .ach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:16px;}
+  @media(min-width:700px){.ach-grid{grid-template-columns:repeat(4,1fr);}}
+  .ach{
+    background:var(--glass);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
+    border:1px solid var(--glass-edge);box-shadow:var(--glass-hi),var(--glass-elev);
+    border-radius:18px;padding:14px 8px 12px;text-align:center;transition:.2s;}
+  .ach.locked{opacity:.35;filter:grayscale(1) brightness(.88);}
+  .ach .ae{font-size:28px;line-height:1;margin-bottom:5px;}
+  .ach .an{font-size:10px;font-weight:800;color:var(--text);line-height:1.3;}
+  .ach.unlocked{border-color:var(--accent);box-shadow:var(--glass-hi),var(--glass-elev),0 0 0 1.5px var(--accent);}
+
+  /* Level-up overlay */
+  .lvlup-badge{
+    font-size:40px;font-weight:900;line-height:1;margin-top:8px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-d));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .lvlup-sub{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-top:3px;}
+
+  /* XP card bar in stats */
+  .xp-card-bar-wrap{height:8px;background:rgba(0,0,0,.07);border-radius:4px;margin-top:7px;overflow:hidden;}
+  .xp-card-bar{height:100%;border-radius:4px;background:var(--accent);box-shadow:0 0 6px var(--accent);transition:width .6s cubic-bezier(.2,1,.3,1);}
+  [data-theme="dark"] .xp-card-bar-wrap{background:rgba(255,255,255,.08);}
+
+  /* Enhanced streak meta colors */
+  .s.s-epic{color:#1cb0f6!important;}
+  .s.s-hot{color:#ff4b4b!important;}
+  .s.s-legend{color:#f4b740!important;}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <div class="brand"><span class="logo">🔥</span><h1>Streak</h1></div>
+    <div class="brand"><span class="logo">🔥</span><h1>Streak</h1><span class="level-badge" id="levelBadge">Lv.1</span></div>
     <div class="summary">
       <div class="ring">
         <svg width="64" height="64">
@@ -546,6 +602,7 @@
         <div><div class="num" id="ffNum">0</div><div class="lbl" id="ffLbl">gemeinsame Tage</div></div>
       </div>
     </div>
+    <div class="xp-bar-wrap"><div class="xp-bar" id="xpBar" style="width:0%"></div></div>
   </header>
 
   <div class="tabs">
@@ -573,6 +630,13 @@
     <div class="ms-flame"><span class="mascot ms-mascot mood-happy" id="mascotMs" aria-hidden="true"></span></div>
     <div class="ms-num">7</div>
     <div class="ms-lbl">Tage Serie!</div>
+  </div>
+</div>
+<div class="ms-overlay" id="levelup">
+  <div class="ms-card">
+    <div class="ms-flame"><span class="mascot ms-mascot mood-happy" id="mascotLvl" aria-hidden="true"></span></div>
+    <div class="lvlup-badge">Level 2</div>
+    <div class="lvlup-sub">Aufsteiger</div>
   </div>
 </div>
 <div class="ms-overlay" id="hug">
@@ -620,13 +684,39 @@ const STARTERS=[
   {name:'Lesen',emoji:'📚',color:'orange',duration:15},
 ];
 
+/* ---- XP & Gamification constants ---- */
+const LEVEL_XP=[0,50,150,300,500,750,1050,1400,1800,2250,2750,3300,3900,4550,5250,6000,7000,8000,9000,10000];
+const LEVEL_NAMES=['Neuling','Anfänger','Einsteiger','Aufsteiger','Diszipliniert','Fokussiert','Zuverlässig','Konsequent','Profi','Champion','Experte','Meister','Grandmeister','Legende','Mythisch','Unsterblich','Gottgleich','Übermensch','Streakgott','Ewige Flamme'];
+const ACHIEVEMENTS=[
+  {id:'first_habit',e:'🌱',n:'Erster Schritt'},
+  {id:'first_check',e:'✅',n:'Abgehakt!'},
+  {id:'streak_3',e:'🔥',n:'Heiß'},
+  {id:'streak_7',e:'⭐',n:'Wochensieger'},
+  {id:'streak_14',e:'⚡',n:'Blitz'},
+  {id:'streak_30',e:'🏆',n:'Champion'},
+  {id:'total_10',e:'💪',n:'Fleißig'},
+  {id:'total_50',e:'🎯',n:'Zielstrebig'},
+  {id:'total_100',e:'💯',n:'Profi'},
+  {id:'level_5',e:'🌟',n:'Aufsteiger'},
+  {id:'level_10',e:'🌠',n:'Meister'},
+  {id:'perfect_day',e:'🎖️',n:'Perfekter Tag'},
+  {id:'habit_5',e:'📋',n:'Sammler'},
+  {id:'streak_100',e:'👑',n:'Legende'},
+];
+
 let state={habits:[]};
 let tab='today';
 let editId=null, selEmoji=EMOJIS[0], selColor=COLORS[0], selDuration=0, delArmed=false;
 let ticker=null;
 
 /* ---- storage ---- */
-function load(){try{state=JSON.parse(localStorage.getItem(aKey()))||{habits:[]}}catch(e){state={habits:[]}}}
+function load(){
+  try{state=JSON.parse(localStorage.getItem(aKey()))||{habits:[]};}
+  catch(e){state={habits:[]};}
+  if(!state.habits)state.habits=[];
+  if(state.xp==null)state.xp=0;
+  if(!state.achievements)state.achievements={};
+}
 function save(){localStorage.setItem(aKey(),JSON.stringify(state));scheduleSync();}
 
 /* ---- dates ---- */
@@ -751,6 +841,7 @@ function renderInsights(){
 
 /* ---- render ---- */
 function render(){
+  updateXPBar();
   const done=state.habits.filter(h=>h.history[TODAY]).length;
   const tot=state.habits.length;
   document.getElementById('ringNum').textContent=done+'/'+tot;
@@ -768,7 +859,12 @@ function render(){
 
 function streakMeta(h){
   const st=currentStreak(h);
-  return st>0?`<span class="s">🔥 ${st} ${st===1?'Tag':'Tage'} Serie</span>`:'noch keine Serie';
+  if(!st)return'noch keine Serie';
+  let cls='s',em='🔥';
+  if(st>=100){cls='s s-legend';em='👑';}
+  else if(st>=30){cls='s s-epic';em='💙';}
+  else if(st>=14){cls='s s-hot';em='🔥';}
+  return`<span class="${cls}">${em} ${st} ${st===1?'Tag':'Tage'} Serie</span>`;
 }
 function mmss(ms){const s=Math.max(0,Math.round(ms/1000));return Math.floor(s/60)+':'+pad(s%60);}
 
@@ -834,7 +930,24 @@ function renderStats(){
   if(!state.habits.length){v.innerHTML='<div class="empty"><div class="e">📊</div><p>Statistiken erscheinen,<br>sobald du Habits hast.</p></div>';return;}
   const done=state.habits.filter(h=>h.history[TODAY]).length;
   const best=state.habits.reduce((m,h)=>Math.max(m,bestStreak(h)),0);
-  let html=`<div class="stat-row">
+  const xp=state.xp||0;
+  const lv=levelFromXP(xp);
+  const{cur,need,pct}=xpProgress(xp);
+  const lvName=LEVEL_NAMES[lv-1]||'Meister';
+  let html=`<div class="statcard" style="margin-bottom:14px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="font-size:36px;line-height:1">⭐</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <span style="font-size:20px;font-weight:900;color:var(--accent)">Level ${lv}</span>
+          <span style="font-size:13px;font-weight:800;color:var(--muted)">${lvName}</span>
+        </div>
+        <div class="xp-card-bar-wrap"><div class="xp-card-bar" style="width:${Math.round(pct*100)}%"></div></div>
+        <div style="font-size:10px;font-weight:700;color:var(--muted);margin-top:4px">${cur} / ${need} XP bis Level ${lv+1}</div>
+      </div>
+    </div>
+  </div>`;
+  html+=`<div class="stat-row">
     <div class="stat"><div class="v">${state.habits.length}</div><div class="k">Habits</div></div>
     <div class="stat"><div class="v">${done}/${state.habits.length}</div><div class="k">heute</div></div>
     <div class="stat"><div class="v" style="color:var(--fire)">${best}</div><div class="k">Rekord</div></div>
@@ -859,6 +972,9 @@ function renderStats(){
       <div class="dlabel">${dayNames[o.d.getDay()]}</div></div>`;
   });
   html+='</div>';
+
+  // achievements
+  html+=renderAchievements();
 
   // per habit
   html+='<div class="section-title">Pro Habit</div>';
@@ -988,6 +1104,9 @@ function toggle(id,btn){
     ensureAudio();
     sndCheck();
     celebrateAt(nb,big);
+    const xpGain=10+Math.min(Math.floor(s*1.5),30)+(big?25:0);
+    awardXP(xpGain,nb);
+    checkAchievements(h,s);
     if(big){milestoneBanner(s);emberRain();sndMilestone();}
     else{toast(s>0?('🔥 '+s+' '+(s===1?'Tag':'Tage')+' Serie'):'Erledigt');if(s>0)sndStreak(s);}
   }
@@ -1037,6 +1156,9 @@ function tick(){
     toast('🔥 '+doneName+' geschafft!');
     sndCheck();
     celebrateAt(nb,big);
+    const xpGain=10+Math.min(Math.floor(s*1.5),30)+(big?25:0);
+    awardXP(xpGain,nb);
+    if(h)checkAchievements(h,s);
     if(big){milestoneBanner(s);emberRain();sndMilestone();}
     else if(s>0)sndStreak(s);
   }
@@ -1156,6 +1278,7 @@ function saveHabit(){
     state.habits.push({id:'h'+Date.now(),name,emoji:selEmoji,color:selColor,duration:selDuration,createdAt:TODAY,history:{},timer:null});
   }
   save();render();ensureTicker();closeSheet();
+  if(!editId)checkAchievementsHabit();
 }
 function deleteHabit(){
   const del=document.getElementById('delBtn');
@@ -1444,6 +1567,7 @@ function mascotSVG(p){return `
 function mascotInit(){
   const h=document.getElementById('mascotHeader');if(h)h.innerHTML=mascotSVG('mh');
   const m=document.getElementById('mascotMs');if(m)m.innerHTML=mascotSVG('mm');
+  const ml=document.getElementById('mascotLvl');if(ml)ml.innerHTML=mascotSVG('mlv');
   const ha=document.getElementById('hugA');if(ha)ha.innerHTML=mascotSVG('ha');
   const hb=document.getElementById('hugB');if(hb)hb.innerHTML=mascotSVG('hb');
   const hf=document.getElementById('hugFlame');if(hf)hf.innerHTML=purpleFlame(46);
@@ -1793,10 +1917,152 @@ async function pushCloud(){
   try{await sb.from('app_state').upsert({user_id:sbUser.id,state:state,updated_at:new Date().toISOString()});}catch(e){}
 }
 
+/* ---- XP / Level / Achievement functions ---- */
+function levelFromXP(xp){
+  for(let i=LEVEL_XP.length-1;i>=0;i--)if(xp>=LEVEL_XP[i])return i+1;
+  return 1;
+}
+function xpProgress(xp){
+  const lv=levelFromXP(xp);
+  if(lv>=LEVEL_XP.length)return{cur:xp,need:1,pct:1};
+  const base=LEVEL_XP[lv-1],next=LEVEL_XP[lv];
+  return{cur:xp-base,need:next-base,pct:(xp-base)/(next-base)};
+}
+function totalCompletions(){
+  return state.habits.reduce((s,h)=>s+Object.values(h.history).filter(Boolean).length,0);
+}
+function migrateXP(){
+  if(state.xp!=null&&state.xp>0)return;
+  let xp=0;
+  state.habits.forEach(h=>Object.values(h.history).filter(Boolean).forEach(()=>xp+=10));
+  state.xp=xp;
+  if(!state.achievements)state.achievements={};
+  const ach=state.achievements;
+  const tc=totalCompletions();
+  if(state.habits.length>=1&&!ach.first_habit)ach.first_habit=1;
+  if(tc>=1&&!ach.first_check)ach.first_check=1;
+  if(tc>=10&&!ach.total_10)ach.total_10=1;
+  if(tc>=50&&!ach.total_50)ach.total_50=1;
+  if(tc>=100&&!ach.total_100)ach.total_100=1;
+  if(state.habits.length>=5&&!ach.habit_5)ach.habit_5=1;
+  const ms=state.habits.reduce((m,h)=>Math.max(m,bestStreak(h)),0);
+  if(ms>=3&&!ach.streak_3)ach.streak_3=1;
+  if(ms>=7&&!ach.streak_7)ach.streak_7=1;
+  if(ms>=14&&!ach.streak_14)ach.streak_14=1;
+  if(ms>=30&&!ach.streak_30)ach.streak_30=1;
+  if(ms>=100&&!ach.streak_100)ach.streak_100=1;
+  const lv=levelFromXP(xp);
+  if(lv>=5&&!ach.level_5)ach.level_5=1;
+  if(lv>=10&&!ach.level_10)ach.level_10=1;
+  save();
+}
+function updateXPBar(){
+  const xp=state.xp||0;
+  const{pct}=xpProgress(xp);
+  const bar=document.getElementById('xpBar');
+  if(bar)bar.style.width=(pct*100)+'%';
+  const badge=document.getElementById('levelBadge');
+  if(badge)badge.textContent='Lv.'+levelFromXP(xp);
+}
+function awardXP(amount,el){
+  const old=state.xp||0;
+  const oldLv=levelFromXP(old);
+  state.xp=old+amount;
+  const newLv=levelFromXP(state.xp);
+  save();
+  updateXPBar();
+  if(newLv>oldLv){
+    setTimeout(()=>showLevelUp(newLv),500);
+    checkAchievementsLevel(newLv);
+  }
+  if(el&&!reduceMotion())showXPFloat(el,'+'+amount+' XP');
+}
+function showXPFloat(el,text){
+  const r=el.getBoundingClientRect();
+  const d=document.createElement('div');
+  d.className='xp-float';d.textContent=text;
+  d.style.cssText='left:'+(r.left+r.width/2-22)+'px;top:'+(r.top-2)+'px';
+  document.body.appendChild(d);
+  setTimeout(()=>d.remove(),950);
+}
+function showLevelUp(level){
+  const o=document.getElementById('levelup');if(!o)return;
+  o.querySelector('.lvlup-badge').textContent='Level '+level;
+  o.querySelector('.lvlup-sub').textContent=LEVEL_NAMES[level-1]||'Meister';
+  const mm=document.getElementById('mascotLvl');
+  if(mm){mm.classList.add('celebrate');clearTimeout(mm._c);mm._c=setTimeout(()=>mm.classList.remove('celebrate'),720);}
+  o.classList.add('show');
+  clearTimeout(o._t);o._t=setTimeout(()=>o.classList.remove('show'),2500);
+  if(!reduceMotion())emberRain();
+  sndMilestone();
+  if(navigator.vibrate)navigator.vibrate([40,50,40,50,80]);
+}
+function checkAchievements(h,streak){
+  const ach=state.achievements||{};
+  const unlock=id=>{
+    if(!ach[id]){
+      ach[id]=Date.now();
+      const def=ACHIEVEMENTS.find(a=>a.id===id);
+      if(def)setTimeout(()=>toast(def.e+' Erfolg: '+def.n),900);
+    }
+  };
+  unlock('first_check');
+  if(streak>=3)unlock('streak_3');
+  if(streak>=7)unlock('streak_7');
+  if(streak>=14)unlock('streak_14');
+  if(streak>=30)unlock('streak_30');
+  if(streak>=100)unlock('streak_100');
+  const tc=totalCompletions();
+  if(tc>=10)unlock('total_10');
+  if(tc>=50)unlock('total_50');
+  if(tc>=100)unlock('total_100');
+  const done=state.habits.filter(hh=>hh.history[TODAY]).length;
+  if(done===state.habits.length&&state.habits.length>0)unlock('perfect_day');
+  state.achievements=ach;
+}
+function checkAchievementsLevel(level){
+  const ach=state.achievements||{};
+  const unlock=id=>{
+    if(!ach[id]){
+      ach[id]=Date.now();
+      const def=ACHIEVEMENTS.find(a=>a.id===id);
+      if(def)setTimeout(()=>toast(def.e+' Erfolg: '+def.n),1300);
+    }
+  };
+  if(level>=5)unlock('level_5');
+  if(level>=10)unlock('level_10');
+  state.achievements=ach;
+}
+function checkAchievementsHabit(){
+  const ach=state.achievements||{};
+  const unlock=id=>{
+    if(!ach[id]){
+      ach[id]=Date.now();
+      const def=ACHIEVEMENTS.find(a=>a.id===id);
+      if(def)setTimeout(()=>toast(def.e+' Erfolg: '+def.n),400);
+    }
+  };
+  if(state.habits.length>=1)unlock('first_habit');
+  if(state.habits.length>=5)unlock('habit_5');
+  state.achievements=ach;
+}
+function renderAchievements(){
+  const ach=state.achievements||{};
+  const cnt=ACHIEVEMENTS.filter(a=>ach[a.id]).length;
+  return'<div class="section-title">Erfolge ('+cnt+'/'+ACHIEVEMENTS.length+')</div>'+
+    '<div class="ach-grid">'+
+    ACHIEVEMENTS.map(a=>{
+      const u=!!ach[a.id];
+      return`<div class="ach ${u?'unlocked':'locked'}"><div class="ae">${a.e}</div><div class="an">${a.n}</div></div>`;
+    }).join('')+
+    '</div>';
+}
+
 /* ---- init ---- */
 load();
 loadTheme();
 loadSound();
+migrateXP();
 reconcileTimers();
 fxInit();
 mascotInit();
