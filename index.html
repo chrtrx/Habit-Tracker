@@ -576,6 +576,192 @@
   .s.s-hot{color:#ff4b4b!important;}
   .s.s-legend{color:#f4b740!important;}
 </style>
+<style id="upgrade">
+/* ===================================================
+   Design Upgrade v2 — Stronger Hierarchy, Committed Color
+   =================================================== */
+
+/* ---- App background: more presence ---- */
+.app{
+  background:
+    radial-gradient(700px 500px at 8% -10%, rgba(88,204,2,.30), transparent 58%),
+    radial-gradient(640px 460px at 114% 2%,  rgba(28,176,246,.20), transparent 56%),
+    radial-gradient(680px 540px at -8% 62%,  rgba(0,205,156,.18), transparent 58%),
+    radial-gradient(700px 560px at 58% 116%, rgba(206,130,255,.18), transparent 58%),
+    linear-gradient(180deg,#edf5ee,#e4ece6) !important;
+}
+
+/* ---- Header: tighter, stronger top presence ---- */
+header{
+  background:rgba(255,255,255,.20) !important;
+  -webkit-backdrop-filter:saturate(200%) blur(34px) !important;
+  backdrop-filter:saturate(200%) blur(34px) !important;
+  border-bottom:1px solid rgba(255,255,255,.38) !important;
+}
+[data-theme="dark"] header{
+  background:rgba(10,18,46,.60) !important;
+}
+
+/* ---- Ring: bigger, glow at 100% ---- */
+.ring{width:72px!important;height:72px!important;}
+.ring svg{width:72px!important;height:72px!important;}
+.ring .ring-num{font-size:17px!important;font-weight:900!important;}
+.ring.complete .ring-num{color:var(--accent)!important;}
+.ring.complete #ringProg{filter:drop-shadow(0 0 5px var(--accent));}
+
+/* ---- Flamebox: bigger number ---- */
+.flamebox .num{font-size:30px!important;font-weight:900!important;}
+.flamebox .big{font-size:34px!important;}
+
+/* ---- Habit cards: per-habit done state ---- */
+.habit{overflow:hidden;}
+.habit.done{
+  box-shadow:inset 5px 0 0 var(--hc,var(--green)),var(--glass-hi),var(--glass-elev)!important;
+  background:color-mix(in oklch,var(--hc,var(--green)) 10%,rgba(255,255,255,.22))!important;
+  border-color:color-mix(in oklch,var(--hc,var(--green)) 28%,rgba(255,255,255,.5))!important;
+}
+[data-theme="dark"] .habit.done{
+  background:color-mix(in oklch,var(--hc,var(--accent)) 14%,rgba(22,34,68,.5))!important;
+  box-shadow:inset 5px 0 0 var(--hc,var(--accent)),var(--glass-hi),var(--glass-elev)!important;
+  border-color:color-mix(in oklch,var(--hc,var(--accent)) 35%,rgba(255,255,255,.14))!important;
+}
+
+/* ---- Habit emoji: slightly larger ---- */
+.habit .emoji{
+  width:50px!important;height:50px!important;
+  border-radius:15px!important;font-size:26px!important;
+  box-shadow:0 2px 8px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.7)!important;
+}
+
+/* ---- Streak badge: pill style ---- */
+.habit .meta .s{
+  display:inline-flex;align-items:center;
+  background:rgba(255,150,0,.12);
+  border-radius:7px;padding:1px 7px;
+}
+.habit .meta .s.s-epic{background:rgba(28,176,246,.14)!important;}
+.habit .meta .s.s-hot{background:rgba(255,75,75,.12)!important;}
+.habit .meta .s.s-legend{background:rgba(244,183,64,.15)!important;}
+
+/* ---- Check button ---- */
+.check{width:48px!important;height:48px!important;font-size:22px!important;}
+
+/* ---- All-done banner: vibrant ---- */
+.alldone{
+  padding:15px 18px!important;font-size:15px!important;border-radius:18px!important;
+  background:linear-gradient(90deg,
+    color-mix(in oklch,var(--accent) 20%,transparent),
+    color-mix(in oklch,var(--accent) 8%,transparent))!important;
+  border-color:color-mix(in oklch,var(--accent) 48%,transparent)!important;
+  color:var(--accent-d)!important;
+}
+[data-theme="dark"] .alldone{color:var(--accent)!important;}
+
+/* ---- Stats: bigger numbers ---- */
+.stat .v{font-size:26px!important;font-weight:900!important;}
+
+/* ---- Week chart bars: gradient, taller ---- */
+.week .bar-wrap{height:80px!important;}
+.week .bar{
+  background:linear-gradient(to top,var(--accent-d),var(--accent))!important;
+  border-radius:8px 8px 3px 3px!important;
+  min-height:6px!important;
+}
+.week .bar.zero{background:rgba(0,0,0,.08)!important;}
+[data-theme="dark"] .week .bar.zero{background:rgba(255,255,255,.10)!important;}
+.week .day.today-bar .bar{
+  box-shadow:0 0 12px color-mix(in oklch,var(--accent) 48%,transparent)!important;
+}
+.week .day.today-bar .dlabel{color:var(--accent)!important;font-weight:900!important;}
+.week .dval{font-size:12px!important;font-weight:900!important;}
+
+/* ---- Grid30: tighter cells, today indicator ---- */
+.grid30{gap:5px!important;}
+.grid30 .cell{border-radius:7px!important;}
+.grid30 .cell.miss{background:rgba(0,0,0,.07)!important;}
+[data-theme="dark"] .grid30 .cell.miss{background:rgba(255,255,255,.08)!important;}
+.grid30 .cell.today-cell{
+  box-shadow:0 0 0 2.5px var(--accent)!important;
+  position:relative;z-index:1;
+}
+
+/* ---- Section titles ---- */
+.section-title{font-size:11px!important;letter-spacing:1.2px!important;}
+
+/* ---- FAB: stronger, bigger ---- */
+.fab{
+  width:64px!important;height:64px!important;
+  border-radius:20px!important;font-size:36px!important;
+  box-shadow:
+    0 6px 0 var(--accent-d),
+    0 16px 34px color-mix(in oklch,var(--accent) 30%,transparent),
+    var(--glass-hi)!important;
+}
+
+/* ---- XP bar: gradient glow ---- */
+.xp-bar{
+  background:linear-gradient(90deg,var(--accent-d),var(--accent))!important;
+  box-shadow:0 0 10px color-mix(in oklch,var(--accent) 55%,transparent)!important;
+}
+.xp-card-bar{
+  background:linear-gradient(90deg,var(--accent-d),var(--accent))!important;
+  box-shadow:0 0 6px color-mix(in oklch,var(--accent) 45%,transparent)!important;
+}
+
+/* ---- Level badge ---- */
+.level-badge{
+  padding:4px 11px!important;font-size:12px!important;letter-spacing:.5px!important;
+  box-shadow:0 2px 0 var(--accent-d),0 4px 12px color-mix(in oklch,var(--accent) 25%,transparent),inset 0 1px 0 rgba(255,255,255,.5)!important;
+}
+
+/* ---- Achievement: unlocked tint ---- */
+.ach.unlocked{
+  background:color-mix(in oklch,var(--accent) 10%,rgba(255,255,255,.28))!important;
+  transform:scale(1.02);
+}
+
+/* ---- Statcard emoji ---- */
+.statcard .emoji{
+  width:44px!important;height:44px!important;border-radius:13px!important;
+  box-shadow:0 2px 6px rgba(0,0,0,.10),inset 0 1px 0 rgba(255,255,255,.6)!important;
+}
+
+/* ---- Milestone / level-up card ---- */
+.ms-card{
+  padding:30px 42px!important;
+  box-shadow:var(--glass-hi),0 28px 70px rgba(33,46,40,.32)!important;
+}
+.ms-num{font-size:54px!important;}
+.ms-lbl{font-size:15px!important;letter-spacing:.8px!important;}
+
+/* ---- Toast: richer ---- */
+.toast{
+  padding:13px 20px!important;border-radius:16px!important;
+  box-shadow:var(--glass-hi),0 14px 38px rgba(0,0,0,.34)!important;
+}
+
+/* ---- Dark theme overrides ---- */
+[data-theme="dark"] .app{
+  background:
+    radial-gradient(720px 480px at 12% -8%,  rgba(40,86,200,.35),  transparent 58%),
+    radial-gradient(660px 480px at 116% 8%,  rgba(24,52,150,.36),  transparent 56%),
+    radial-gradient(720px 540px at 60% 122%, rgba(244,183,64,.12), transparent 58%),
+    linear-gradient(180deg,#0b1430,#060a16) !important;
+}
+
+/* ---- Starter cards ---- */
+.starter,.install{border-radius:20px!important;}
+
+/* ---- Aurora theme adjustments ---- */
+[data-theme="aurora"] .habit.done{
+  background:color-mix(in oklch,var(--hc,var(--orange)) 10%,rgba(255,255,255,.22))!important;
+}
+
+/* ---- Berry theme adjustments ---- */
+[data-theme="berry"] .alldone{
+  background:linear-gradient(90deg,rgba(200,80,255,.16),rgba(200,80,255,.06))!important;
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -847,6 +1033,8 @@ function render(){
   document.getElementById('ringNum').textContent=done+'/'+tot;
   const pct=tot?done/tot:0;
   document.getElementById('ringProg').style.strokeDashoffset=169.6*(1-pct);
+  const ringEl=document.querySelector('.ring');
+  if(ringEl)ringEl.classList.toggle('complete',pct===1&&tot>0);
   const top=state.habits.reduce((m,h)=>Math.max(m,currentStreak(h)),0);
   document.getElementById('topStreak').textContent=top;
   renderToday(done,tot);
@@ -908,7 +1096,7 @@ function renderToday(done,tot){
       btn=`<button class="check" data-h="${h.id}" onclick="toggle('${h.id}',this)">✓</button>`;
       meta=streakMeta(h);
     }
-    html+=`<div class="habit ${on?'done':''}">
+    html+=`<div class="habit ${on?'done':''}" style="--hc:var(--${h.color});--hc-t:var(--${h.color}-tint)">
       <div class="emoji" style="background:var(--${h.color}-tint,#eee);color:var(--${h.color})"
            onclick="openSheet('${h.id}')">${h.emoji}</div>
       <div class="body" onclick="openSheet('${h.id}')">
@@ -965,8 +1153,9 @@ function renderStats(){
   }
   html+='<div class="section-title">Letzte 7 Tage</div><div class="week">';
   counts.forEach(o=>{
-    const hpx=Math.round(o.c/maxc*64);
-    html+=`<div class="day">
+    const hpx=Math.round(o.c/maxc*80);
+    const isToday=o.k===TODAY;
+    html+=`<div class="day ${isToday?'today-bar':''}">
       <div class="dval">${o.c||''}</div>
       <div class="bar-wrap"><div class="bar ${o.c?'':'zero'}" style="height:${o.c?Math.max(hpx,6):4}px"></div></div>
       <div class="dlabel">${dayNames[o.d.getDay()]}</div></div>`;
@@ -1081,9 +1270,11 @@ function grid30(h){
     const k=ymd(addDays(new Date(),-i));
     const on=!!h.history[k];
     const created=k>=h.createdAt;
-    if(!created){cells+='<div class="cell miss"></div>';}
-    else if(on){cells+=`<div class="cell" style="background:var(--${h.color})"></div>`;}
-    else{cells+='<div class="cell miss"></div>';}
+    const isToday=i===0;
+    const todayCls=isToday?' today-cell':'';
+    if(!created){cells+=`<div class="cell miss${todayCls}"></div>`;}
+    else if(on){cells+=`<div class="cell${todayCls}" style="background:var(--${h.color})"></div>`;}
+    else{cells+=`<div class="cell miss${todayCls}"></div>`;}
   }
   return cells;
 }

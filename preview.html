@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Streak · Design Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#58cc02;--green-dark:#46a302;--green-tint:#eafadb;
+  --blue:#1cb0f6;--blue-dark:#1690cc;--blue-tint:#e2f5ff;
+  --purple:#ce82ff;--purple-dark:#a568cc;--purple-tint:#f4e9ff;
+  --orange:#ff9600;--orange-dark:#cc7800;--orange-tint:#fff0db;
+  --red:#ff4b4b;--red-dark:#d43a3a;--red-tint:#ffe6e6;
+  --yellow:#ffc800;--yellow-dark:#e0a800;--yellow-tint:#fff6d6;
+  --teal:#00cd9c;--teal-dark:#00a37d;--teal-tint:#d9fbf2;
+  --pink:#ff86d0;--pink-dark:#d96bad;--pink-tint:#ffe7f6;
+  --fire:#ff9600;
+  --accent:#58cc02;--accent-d:#46a302;--accent-t:#eafadb;
+  --text:#3c3c3c;--muted:#afafaf;--line:#e5e5e5;
+  --glass:rgba(255,255,255,.20);
+  --glass-edge:rgba(255,255,255,.55);
+  --glass-hi:inset 0 1px 0 rgba(255,255,255,.65);
+  --glass-elev:0 10px 28px rgba(20,28,38,.10);
+  --blur:saturate(180%) blur(26px);
+  --r:22px;
+  font-family:'Nunito',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Nunito',system-ui,sans-serif;font-weight:700;
+  background:
+    radial-gradient(700px 500px at 8% -10%,  rgba(88,204,2,.30),  transparent 58%),
+    radial-gradient(640px 460px at 114% 2%,  rgba(28,176,246,.20), transparent 56%),
+    radial-gradient(680px 540px at -8% 62%,  rgba(0,205,156,.18), transparent 58%),
+    radial-gradient(700px 560px at 58% 116%, rgba(206,130,255,.18), transparent 58%),
+    linear-gradient(180deg,#edf5ee,#e4ece6);
+  min-height:100vh;
+  padding:24px 16px 60px;
+  color:var(--text);
+}
+
+/* ---- Layout ---- */
+.preview-wrap{max-width:480px;margin:0 auto;display:flex;flex-direction:column;gap:32px;}
+.section-label{
+  font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:1.4px;
+  color:var(--muted);margin-bottom:10px;
+}
+
+/* ---- Header ---- */
+.header-preview{
+  background:rgba(255,255,255,.20);
+  -webkit-backdrop-filter:saturate(200%) blur(34px);
+  backdrop-filter:saturate(200%) blur(34px);
+  border-bottom:1px solid rgba(255,255,255,.38);
+  border-radius:0 0 24px 24px;
+  padding:20px 18px 0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.65);
+}
+.brand{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.brand .logo{font-size:24px;}
+.brand h1{font-size:20px;font-weight:900;letter-spacing:-.3px;}
+.level-badge{
+  margin-left:auto;display:inline-flex;align-items:center;
+  background:linear-gradient(135deg,var(--accent),var(--accent-d));
+  color:#fff;border-radius:10px;padding:4px 11px;font-size:12px;font-weight:900;
+  letter-spacing:.5px;
+  box-shadow:0 2px 0 var(--accent-d),0 4px 12px rgba(88,204,2,.25),inset 0 1px 0 rgba(255,255,255,.5);
+}
+.summary{display:flex;align-items:center;gap:16px;margin-bottom:14px;}
+.ring{position:relative;width:72px;height:72px;flex:none;}
+.ring svg{transform:rotate(-90deg);}
+.ring .ring-label{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;line-height:1;}
+.ring .ring-num{font-size:17px;font-weight:900;}
+.ring .ring-sub{font-size:9px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+.flamebox{display:flex;align-items:center;gap:10px;
+  background:linear-gradient(180deg,rgba(255,244,229,.55),rgba(255,236,210,.32));
+  border:1px solid rgba(255,200,140,.6);border-radius:14px;padding:10px 14px;flex:1;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.65);}
+.flamebox .big{font-size:34px;line-height:1;}
+.flamebox .num{font-size:30px;font-weight:900;color:var(--fire);line-height:1;}
+.flamebox .lbl{font-size:11px;font-weight:800;color:#c98a3a;text-transform:uppercase;letter-spacing:.4px;}
+.xp-bar-wrap{height:3px;background:rgba(0,0,0,.08);margin:0 -18px;overflow:hidden;}
+.xp-bar{height:100%;width:62%;
+  background:linear-gradient(90deg,var(--accent-d),var(--accent));
+  box-shadow:0 0 10px rgba(88,204,2,.55);}
+
+/* ---- Habit Cards ---- */
+.habit{
+  display:flex;align-items:center;gap:12px;
+  background:var(--glass);
+  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
+  border:1px solid var(--glass-edge);
+  box-shadow:var(--glass-hi),var(--glass-elev);
+  border-radius:22px;padding:12px;
+  overflow:hidden;
+}
+.habit.done{
+  box-shadow:inset 5px 0 0 var(--hc,var(--green)),var(--glass-hi),var(--glass-elev);
+  background:color-mix(in oklch,var(--hc,var(--green)) 10%,rgba(255,255,255,.22));
+  border-color:color-mix(in oklch,var(--hc,var(--green)) 28%,rgba(255,255,255,.5));
+}
+.habit .emoji{
+  width:50px;height:50px;border-radius:15px;
+  display:flex;align-items:center;justify-content:center;font-size:26px;flex:none;
+  box-shadow:0 2px 8px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.7);
+}
+.habit .body{flex:1;min-width:0;}
+.habit .name{font-size:16px;font-weight:800;}
+.habit .meta{font-size:12px;font-weight:700;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:5px;}
+.habit .meta .s{
+  display:inline-flex;align-items:center;
+  background:rgba(255,150,0,.12);border-radius:7px;padding:1px 7px;
+  color:var(--fire);font-weight:800;
+}
+.habit .meta .s.s-epic{background:rgba(28,176,246,.14);color:#1cb0f6;}
+.check{
+  width:48px;height:48px;border-radius:50%;flex:none;
+  border:3px solid var(--line);background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;color:transparent;
+  box-shadow:0 3px 0 var(--line),inset 0 1px 0 rgba(255,255,255,.65);
+}
+.check.on{
+  background:var(--accent);border-color:var(--accent);color:#fff;
+  box-shadow:0 3px 0 var(--accent-d),inset 0 1px 0 rgba(255,255,255,.4);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0) 50%);
+}
+
+/* ---- All done banner ---- */
+.alldone{
+  display:flex;align-items:center;gap:10px;
+  border-radius:18px;padding:15px 18px;
+  background:linear-gradient(90deg,
+    color-mix(in oklch,var(--accent) 20%,transparent),
+    color-mix(in oklch,var(--accent) 8%,transparent));
+  border:1.5px solid color-mix(in oklch,var(--accent) 48%,transparent);
+  font-weight:800;color:var(--accent-d);font-size:15px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.65);
+}
+
+/* ---- Stats ---- */
+.stat-row{display:flex;gap:10px;}
+.stat{
+  flex:1;background:var(--glass);
+  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
+  border:1px solid var(--glass-edge);border-radius:22px;
+  padding:12px 10px;text-align:center;
+  box-shadow:var(--glass-hi),var(--glass-elev);
+}
+.stat .v{font-size:26px;font-weight:900;line-height:1;}
+.stat .k{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:5px;}
+.week{
+  display:flex;justify-content:space-between;gap:6px;
+  background:var(--glass);
+  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
+  border:1px solid var(--glass-edge);border-radius:22px;
+  padding:14px 12px;box-shadow:var(--glass-hi),var(--glass-elev);
+}
+.week .day{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.week .bar-wrap{width:100%;height:80px;display:flex;align-items:flex-end;justify-content:center;}
+.week .bar{
+  width:60%;max-width:22px;
+  background:linear-gradient(to top,var(--accent-d),var(--accent));
+  border-radius:8px 8px 3px 3px;min-height:6px;
+}
+.week .bar.zero{background:rgba(0,0,0,.08);}
+.week .dlabel{font-size:10px;font-weight:800;color:var(--muted);}
+.week .dval{font-size:12px;font-weight:900;}
+.week .day.today-bar .bar{box-shadow:0 0 12px rgba(88,204,2,.48);}
+.week .day.today-bar .dlabel{color:var(--accent);font-weight:900;}
+
+/* ---- Grid30 ---- */
+.statcard{
+  background:var(--glass);
+  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
+  border:1px solid var(--glass-edge);border-radius:22px;
+  padding:14px;box-shadow:var(--glass-hi),var(--glass-elev);
+}
+.statcard .head{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.statcard .emoji{
+  width:44px;height:44px;border-radius:13px;
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex:none;
+  box-shadow:0 2px 6px rgba(0,0,0,.10),inset 0 1px 0 rgba(255,255,255,.6);
+}
+.statcard .hname{font-weight:800;font-size:15px;flex:1;}
+.statcard .nums{display:flex;gap:16px;margin-bottom:12px;}
+.statcard .nums .b{font-size:11px;font-weight:800;color:var(--muted);}
+.statcard .nums .b span{display:block;font-size:18px;font-weight:900;color:var(--text);margin-top:2px;}
+.statcard .nums .b .fire{color:var(--fire);}
+.grid30{display:grid;grid-template-columns:repeat(15,1fr);gap:5px;}
+.grid30 .cell{aspect-ratio:1;border-radius:7px;background:var(--accent);}
+.grid30 .cell.miss{background:rgba(0,0,0,.07);}
+.grid30 .cell.today-cell{box-shadow:0 0 0 2.5px var(--accent);position:relative;z-index:1;}
+
+/* ---- XP Level Card ---- */
+.xp-card-bar-wrap{height:8px;background:rgba(0,0,0,.07);border-radius:4px;margin-top:7px;overflow:hidden;}
+.xp-card-bar{
+  height:100%;width:62%;border-radius:4px;
+  background:linear-gradient(90deg,var(--accent-d),var(--accent));
+  box-shadow:0 0 6px rgba(88,204,2,.45);
+}
+
+/* ---- Achievements ---- */
+.ach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+.ach{
+  background:var(--glass);
+  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
+  border:1px solid var(--glass-edge);box-shadow:var(--glass-hi),var(--glass-elev);
+  border-radius:18px;padding:14px 8px 12px;text-align:center;
+}
+.ach.locked{opacity:.35;filter:grayscale(1) brightness(.88);}
+.ach .ae{font-size:28px;line-height:1;margin-bottom:5px;}
+.ach .an{font-size:10px;font-weight:800;color:var(--text);line-height:1.3;}
+.ach.unlocked{
+  border-color:var(--accent);
+  box-shadow:var(--glass-hi),var(--glass-elev),0 0 0 1.5px var(--accent);
+  background:color-mix(in oklch,var(--accent) 10%,rgba(255,255,255,.28));
+  transform:scale(1.02);
+}
+
+/* ---- FAB ---- */
+.fab{
+  width:64px;height:64px;border-radius:20px;
+  background:var(--accent);color:#fff;font-size:36px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;line-height:1;padding-bottom:4px;
+  box-shadow:0 6px 0 var(--accent-d),0 16px 34px rgba(88,204,2,.30),inset 0 1px 0 rgba(255,255,255,.4);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0) 50%);
+}
+
+/* ---- Section titles ---- */
+.section-title{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin:18px 2px 10px;}
+</style>
+</head>
+<body>
+<div class="preview-wrap">
+
+  <!-- HEADER -->
+  <div>
+    <div class="section-label">Header</div>
+    <div class="header-preview">
+      <div class="brand">
+        <span class="logo">🔥</span>
+        <h1>Streak</h1>
+        <span class="level-badge">Lv.4</span>
+      </div>
+      <div class="summary">
+        <div class="ring">
+          <svg width="72" height="72">
+            <circle cx="36" cy="36" r="30" fill="none" stroke="#eee" stroke-width="7"/>
+            <circle cx="36" cy="36" r="30" fill="none" stroke="#58cc02" stroke-width="7"
+                    stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="47"
+                    style="filter:drop-shadow(0 0 5px #58cc02)"/>
+          </svg>
+          <div class="ring-label">
+            <span class="ring-num" style="color:#58cc02">3/4</span>
+            <span class="ring-sub">heute</span>
+          </div>
+        </div>
+        <div class="flamebox">
+          <span class="big">🔥</span>
+          <div><div class="num">12</div><div class="lbl">längste Serie</div></div>
+        </div>
+      </div>
+      <div class="xp-bar-wrap"><div class="xp-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- HABIT CARDS: TODAY VIEW -->
+  <div>
+    <div class="section-label">Heute — Habit Cards</div>
+
+    <!-- Done: Wasser (blue) -->
+    <div class="habit done" style="--hc:var(--blue);margin-bottom:10px">
+      <div class="emoji" style="background:var(--blue-tint);color:var(--blue)">💧</div>
+      <div class="body">
+        <div class="name">Wasser trinken</div>
+        <div class="meta">
+          <span class="s s-epic">💙 14 Tage Serie</span>
+          · ⏱ 0 Min
+        </div>
+      </div>
+      <button class="check on">✓</button>
+    </div>
+
+    <!-- Done: Sport (green) -->
+    <div class="habit done" style="--hc:var(--green);margin-bottom:10px">
+      <div class="emoji" style="background:var(--green-tint);color:var(--green)">🏃</div>
+      <div class="body">
+        <div class="name">Bewegung</div>
+        <div class="meta"><span class="s">🔥 7 Tage Serie</span></div>
+      </div>
+      <button class="check on">✓</button>
+    </div>
+
+    <!-- Done: Lesen (orange) -->
+    <div class="habit done" style="--hc:var(--orange);margin-bottom:10px">
+      <div class="emoji" style="background:var(--orange-tint);color:var(--orange)">📚</div>
+      <div class="body">
+        <div class="name">Lesen</div>
+        <div class="meta"><span class="s">🔥 3 Tage Serie</span> · ⏱ 15 Min</div>
+      </div>
+      <button class="check on">✓</button>
+    </div>
+
+    <!-- Not done: Meditieren (purple) -->
+    <div class="habit" style="--hc:var(--purple);margin-bottom:10px">
+      <div class="emoji" style="background:var(--purple-tint);color:var(--purple)">🧘</div>
+      <div class="body">
+        <div class="name">Meditieren</div>
+        <div class="meta">noch keine Serie · ⏱ 10 Min</div>
+      </div>
+      <button class="check">✓</button>
+    </div>
+
+    <!-- All done banner -->
+    <div class="alldone">🎉 Alles erledigt für heute. Stark!</div>
+  </div>
+
+  <!-- STATS VIEW -->
+  <div>
+    <div class="section-label">Statistik</div>
+
+    <!-- XP Level Card -->
+    <div class="statcard" style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:36px;line-height:1">⭐</div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:baseline;gap:8px">
+            <span style="font-size:20px;font-weight:900;color:var(--accent)">Level 4</span>
+            <span style="font-size:13px;font-weight:800;color:var(--muted)">Aufsteiger</span>
+          </div>
+          <div class="xp-card-bar-wrap"><div class="xp-card-bar"></div></div>
+          <div style="font-size:10px;font-weight:700;color:var(--muted);margin-top:4px">450 / 500 XP bis Level 5</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat row -->
+    <div class="stat-row" style="margin-bottom:16px">
+      <div class="stat"><div class="v">4</div><div class="k">Habits</div></div>
+      <div class="stat"><div class="v">3/4</div><div class="k">heute</div></div>
+      <div class="stat"><div class="v" style="color:var(--fire)">14</div><div class="k">Rekord</div></div>
+    </div>
+
+    <!-- Week bars -->
+    <div class="section-title">Letzte 7 Tage</div>
+    <div class="week" style="margin-bottom:16px">
+      <div class="day"><div class="dval">2</div><div class="bar-wrap"><div class="bar" style="height:20px"></div></div><div class="dlabel">Mo</div></div>
+      <div class="day"><div class="dval">3</div><div class="bar-wrap"><div class="bar" style="height:30px"></div></div><div class="dlabel">Di</div></div>
+      <div class="day"><div class="dval">4</div><div class="bar-wrap"><div class="bar" style="height:40px"></div></div><div class="dlabel">Mi</div></div>
+      <div class="day"><div class="dval">2</div><div class="bar-wrap"><div class="bar" style="height:20px"></div></div><div class="dlabel">Do</div></div>
+      <div class="day"><div class="dval">4</div><div class="bar-wrap"><div class="bar" style="height:40px"></div></div><div class="dlabel">Fr</div></div>
+      <div class="day"><div class="dval">3</div><div class="bar-wrap"><div class="bar" style="height:30px"></div></div><div class="dlabel">Sa</div></div>
+      <div class="day today-bar"><div class="dval">3</div><div class="bar-wrap"><div class="bar" style="height:30px"></div></div><div class="dlabel">So</div></div>
+    </div>
+
+    <!-- Achievements -->
+    <div class="section-title">Erfolge (5/14)</div>
+    <div class="ach-grid" style="margin-bottom:16px">
+      <div class="ach unlocked"><div class="ae">🌱</div><div class="an">Erster Schritt</div></div>
+      <div class="ach unlocked"><div class="ae">✅</div><div class="an">Abgehakt!</div></div>
+      <div class="ach unlocked"><div class="ae">🔥</div><div class="an">Heiß</div></div>
+      <div class="ach unlocked"><div class="ae">⭐</div><div class="an">Wochensieger</div></div>
+      <div class="ach unlocked"><div class="ae">💪</div><div class="an">Fleißig</div></div>
+      <div class="ach locked"><div class="ae">⚡</div><div class="an">Blitz</div></div>
+      <div class="ach locked"><div class="ae">🏆</div><div class="an">Champion</div></div>
+      <div class="ach locked"><div class="ae">🎯</div><div class="an">Zielstrebig</div></div>
+      <div class="ach locked"><div class="ae">💯</div><div class="an">Profi</div></div>
+    </div>
+
+    <!-- Habit stat card with grid30 -->
+    <div class="section-title">Pro Habit</div>
+    <div class="statcard">
+      <div class="head">
+        <div class="emoji" style="background:var(--blue-tint);color:var(--blue)">💧</div>
+        <div class="hname">Wasser trinken</div>
+      </div>
+      <div class="nums">
+        <div class="b">Aktuelle Serie<span class="fire">🔥 14</span></div>
+        <div class="b">Rekord<span>14</span></div>
+        <div class="b">Erfüllt<span>87%</span></div>
+      </div>
+      <div class="grid30">
+        <!-- 30 cells: last 15 mostly done, today marked -->
+        <div class="cell miss"></div>
+        <div class="cell miss"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell miss"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell miss"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell miss"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell" style="background:var(--blue)"></div>
+        <div class="cell today-cell" style="background:var(--blue)"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAB -->
+  <div style="display:flex;justify-content:flex-end">
+    <div class="section-label" style="margin-right:auto;align-self:center">FAB</div>
+    <button class="fab">+</button>
+  </div>
+
+</div>
+</body>
+</html>
