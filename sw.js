@@ -1,4 +1,4 @@
-const CACHE = 'streak-v19';
+const CACHE = 'streak-v20';
 const ASSETS = [
   './',
   './index.html',
