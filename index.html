@@ -528,7 +528,7 @@
     color:#fff;border-radius:10px;padding:3px 10px;font-size:11px;font-weight:900;
     letter-spacing:.3px;box-shadow:0 2px 0 var(--accent-d),inset 0 1px 0 rgba(255,255,255,.4);}
   .xp-bar-wrap{
-    height:3px;background:rgba(0,0,0,.08);border-radius:0;
+    height:4px;background:rgba(0,0,0,.08);border-radius:0;
     margin-top:10px;margin-left:-18px;margin-right:-18px;margin-bottom:-14px;
     overflow:hidden;}
   .xp-bar{
@@ -791,22 +791,50 @@ header{
 .lr-header{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:14px;}
 .lr-track{display:flex;align-items:center;min-width:max-content;}
 .lr-node{
-  width:32px;height:32px;border-radius:50%;
+  width:34px;height:34px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:900;flex:none;position:relative;
+  font-size:16px;font-weight:900;flex:none;position:relative;
 }
-.lr-node.lv-done{background:var(--accent);color:#fff;box-shadow:0 2px 0 var(--accent-d);}
+.lr-node.lv-done{background:var(--accent);color:#fff;box-shadow:0 2px 0 var(--accent-d);font-size:11px;}
 .lr-node.lv-cur{
   background:var(--accent);color:#fff;
   box-shadow:0 0 0 3px rgba(255,255,255,.9),0 0 0 5px var(--accent),0 4px 14px rgba(88,204,2,.45);
   transform:scale(1.22);z-index:2;
 }
-.lr-node.lv-next{background:rgba(0,0,0,.07);color:var(--muted);}
-.lr-node.lv-mile{font-size:15px;width:36px;height:36px;}
-.lr-line{height:4px;width:16px;flex:none;background:rgba(0,0,0,.1);border-radius:2px;}
+.lr-node.lv-next{background:rgba(0,0,0,.06);color:var(--muted);}
+.lr-node.lv-mile{font-size:20px;width:40px;height:40px;}
+.lr-node.lv-mile.lv-done{font-size:14px;}
+.lr-line{height:4px;width:14px;flex:none;background:rgba(0,0,0,.1);border-radius:2px;}
 .lr-line.done{background:var(--accent);}
 [data-theme="dark"] .lr-node.lv-next{background:rgba(255,255,255,.1);}
 [data-theme="dark"] .lr-line{background:rgba(255,255,255,.12);}
+
+/* ---- Stage path (Streichholz → Phönix) ---- */
+.lr-stages{
+  display:flex;align-items:center;
+  background:rgba(0,0,0,.04);border-radius:14px;
+  padding:10px 6px 8px;margin-bottom:16px;
+}
+.lr-stage{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;min-width:0;}
+.lr-stage-icon{font-size:20px;line-height:1;}
+.lr-stage-name{
+  font-size:8px;font-weight:800;color:var(--muted);
+  letter-spacing:.3px;white-space:nowrap;max-width:54px;
+  overflow:hidden;text-overflow:ellipsis;text-align:center;
+}
+.lr-stage.s-done .lr-stage-icon{filter:saturate(.55) brightness(.9);}
+.lr-stage.s-done .lr-stage-name{color:var(--accent-d);}
+.lr-stage.s-cur .lr-stage-name{color:var(--accent-d);font-weight:900;font-size:9px;}
+.lr-stage.s-lock{opacity:.28;}
+.lr-conn{height:2px;width:10px;flex:none;background:rgba(0,0,0,.1);
+  border-radius:1px;margin-bottom:12px;}
+.lr-conn.done{background:var(--accent);}
+[data-theme="dark"] .lr-stages{background:rgba(255,255,255,.06);}
+[data-theme="dark"] .lr-conn{background:rgba(255,255,255,.14);}
+@media(prefers-reduced-motion:no-preference){
+  .lr-stage.s-cur .lr-stage-icon{animation:stageGlow 2s ease-in-out infinite;}
+  @keyframes stageGlow{0%,100%{transform:scale(1)}50%{transform:scale(1.2);}}
+}
 
 /* ---- Level-up sparkles ---- */
 .lvlup-sparks{position:absolute;inset:0;pointer-events:none;border-radius:inherit;overflow:hidden;}
@@ -1200,15 +1228,40 @@ function renderStats(){
       </div>
     </div>
   </div>`;
-  // Level roadmap
-  const miles={5:'🌟',10:'🌠',15:'👑',20:'🔥'};
-  html+='<div class="level-road-wrap"><div class="lr-header">Level-Pfad</div><div class="lr-track" id="lrTrack">';
+  // ---- Level roadmap: Streichholz → Phönix ----
+  const STAGES=[
+    {from:1,to:4,name:'Funke',icon:'🔥'},
+    {from:5,to:9,name:'Kerze',icon:'🕯️'},
+    {from:10,to:14,name:'Fackel',icon:'🔦'},
+    {from:15,to:19,name:'Lagerfeuer',icon:'🏕️'},
+    {from:20,to:20,name:'Phönix',icon:'🦅'},
+  ];
+  const csi=Math.max(0,STAGES.findIndex(s=>lv>=s.from&&lv<=s.to));
+  const SI={1:'🔥',2:'🔥',3:'🔥',4:'🔥',5:'🕯️',6:'🕯️',7:'🕯️',8:'🕯️',9:'🕯️',
+    10:'🔦',11:'🔦',12:'🔦',13:'🔦',14:'🔦',
+    15:'🏕️',16:'🏕️',17:'🏕️',18:'🏕️',19:'🏕️',20:'🦅'};
+  const MILES={5:true,10:true,15:true,20:true};
+
+  let sgHtml='<div class="lr-stages">';
+  STAGES.forEach((s,i)=>{
+    const d=lv>s.to,c=i===csi;
+    sgHtml+=`<div class="lr-stage ${d?'s-done':c?'s-cur':'s-lock'}">
+      <span class="lr-stage-icon">${s.icon}</span>
+      <span class="lr-stage-name">${s.name}</span>
+    </div>`;
+    if(i<STAGES.length-1)sgHtml+=`<div class="lr-conn${d?' done':''}"></div>`;
+  });
+  sgHtml+='</div>';
+
+  html+='<div class="level-road-wrap"><div class="lr-header">'+STAGES[csi].icon+' '+STAGES[csi].name+' · Level '+lv+'</div>';
+  html+=sgHtml;
+  html+='<div class="lr-track" id="lrTrack">';
   for(let i=1;i<=LEVEL_XP.length;i++){
-    const isDone=i<lv,isCur=i===lv;
-    const cls=isDone?'lv-done':isCur?'lv-cur':'lv-next';
-    const mile=miles[i];
-    html+=`<div class="lr-node ${cls}${mile?' lv-mile':''}">${mile&&!isDone&&!isCur?mile:i}</div>`;
-    if(i<LEVEL_XP.length)html+=`<div class="lr-line${isDone||isCur?' done':''}"></div>`;
+    const iD=i<lv,iC=i===lv;
+    const cls=iD?'lv-done':iC?'lv-cur':'lv-next';
+    const ml=MILES[i];
+    html+=`<div class="lr-node ${cls}${ml?' lv-mile':''}">${iD?i:SI[i]}</div>`;
+    if(i<LEVEL_XP.length)html+=`<div class="lr-line${iD||iC?' done':''}"></div>`;
   }
   html+='</div></div>';
   html+=`<div class="stat-row">
@@ -1794,94 +1847,104 @@ function milestoneBanner(streak){
   clearTimeout(o._t);o._t=setTimeout(()=>o.classList.remove('show'),1800);
 }
 
-/* ---- mascot "Ember" ---- */
+/* ---- mascot "Ember" v3 ---- */
 function mascotSVG(p){return `
 <svg class="m-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="${p}b" cx="42%" cy="34%" r="62%">
-      <stop offset="0%" stop-color="#ffe14d"/>
-      <stop offset="52%" stop-color="#ffaa00"/>
-      <stop offset="100%" stop-color="#ff6200"/>
+    <radialGradient id="${p}b" cx="38%" cy="28%" r="70%">
+      <stop offset="0%" stop-color="#ffe866"/>
+      <stop offset="45%" stop-color="#ffac00"/>
+      <stop offset="100%" stop-color="#ff5600"/>
     </radialGradient>
-    <radialGradient id="${p}f" cx="50%" cy="85%" r="55%">
-      <stop offset="0%" stop-color="#ffb800"/>
-      <stop offset="55%" stop-color="#ff6a00"/>
-      <stop offset="100%" stop-color="#cc2800"/>
+    <radialGradient id="${p}f" cx="50%" cy="88%" r="62%">
+      <stop offset="0%" stop-color="#ffc820"/>
+      <stop offset="46%" stop-color="#ff5e00"/>
+      <stop offset="100%" stop-color="#bf2000"/>
     </radialGradient>
-    <radialGradient id="${p}eye" cx="38%" cy="28%" r="62%">
-      <stop offset="0%" stop-color="#9a6230"/>
-      <stop offset="100%" stop-color="#3d1800"/>
+    <radialGradient id="${p}eye" cx="30%" cy="22%" r="70%">
+      <stop offset="0%" stop-color="#8a5520"/>
+      <stop offset="100%" stop-color="#2c0c00"/>
     </radialGradient>
   </defs>
   <g class="m-bob">
-    <!-- Flame hair -->
+    <!-- Flame hair – organic, layered -->
     <g class="m-wisp">
-      <path d="M26 54 C18 40 22 22 30 14 C33 24 28 40 36 50Z" fill="url(#${p}f)"/>
-      <path d="M37 50 C32 35 36 18 42 8 C46 18 44 34 46 46Z" fill="#ff7a00"/>
-      <path d="M44 47 C42 30 46 14 50 4 C54 14 58 30 56 47Z" fill="#ff9200"/>
-      <path d="M54 50 C56 34 54 18 58 8 C64 18 68 35 63 50Z" fill="#ff7a00"/>
-      <path d="M64 54 C72 40 72 22 70 14 C78 22 82 40 74 54Z" fill="url(#${p}f)"/>
+      <path d="M24 56 C13 39 18 18 28 10 C34 22 26 41 35 53Z" fill="url(#${p}f)" opacity=".9"/>
+      <path d="M35 51 C26 32 33 13 40 4 C47 17 44 35 46 47Z" fill="#ffb200" opacity=".95"/>
+      <path d="M44 47 C39 25 46 9 50 1 C54 9 61 25 56 47Z" fill="#ffd830"/>
+      <path d="M54 51 C56 35 53 17 60 4 C67 13 74 32 65 51Z" fill="#ffb200" opacity=".95"/>
+      <path d="M66 56 C74 41 82 18 72 10 C82 18 87 39 76 56Z" fill="url(#${p}f)" opacity=".9"/>
     </g>
     <!-- Legs -->
     <rect class="m-foot" x="37" y="97" width="11" height="13" rx="5.5" fill="#ff7a00"/>
     <rect class="m-foot" x="52" y="97" width="11" height="13" rx="5.5" fill="#ff7a00"/>
-    <!-- Sneakers -->
-    <ellipse class="m-foot" cx="42" cy="111" rx="11" ry="5" fill="#f0ece0"/>
-    <ellipse class="m-foot" cx="58" cy="111" rx="11" ry="5" fill="#f0ece0"/>
-    <path class="m-foot" d="M33 110 Q42 106 51 110" fill="none" stroke="#d4cfc0" stroke-width="1.5"/>
-    <path class="m-foot" d="M49 110 Q58 106 67 110" fill="none" stroke="#d4cfc0" stroke-width="1.5"/>
-    <!-- Arms -->
-    <g class="m-arm m-arm-l"><ellipse cx="19" cy="80" rx="7" ry="9.5" fill="url(#${p}b)" transform="rotate(-18 19 80)"/></g>
-    <g class="m-arm m-arm-r"><ellipse cx="81" cy="80" rx="7" ry="9.5" fill="url(#${p}b)" transform="rotate(18 81 80)"/></g>
+    <!-- Sneakers – cleaner -->
+    <ellipse class="m-foot" cx="42" cy="111" rx="11.5" ry="5.2" fill="#f2eddf"/>
+    <ellipse class="m-foot" cx="58" cy="111" rx="11.5" ry="5.2" fill="#f2eddf"/>
+    <path class="m-foot" d="M32 111 Q42 107 52 111" fill="none" stroke="#d8d0bc" stroke-width="1.6" stroke-linecap="round"/>
+    <path class="m-foot" d="M48 111 Q58 107 68 111" fill="none" stroke="#d8d0bc" stroke-width="1.6" stroke-linecap="round"/>
+    <!-- Arms – slightly rounder/friendlier -->
+    <g class="m-arm m-arm-l">
+      <ellipse cx="18" cy="80" rx="7.5" ry="10" fill="url(#${p}b)" transform="rotate(-20 18 80)"/>
+      <ellipse cx="16" cy="77" rx="3" ry="4" fill="#fff" opacity=".18" transform="rotate(-20 18 80)"/>
+    </g>
+    <g class="m-arm m-arm-r">
+      <ellipse cx="82" cy="80" rx="7.5" ry="10" fill="url(#${p}b)" transform="rotate(20 82 80)"/>
+      <ellipse cx="80" cy="77" rx="3" ry="4" fill="#fff" opacity=".18" transform="rotate(20 82 80)"/>
+    </g>
     <!-- Body -->
-    <circle class="m-body" cx="50" cy="74" r="28" fill="url(#${p}b)"/>
-    <!-- Body shine -->
-    <ellipse cx="40" cy="61" rx="10" ry="13" fill="#fff" opacity=".18"/>
-    <!-- Eye whites -->
-    <circle cx="38" cy="70" r="10.5" fill="#fff"/>
-    <circle cx="62" cy="70" r="10.5" fill="#fff"/>
+    <circle class="m-body" cx="50" cy="74" r="29" fill="url(#${p}b)"/>
+    <!-- Body highlight -->
+    <ellipse cx="38" cy="59" rx="11" ry="14.5" fill="#fff" opacity=".22" transform="rotate(-8 38 59)"/>
+    <!-- Eye whites – bigger, higher → cuter -->
+    <circle cx="37" cy="68" r="12" fill="#fff"/>
+    <circle cx="63" cy="68" r="12" fill="#fff"/>
     <!-- Open eyes -->
     <g class="m-eyes-open">
-      <circle cx="38" cy="71" r="7" fill="url(#${p}eye)"/>
-      <circle cx="62" cy="71" r="7" fill="url(#${p}eye)"/>
-      <circle cx="38" cy="72" r="4.5" fill="#180900"/>
-      <circle cx="62" cy="72" r="4.5" fill="#180900"/>
-      <circle cx="35.5" cy="68" r="2.6" fill="#fff"/>
-      <circle cx="59.5" cy="68" r="2.6" fill="#fff"/>
+      <circle cx="37" cy="69" r="8" fill="url(#${p}eye)"/>
+      <circle cx="63" cy="69" r="8" fill="url(#${p}eye)"/>
+      <circle cx="37" cy="70" r="5.2" fill="#1c0800"/>
+      <circle cx="63" cy="70" r="5.2" fill="#1c0800"/>
+      <!-- Main sparkle highlight -->
+      <circle cx="33.5" cy="65.5" r="3.1" fill="#fff"/>
+      <circle cx="59.5" cy="65.5" r="3.1" fill="#fff"/>
+      <!-- Secondary sparkle -->
+      <circle cx="39.5" cy="68" r="1.5" fill="rgba(255,255,255,.6)"/>
+      <circle cx="65.5" cy="68" r="1.5" fill="rgba(255,255,255,.6)"/>
     </g>
-    <!-- Happy eyes (arcs) -->
+    <!-- Happy eyes (squint arcs) -->
     <g class="m-eyes-happy">
-      <path d="M30 71 Q38 61 46 71" fill="none" stroke="#3d1800" stroke-width="4" stroke-linecap="round"/>
-      <path d="M54 71 Q62 61 70 71" fill="none" stroke="#3d1800" stroke-width="4" stroke-linecap="round"/>
-      <circle cx="34" cy="65" r="2.4" fill="#fff" opacity=".9"/>
-      <circle cx="58" cy="65" r="2.4" fill="#fff" opacity=".9"/>
+      <path d="M27 68 Q37 56 47 68" fill="none" stroke="#1c0800" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M53 68 Q63 56 73 68" fill="none" stroke="#1c0800" stroke-width="4.5" stroke-linecap="round"/>
+      <circle cx="31" cy="61" r="2.8" fill="#fff" opacity=".9"/>
+      <circle cx="57" cy="61" r="2.8" fill="#fff" opacity=".9"/>
     </g>
     <!-- Blink -->
     <g class="m-eyes-closed">
-      <path d="M30 70 Q38 77 46 70" fill="none" stroke="#3d1800" stroke-width="4" stroke-linecap="round"/>
-      <path d="M54 70 Q62 77 70 70" fill="none" stroke="#3d1800" stroke-width="4" stroke-linecap="round"/>
+      <path d="M27 67 Q37 76 47 67" fill="none" stroke="#1c0800" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M53 67 Q63 76 73 67" fill="none" stroke="#1c0800" stroke-width="4.5" stroke-linecap="round"/>
     </g>
-    <!-- Eyebrows -->
-    <path d="M31 59 Q38 55 45 59" fill="none" stroke="#cc3300" stroke-width="2.8" stroke-linecap="round"/>
-    <path d="M55 59 Q62 55 69 59" fill="none" stroke="#cc3300" stroke-width="2.8" stroke-linecap="round"/>
-    <!-- Cheeks -->
-    <ellipse class="m-cheek" cx="26" cy="80" rx="6" ry="4" fill="#ff7a9c" opacity=".4"/>
-    <ellipse class="m-cheek" cx="74" cy="80" rx="6" ry="4" fill="#ff7a9c" opacity=".4"/>
+    <!-- Eyebrows – expressive -->
+    <path d="M28 56 Q37 51.5 46 56" fill="none" stroke="#c43000" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M54 56 Q63 51.5 72 56" fill="none" stroke="#c43000" stroke-width="3.2" stroke-linecap="round"/>
+    <!-- Cheeks – more visible -->
+    <ellipse class="m-cheek" cx="23" cy="79" rx="7.5" ry="4.8" fill="#ff6090" opacity=".44"/>
+    <ellipse class="m-cheek" cx="77" cy="79" rx="7.5" ry="4.8" fill="#ff6090" opacity=".44"/>
     <!-- Smile -->
-    <path class="m-mouth-smile" d="M40 82 Q50 91 60 82" fill="none" stroke="#3d1800" stroke-width="3.5" stroke-linecap="round"/>
+    <path class="m-mouth-smile" d="M38 83 Q50 93 62 83" fill="none" stroke="#1c0800" stroke-width="3.5" stroke-linecap="round"/>
     <!-- Open grin -->
     <g class="m-mouth-grin">
-      <path d="M38 80 Q50 98 62 80 Z" fill="#881800"/>
-      <rect x="38.5" y="80" width="23" height="5" rx="2.5" fill="#fff"/>
-      <ellipse cx="50" cy="92" rx="7" ry="4.5" fill="#ff7a9c"/>
+      <path d="M37 81 Q50 99 63 81 Z" fill="#7a1200"/>
+      <rect x="38" y="80.5" width="24" height="6" rx="3" fill="#fff"/>
+      <ellipse cx="50" cy="93" rx="7.5" ry="5" fill="#ff7a9c"/>
     </g>
-    <!-- Flat mouth -->
-    <path class="m-mouth-flat" d="M42 88 Q50 90 58 88" fill="none" stroke="#3d1800" stroke-width="3.5" stroke-linecap="round"/>
+    <!-- Flat/neutral mouth -->
+    <path class="m-mouth-flat" d="M42 89 Q50 91 58 89" fill="none" stroke="#1c0800" stroke-width="3.5" stroke-linecap="round"/>
     <!-- Sparks (celebrate) -->
     <g class="m-spark">
-      <path d="M12 50 l1.8 4 4 1.8 -4 1.8 -1.8 4 -1.8-4 -4-1.8 4-1.8Z" fill="#ffd86b"/>
-      <path d="M88 44 l1.5 3.4 3.4 1.5 -3.4 1.5 -1.5 3.4 -1.5-3.4 -3.4-1.5 3.4-1.5Z" fill="#ffce5c"/>
-      <path d="M80 100 l1.3 3 3 1.3 -3 1.3 -1.3 3 -1.3-3 -3-1.3 3-1.3Z" fill="#58cc02"/>
+      <path d="M10 46 l2 4.5 4.5 2 -4.5 2 -2 4.5 -2-4.5 -4.5-2 4.5-2Z" fill="#ffd060"/>
+      <path d="M90 40 l1.7 3.8 3.8 1.7 -3.8 1.7 -1.7 3.8 -1.7-3.8 -3.8-1.7 3.8-1.7Z" fill="#ffce5c"/>
+      <path d="M78 98 l1.4 3.2 3.2 1.4 -3.2 1.4 -1.4 3.2 -1.4-3.2 -3.2-1.4 3.2-1.4Z" fill="#58cc02"/>
     </g>
   </g>
 </svg>`;}
