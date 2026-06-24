@@ -772,7 +772,7 @@ header{
   }
 }
 /* ---- Ember: bigger in header ---- */
-#mascotHeader{width:64px!important;height:76px!important;}
+#mascotHeader{width:80px!important;height:95px!important;}
 
 /* ---- Level badge: num + name stacked ---- */
 .level-badge{flex-direction:column!important;align-items:center!important;padding:5px 11px!important;gap:1px;line-height:1;}
@@ -964,8 +964,8 @@ const STARTERS=[
 ];
 
 /* ---- XP & Gamification constants ---- */
-const LEVEL_XP=[0,50,150,300,500,750,1050,1400,1800,2250,2750,3300,3900,4550,5250,6000,7000,8000,9000,10000];
-const LEVEL_NAMES=['Neuling','Anfänger','Einsteiger','Aufsteiger','Diszipliniert','Fokussiert','Zuverlässig','Konsequent','Profi','Champion','Experte','Meister','Grandmeister','Legende','Mythisch','Unsterblich','Gottgleich','Übermensch','Streakgott','Ewige Flamme'];
+const LEVEL_XP=[0,50,150,300,500,750,1050,1400,1800,2250,2750,3300,3900,4550,5250,6000,7000,8000,9000,10000,11500,13000,14500,16000,17500,19000,20500,22000,23500,25000,27500,30000,32500,35000,37500,40000,42500,45000,47500,50000];
+const LEVEL_NAMES=['Neuling','Anfänger','Einsteiger','Funke','Glimmer','Entzündet','Aufflackern','Brennend','Feuergeist','Streichholz','Flämmchen','Leuchtend','Flammend','Feuerläufer','Fackel','Lichtbringer','Feuerspeier','Flammenwächter','Meisterläufer','Meisterflamme','Holzleger','Funkenmeister','Zündmeister','Wärmegeber','Lagerfeuer','Gluthalter','Flammenherr','Feuerwächter','Feuermeister','Großfeuer','Auferstehung','Phönixflügel','Feuervogel','Unsterblich','Göttlich','Legendär','Mythisch','Übermensch','Ewige Flamme','Phönix'];
 const ACHIEVEMENTS=[
   {id:'first_habit',e:'🌱',n:'Erster Schritt'},
   {id:'first_check',e:'✅',n:'Abgehakt!'},
@@ -1230,17 +1230,14 @@ function renderStats(){
   </div>`;
   // ---- Level roadmap: Streichholz → Phönix ----
   const STAGES=[
-    {from:1,to:4,name:'Funke',icon:'🔥'},
-    {from:5,to:9,name:'Kerze',icon:'🕯️'},
-    {from:10,to:14,name:'Fackel',icon:'🔦'},
-    {from:15,to:19,name:'Lagerfeuer',icon:'🏕️'},
-    {from:20,to:20,name:'Phönix',icon:'🦅'},
+    {from:1,to:10,name:'Streichholz',icon:'✨'},
+    {from:11,to:20,name:'Flamme',icon:'🔥'},
+    {from:21,to:30,name:'Lagerfeuer',icon:'🏕️'},
+    {from:31,to:40,name:'Phönix',icon:'🦅'},
   ];
   const csi=Math.max(0,STAGES.findIndex(s=>lv>=s.from&&lv<=s.to));
-  const SI={1:'🔥',2:'🔥',3:'🔥',4:'🔥',5:'🕯️',6:'🕯️',7:'🕯️',8:'🕯️',9:'🕯️',
-    10:'🔦',11:'🔦',12:'🔦',13:'🔦',14:'🔦',
-    15:'🏕️',16:'🏕️',17:'🏕️',18:'🏕️',19:'🏕️',20:'🦅'};
-  const MILES={5:true,10:true,15:true,20:true};
+  const SI={};for(let _i=1;_i<=40;_i++)SI[_i]=_i<=10?'✨':_i<=20?'🔥':_i<=30?'🏕️':'🦅';
+  const MILES={10:true,20:true,30:true,40:true};
 
   let sgHtml='<div class="lr-stages">';
   STAGES.forEach((s,i)=>{
@@ -1256,12 +1253,13 @@ function renderStats(){
   html+='<div class="level-road-wrap"><div class="lr-header">'+STAGES[csi].icon+' '+STAGES[csi].name+' · Level '+lv+'</div>';
   html+=sgHtml;
   html+='<div class="lr-track" id="lrTrack">';
-  for(let i=1;i<=LEVEL_XP.length;i++){
+  const sStart=STAGES[csi].from,sEnd=STAGES[csi].to;
+  for(let i=sStart;i<=sEnd;i++){
     const iD=i<lv,iC=i===lv;
     const cls=iD?'lv-done':iC?'lv-cur':'lv-next';
     const ml=MILES[i];
     html+=`<div class="lr-node ${cls}${ml?' lv-mile':''}">${iD?i:SI[i]}</div>`;
-    if(i<LEVEL_XP.length)html+=`<div class="lr-line${iD||iC?' done':''}"></div>`;
+    if(i<sEnd)html+=`<div class="lr-line${iD||iC?' done':''}"></div>`;
   }
   html+='</div></div>';
   html+=`<div class="stat-row">
@@ -1848,7 +1846,7 @@ function milestoneBanner(streak){
 }
 
 /* ---- mascot "Ember" v3 ---- */
-function mascotSVG(p){return `
+function mascotEmbSVG(p){return `
 <svg class="m-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <radialGradient id="${p}b" cx="38%" cy="28%" r="70%">
@@ -1948,12 +1946,259 @@ function mascotSVG(p){return `
     </g>
   </g>
 </svg>`;}
+function mascotMatchSVG(p){return `
+<svg class="m-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="${p}b" cx="40%" cy="28%" r="72%">
+      <stop offset="0%" stop-color="#ff9030"/>
+      <stop offset="50%" stop-color="#cc1a00"/>
+      <stop offset="100%" stop-color="#7a0000"/>
+    </radialGradient>
+    <radialGradient id="${p}w" cx="35%" cy="32%" r="68%">
+      <stop offset="0%" stop-color="#ffe8c0"/>
+      <stop offset="60%" stop-color="#cc8838"/>
+      <stop offset="100%" stop-color="#8c5a18"/>
+    </radialGradient>
+    <radialGradient id="${p}eye" cx="28%" cy="20%" r="70%">
+      <stop offset="0%" stop-color="#7a4818"/>
+      <stop offset="100%" stop-color="#200800"/>
+    </radialGradient>
+  </defs>
+  <g class="m-bob">
+    <rect x="44" y="67" width="12" height="53" rx="6" fill="url(#${p}w)"/>
+    <line x1="50" y1="76" x2="50" y2="112" stroke="#a06818" stroke-width="1.5" opacity=".3" stroke-linecap="round"/>
+    <g class="m-arm m-arm-l">
+      <ellipse cx="17" cy="57" rx="9" ry="6" fill="url(#${p}b)" transform="rotate(-28 17 57)"/>
+    </g>
+    <g class="m-arm m-arm-r">
+      <ellipse cx="83" cy="57" rx="9" ry="6" fill="url(#${p}b)" transform="rotate(28 83 57)"/>
+    </g>
+    <circle class="m-body" cx="50" cy="38" r="30" fill="url(#${p}b)"/>
+    <ellipse cx="37" cy="25" rx="12" ry="9" fill="#fff" opacity=".20" transform="rotate(-15 37 25)"/>
+    <circle cx="35" cy="37" r="13.5" fill="#fff"/>
+    <circle cx="65" cy="37" r="13.5" fill="#fff"/>
+    <g class="m-eyes-open">
+      <circle cx="35" cy="38" r="9.5" fill="url(#${p}eye)"/>
+      <circle cx="65" cy="38" r="9.5" fill="url(#${p}eye)"/>
+      <circle cx="35" cy="39" r="6.2" fill="#180400"/>
+      <circle cx="65" cy="39" r="6.2" fill="#180400"/>
+      <circle cx="30.5" cy="33" r="4" fill="#fff"/>
+      <circle cx="60.5" cy="33" r="4" fill="#fff"/>
+      <circle cx="39.5" cy="37" r="2" fill="rgba(255,255,255,.65)"/>
+      <circle cx="69.5" cy="37" r="2" fill="rgba(255,255,255,.65)"/>
+    </g>
+    <g class="m-eyes-happy">
+      <path d="M22 37 Q35 24 48 37" fill="none" stroke="#180400" stroke-width="5.5" stroke-linecap="round"/>
+      <path d="M52 37 Q65 24 78 37" fill="none" stroke="#180400" stroke-width="5.5" stroke-linecap="round"/>
+      <circle cx="26" cy="28" r="3.2" fill="#fff" opacity=".9"/>
+      <circle cx="56" cy="28" r="3.2" fill="#fff" opacity=".9"/>
+    </g>
+    <g class="m-eyes-closed">
+      <path d="M22 36 Q35 46 48 36" fill="none" stroke="#180400" stroke-width="5.5" stroke-linecap="round"/>
+      <path d="M52 36 Q65 46 78 36" fill="none" stroke="#180400" stroke-width="5.5" stroke-linecap="round"/>
+    </g>
+    <path d="M23 24 Q35 18 47 24" fill="none" stroke="#880000" stroke-width="3" stroke-linecap="round"/>
+    <path d="M53 24 Q65 18 77 24" fill="none" stroke="#880000" stroke-width="3" stroke-linecap="round"/>
+    <ellipse class="m-cheek" cx="18" cy="48" rx="8" ry="5.5" fill="#ff6090" opacity=".40"/>
+    <ellipse class="m-cheek" cx="82" cy="48" rx="8" ry="5.5" fill="#ff6090" opacity=".40"/>
+    <path class="m-mouth-smile" d="M37 52 Q50 63 63 52" fill="none" stroke="#180400" stroke-width="3.5" stroke-linecap="round"/>
+    <g class="m-mouth-grin">
+      <path d="M36 50 Q50 67 64 50 Z" fill="#7a0c00"/>
+      <rect x="37" y="49.5" width="26" height="6" rx="3" fill="#fff"/>
+      <ellipse cx="50" cy="63" rx="7.5" ry="5" fill="#ff7a9c"/>
+    </g>
+    <path class="m-mouth-flat" d="M42 58 Q50 60.5 58 58" fill="none" stroke="#180400" stroke-width="3" stroke-linecap="round"/>
+    <g class="m-spark">
+      <path d="M8 28 l1.5 3.5 3.5 1.5 -3.5 1.5 -1.5 3.5 -1.5-3.5 -3.5-1.5 3.5-1.5Z" fill="#ffa030"/>
+      <path d="M92 22 l1.3 3 3 1.3 -3 1.3 -1.3 3 -1.3-3 -3-1.3 3-1.3Z" fill="#ffcc40"/>
+    </g>
+  </g>
+</svg>`;}
+function mascotLagerfeueSVG(p){return `
+<svg class="m-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="${p}b" cx="38%" cy="28%" r="70%">
+      <stop offset="0%" stop-color="#ffe055"/>
+      <stop offset="45%" stop-color="#ff8800"/>
+      <stop offset="100%" stop-color="#c82800"/>
+    </radialGradient>
+    <radialGradient id="${p}f" cx="50%" cy="88%" r="62%">
+      <stop offset="0%" stop-color="#ffc820"/>
+      <stop offset="46%" stop-color="#ff5e00"/>
+      <stop offset="100%" stop-color="#bf2000"/>
+    </radialGradient>
+    <radialGradient id="${p}eye" cx="30%" cy="22%" r="70%">
+      <stop offset="0%" stop-color="#8a5520"/>
+      <stop offset="100%" stop-color="#2c0c00"/>
+    </radialGradient>
+    <linearGradient id="${p}lg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#5c2a08"/>
+      <stop offset="45%" stop-color="#8c4e18"/>
+      <stop offset="100%" stop-color="#5c2a08"/>
+    </linearGradient>
+  </defs>
+  <g class="m-bob">
+    <g class="m-wisp">
+      <path d="M20 58 C10 38 16 16 26 8 C32 22 24 42 34 54Z" fill="url(#${p}f)" opacity=".9"/>
+      <path d="M32 52 C22 30 30 10 37 2 C44 16 40 36 43 49Z" fill="#ffb200" opacity=".95"/>
+      <path d="M44 47 C38 23 45 7 50 0 C55 9 62 23 57 47Z" fill="#ffd820"/>
+      <path d="M57 52 C59 34 55 14 63 3 C70 13 78 33 67 52Z" fill="#ffb200" opacity=".95"/>
+      <path d="M68 58 C77 40 85 16 74 8 C84 16 90 40 79 58Z" fill="url(#${p}f)" opacity=".9"/>
+    </g>
+    <rect x="8" y="102" width="84" height="9" rx="4.5" fill="url(#${p}lg)" transform="rotate(-7 50 106.5)"/>
+    <rect x="8" y="102" width="84" height="9" rx="4.5" fill="url(#${p}lg)" transform="rotate(7 50 106.5)"/>
+    <ellipse cx="11" cy="99" rx="5.5" ry="4.5" fill="#3c1a04" opacity=".88"/>
+    <ellipse cx="89" cy="99" rx="5.5" ry="4.5" fill="#3c1a04" opacity=".88"/>
+    <ellipse cx="11" cy="113" rx="5.5" ry="4.5" fill="#3c1a04" opacity=".88"/>
+    <ellipse cx="89" cy="113" rx="5.5" ry="4.5" fill="#3c1a04" opacity=".88"/>
+    <g class="m-arm m-arm-l">
+      <ellipse cx="14" cy="78" rx="9" ry="12" fill="url(#${p}b)" transform="rotate(-22 14 78)"/>
+      <ellipse cx="12" cy="74" rx="3.5" ry="4.5" fill="#fff" opacity=".18" transform="rotate(-22 14 78)"/>
+    </g>
+    <g class="m-arm m-arm-r">
+      <ellipse cx="86" cy="78" rx="9" ry="12" fill="url(#${p}b)" transform="rotate(22 86 78)"/>
+      <ellipse cx="84" cy="74" rx="3.5" ry="4.5" fill="#fff" opacity=".18" transform="rotate(22 86 78)"/>
+    </g>
+    <ellipse class="m-body" cx="50" cy="72" rx="33" ry="25" fill="url(#${p}b)"/>
+    <ellipse cx="37" cy="57" rx="13" ry="15" fill="#fff" opacity=".22" transform="rotate(-8 37 57)"/>
+    <circle cx="37" cy="67" r="12" fill="#fff"/>
+    <circle cx="63" cy="67" r="12" fill="#fff"/>
+    <g class="m-eyes-open">
+      <circle cx="37" cy="68" r="8" fill="url(#${p}eye)"/>
+      <circle cx="63" cy="68" r="8" fill="url(#${p}eye)"/>
+      <circle cx="37" cy="69" r="5.2" fill="#1c0800"/>
+      <circle cx="63" cy="69" r="5.2" fill="#1c0800"/>
+      <circle cx="33.5" cy="64.5" r="3.1" fill="#fff"/>
+      <circle cx="59.5" cy="64.5" r="3.1" fill="#fff"/>
+      <circle cx="39.5" cy="67" r="1.5" fill="rgba(255,255,255,.6)"/>
+      <circle cx="65.5" cy="67" r="1.5" fill="rgba(255,255,255,.6)"/>
+    </g>
+    <g class="m-eyes-happy">
+      <path d="M27 67 Q37 55 47 67" fill="none" stroke="#1c0800" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M53 67 Q63 55 73 67" fill="none" stroke="#1c0800" stroke-width="4.5" stroke-linecap="round"/>
+      <circle cx="31" cy="60" r="2.8" fill="#fff" opacity=".9"/>
+      <circle cx="57" cy="60" r="2.8" fill="#fff" opacity=".9"/>
+    </g>
+    <g class="m-eyes-closed">
+      <path d="M27 66 Q37 75 47 66" fill="none" stroke="#1c0800" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M53 66 Q63 75 73 66" fill="none" stroke="#1c0800" stroke-width="4.5" stroke-linecap="round"/>
+    </g>
+    <path d="M28 55 Q37 50 46 55" fill="none" stroke="#c43000" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M54 55 Q63 50 72 55" fill="none" stroke="#c43000" stroke-width="3.2" stroke-linecap="round"/>
+    <ellipse class="m-cheek" cx="19" cy="78" rx="9" ry="5.5" fill="#ff6090" opacity=".44"/>
+    <ellipse class="m-cheek" cx="81" cy="78" rx="9" ry="5.5" fill="#ff6090" opacity=".44"/>
+    <path class="m-mouth-smile" d="M37 82 Q50 94 63 82" fill="none" stroke="#1c0800" stroke-width="3.5" stroke-linecap="round"/>
+    <g class="m-mouth-grin">
+      <path d="M36 80 Q50 98 64 80 Z" fill="#7a1200"/>
+      <rect x="37" y="79.5" width="26" height="6" rx="3" fill="#fff"/>
+      <ellipse cx="50" cy="94" rx="8" ry="5.5" fill="#ff7a9c"/>
+    </g>
+    <path class="m-mouth-flat" d="M41 89 Q50 91.5 59 89" fill="none" stroke="#1c0800" stroke-width="3.5" stroke-linecap="round"/>
+    <g class="m-spark">
+      <path d="M7 44 l2 4.5 4.5 2 -4.5 2 -2 4.5 -2-4.5 -4.5-2 4.5-2Z" fill="#ffd060"/>
+      <path d="M93 38 l1.7 3.8 3.8 1.7 -3.8 1.7 -1.7 3.8 -1.7-3.8 -3.8-1.7 3.8-1.7Z" fill="#ffce5c"/>
+      <path d="M77 96 l1.4 3.2 3.2 1.4 -3.2 1.4 -1.4 3.2 -1.4-3.2 -3.2-1.4 3.2-1.4Z" fill="#58cc02"/>
+    </g>
+  </g>
+</svg>`;}
+function mascotPhoenixSVG(p){return `
+<svg class="m-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="${p}b" cx="42%" cy="28%" r="68%">
+      <stop offset="0%" stop-color="#fff066"/>
+      <stop offset="40%" stop-color="#ffb800"/>
+      <stop offset="100%" stop-color="#dc4800"/>
+    </radialGradient>
+    <radialGradient id="${p}f" cx="50%" cy="85%" r="65%">
+      <stop offset="0%" stop-color="#ffe040"/>
+      <stop offset="50%" stop-color="#ff7000"/>
+      <stop offset="100%" stop-color="#c03000"/>
+    </radialGradient>
+    <radialGradient id="${p}wg" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#ffe844"/>
+      <stop offset="55%" stop-color="#ff8000"/>
+      <stop offset="100%" stop-color="#c03800"/>
+    </radialGradient>
+    <radialGradient id="${p}eye" cx="30%" cy="22%" r="70%">
+      <stop offset="0%" stop-color="#aa6612"/>
+      <stop offset="100%" stop-color="#3c1400"/>
+    </radialGradient>
+  </defs>
+  <g class="m-bob">
+    <g class="m-wisp">
+      <path d="M37 16 C34 7 38 1 42 0 C43 6 40 12 44 17Z" fill="#ffe040" opacity=".9"/>
+      <path d="M49 13 C46 4 50 0 50 0 C54 4 54 9 51 14Z" fill="#fff066"/>
+      <path d="M61 16 C59 7 63 1 60 3 C61 9 59 13 64 17Z" fill="#ffe040" opacity=".9"/>
+    </g>
+    <g class="m-arm m-arm-l">
+      <path d="M34 56 C20 48 5 42 3 52 C10 55 22 62 32 67Z" fill="url(#${p}wg)" opacity=".92"/>
+      <path d="M32 67 C16 65 4 59 3 52 C7 58 15 68 30 73Z" fill="url(#${p}f)" opacity=".72"/>
+    </g>
+    <g class="m-arm m-arm-r">
+      <path d="M66 56 C80 48 95 42 97 52 C90 55 78 62 68 67Z" fill="url(#${p}wg)" opacity=".92"/>
+      <path d="M68 67 C84 65 96 59 97 52 C93 58 85 68 70 73Z" fill="url(#${p}f)" opacity=".72"/>
+    </g>
+    <path class="m-foot" d="M41 94 C37 102 35 112 38 118 C41 111 44 105 45 97Z" fill="url(#${p}f)"/>
+    <path class="m-foot" d="M59 94 C63 102 65 112 62 118 C59 111 56 105 55 97Z" fill="url(#${p}f)"/>
+    <ellipse class="m-body" cx="50" cy="70" rx="18" ry="26" fill="url(#${p}b)"/>
+    <ellipse cx="42" cy="56" rx="7" ry="11" fill="#fff" opacity=".22" transform="rotate(-5 42 56)"/>
+    <ellipse cx="50" cy="28" rx="18" ry="19" fill="url(#${p}b)"/>
+    <ellipse cx="41" cy="18" rx="8" ry="8" fill="#fff" opacity=".20" transform="rotate(-10 41 18)"/>
+    <circle cx="41" cy="27" r="10.5" fill="#fff"/>
+    <circle cx="59" cy="27" r="10.5" fill="#fff"/>
+    <g class="m-eyes-open">
+      <circle cx="41" cy="28" r="7.2" fill="url(#${p}eye)"/>
+      <circle cx="59" cy="28" r="7.2" fill="url(#${p}eye)"/>
+      <circle cx="41" cy="29" r="4.7" fill="#1c0800"/>
+      <circle cx="59" cy="29" r="4.7" fill="#1c0800"/>
+      <circle cx="37.5" cy="24" r="2.8" fill="#fff"/>
+      <circle cx="55.5" cy="24" r="2.8" fill="#fff"/>
+      <circle cx="44" cy="27.5" r="1.4" fill="rgba(255,255,255,.65)"/>
+      <circle cx="62" cy="27.5" r="1.4" fill="rgba(255,255,255,.65)"/>
+    </g>
+    <g class="m-eyes-happy">
+      <path d="M30 27 Q41 15 52 27" fill="none" stroke="#1c0800" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M48 27 Q59 15 70 27" fill="none" stroke="#1c0800" stroke-width="4.5" stroke-linecap="round"/>
+      <circle cx="34" cy="19" r="2.5" fill="#fff" opacity=".9"/>
+      <circle cx="52" cy="19" r="2.5" fill="#fff" opacity=".9"/>
+    </g>
+    <g class="m-eyes-closed">
+      <path d="M30 26 Q41 35 52 26" fill="none" stroke="#1c0800" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M48 26 Q59 35 70 26" fill="none" stroke="#1c0800" stroke-width="4.5" stroke-linecap="round"/>
+    </g>
+    <path d="M31 15 Q41 9 51 15" fill="none" stroke="#b84800" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M49 15 Q59 9 69 15" fill="none" stroke="#b84800" stroke-width="3.2" stroke-linecap="round"/>
+    <ellipse class="m-cheek" cx="25" cy="35" rx="7" ry="4.5" fill="#ff9060" opacity=".42"/>
+    <ellipse class="m-cheek" cx="75" cy="35" rx="7" ry="4.5" fill="#ff9060" opacity=".42"/>
+    <path class="m-mouth-smile" d="M38 39 Q50 50 62 39" fill="none" stroke="#1c0800" stroke-width="3.5" stroke-linecap="round"/>
+    <g class="m-mouth-grin">
+      <path d="M37 37 Q50 54 63 37 Z" fill="#7a2000"/>
+      <rect x="38" y="36.5" width="24" height="6" rx="3" fill="#fff"/>
+      <ellipse cx="50" cy="50" rx="7.5" ry="5" fill="#ff9a8c"/>
+    </g>
+    <path class="m-mouth-flat" d="M41 44 Q50 46 59 44" fill="none" stroke="#1c0800" stroke-width="3.5" stroke-linecap="round"/>
+    <g class="m-spark">
+      <path d="M6 48 l2 4.5 4.5 2 -4.5 2 -2 4.5 -2-4.5 -4.5-2 4.5-2Z" fill="#ffd060"/>
+      <path d="M92 40 l1.7 3.8 3.8 1.7 -3.8 1.7 -1.7 3.8 -1.7-3.8 -3.8-1.7 3.8-1.7Z" fill="#fff060"/>
+      <path d="M78 106 l1.4 3.2 3.2 1.4 -3.2 1.4 -1.4 3.2 -1.4-3.2 -3.2-1.4 3.2-1.4Z" fill="#ffe040"/>
+    </g>
+  </g>
+</svg>`;}
+function mascotForm(lv){return lv<=10?1:lv<=20?2:lv<=30?3:4;}
+function mascotSVG(p,form){
+  if(form===1)return mascotMatchSVG(p);
+  if(form===3)return mascotLagerfeueSVG(p);
+  if(form===4)return mascotPhoenixSVG(p);
+  return mascotEmbSVG(p);
+}
 function mascotInit(){
-  const h=document.getElementById('mascotHeader');if(h)h.innerHTML=mascotSVG('mh');
-  const m=document.getElementById('mascotMs');if(m)m.innerHTML=mascotSVG('mm');
-  const ml=document.getElementById('mascotLvl');if(ml)ml.innerHTML=mascotSVG('mlv');
-  const ha=document.getElementById('hugA');if(ha)ha.innerHTML=mascotSVG('ha');
-  const hb=document.getElementById('hugB');if(hb)hb.innerHTML=mascotSVG('hb');
+  const lv=levelFromXP(state.xp||0);
+  const form=mascotForm(lv);
+  const h=document.getElementById('mascotHeader');if(h)h.innerHTML=mascotSVG('mh',form);
+  const m=document.getElementById('mascotMs');if(m)m.innerHTML=mascotSVG('mm',form);
+  const ml=document.getElementById('mascotLvl');if(ml)ml.innerHTML=mascotSVG('mlv',form);
+  const ha=document.getElementById('hugA');if(ha)ha.innerHTML=mascotSVG('ha',form);
+  const hb=document.getElementById('hugB');if(hb)hb.innerHTML=mascotSVG('hb',form);
   const hf=document.getElementById('hugFlame');if(hf)hf.innerHTML=purpleFlame(46);
   const fa=document.getElementById('ffA');if(fa)fa.innerHTML=purpleFlame(30);
   const fb=document.getElementById('ffB');if(fb)fb.innerHTML=purpleFlame(30);
@@ -2361,6 +2606,7 @@ function awardXP(amount,el){
   if(newLv>oldLv){
     setTimeout(()=>showLevelUp(newLv),500);
     checkAchievementsLevel(newLv);
+    if(mascotForm(newLv)!==mascotForm(oldLv))setTimeout(()=>mascotInit(),650);
   }
   if(el&&!reduceMotion())showXPFloat(el,'+'+amount+' XP');
 }
