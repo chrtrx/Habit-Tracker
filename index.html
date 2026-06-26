@@ -1845,482 +1845,438 @@ function milestoneBanner(streak){
   clearTimeout(o._t);o._t=setTimeout(()=>o.classList.remove('show'),1800);
 }
 
-/* ---- mascot "Ember" v4 – Pixar-quality fire character ---- */
+/* ---- mascot v5 – cleaner, cuter, Pixar-inspired ---- */
 function mascotEmbSVG(p){return `
 <svg class="m-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="${p}b" cx="36%" cy="26%" r="72%">
-      <stop offset="0%" stop-color="#ffe840"/>
-      <stop offset="38%" stop-color="#ffaa00"/>
-      <stop offset="72%" stop-color="#ff6200"/>
-      <stop offset="100%" stop-color="#d93a00"/>
+    <radialGradient id="${p}b" cx="38%" cy="30%" r="68%">
+      <stop offset="0%" stop-color="#fff060"/>
+      <stop offset="35%" stop-color="#ffcc00"/>
+      <stop offset="65%" stop-color="#ff8800"/>
+      <stop offset="100%" stop-color="#e04000"/>
     </radialGradient>
-    <radialGradient id="${p}f" cx="50%" cy="85%" r="65%">
-      <stop offset="0%" stop-color="#ffcf20"/>
-      <stop offset="42%" stop-color="#ff5500"/>
-      <stop offset="100%" stop-color="#bb1c00"/>
+    <radialGradient id="${p}f" cx="50%" cy="80%" r="65%">
+      <stop offset="0%" stop-color="#ffc000"/>
+      <stop offset="50%" stop-color="#ff4800"/>
+      <stop offset="100%" stop-color="#c01800"/>
     </radialGradient>
-    <radialGradient id="${p}fh" cx="40%" cy="30%" r="62%">
-      <stop offset="0%" stop-color="#fff0a0"/>
-      <stop offset="55%" stop-color="#ffbb30"/>
-      <stop offset="100%" stop-color="#ff6600"/>
+    <radialGradient id="${p}fhi" cx="30%" cy="20%" r="70%">
+      <stop offset="0%" stop-color="#fff8d0"/>
+      <stop offset="100%" stop-color="#ffcc50"/>
     </radialGradient>
-    <radialGradient id="${p}arm" cx="35%" cy="25%" r="70%">
-      <stop offset="0%" stop-color="#ffce50"/>
-      <stop offset="55%" stop-color="#ff8800"/>
-      <stop offset="100%" stop-color="#d94000"/>
+    <radialGradient id="${p}iris" cx="28%" cy="22%" r="75%">
+      <stop offset="0%" stop-color="#e8a830"/>
+      <stop offset="55%" stop-color="#a85e10"/>
+      <stop offset="100%" stop-color="#6e3800"/>
     </radialGradient>
-    <radialGradient id="${p}eye" cx="28%" cy="20%" r="72%">
-      <stop offset="0%" stop-color="#9a5f1c"/>
-      <stop offset="60%" stop-color="#5a2a00"/>
-      <stop offset="100%" stop-color="#200800"/>
+    <radialGradient id="${p}arm" cx="30%" cy="25%" r="72%">
+      <stop offset="0%" stop-color="#ffd840"/>
+      <stop offset="55%" stop-color="#ff8000"/>
+      <stop offset="100%" stop-color="#dc3800"/>
     </radialGradient>
-    <radialGradient id="${p}sh" cx="35%" cy="25%" r="70%">
-      <stop offset="0%" stop-color="#f5f0e8"/>
-      <stop offset="100%" stop-color="#ccc4ae"/>
+    <radialGradient id="${p}shoe" cx="30%" cy="25%" r="70%">
+      <stop offset="0%" stop-color="#f8f4ee"/>
+      <stop offset="100%" stop-color="#c8c0b0"/>
     </radialGradient>
-    <filter id="${p}ds" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-color="#c03000" flood-opacity="0.35"/>
-    </filter>
   </defs>
   <g class="m-bob">
-    <!-- Flame hair – 5 tongues with 3D highlight per tongue -->
+    <!-- Flame hair – 5 tongues, bright with soft inner highlight -->
     <g class="m-wisp">
-      <path d="M22 57 C10 37 15 14 27 6 C33 20 25 42 34 54Z" fill="url(#${p}f)" opacity=".92"/>
-      <ellipse cx="26" cy="24" rx="4.5" ry="7" fill="url(#${p}fh)" opacity=".65" transform="rotate(-18 26 24)"/>
-      <path d="M33 51 C23 30 31 10 38 2 C46 16 43 36 46 48Z" fill="#ffb800" opacity=".96"/>
-      <ellipse cx="37" cy="20" rx="4" ry="7.5" fill="url(#${p}fh)" opacity=".6" transform="rotate(-8 37 20)"/>
-      <path d="M44 46 C38 23 45 7 50 0 C55 7 62 23 56 46Z" fill="#ffda30"/>
-      <ellipse cx="50" cy="17" rx="4.5" ry="8" fill="#fff5c0" opacity=".6"/>
-      <path d="M54 51 C57 33 54 15 62 3 C69 13 77 33 67 51Z" fill="#ffb800" opacity=".96"/>
-      <ellipse cx="63" cy="20" rx="4" ry="7.5" fill="url(#${p}fh)" opacity=".6" transform="rotate(8 63 20)"/>
-      <path d="M66 57 C75 42 85 14 73 6 C85 14 90 37 78 57Z" fill="url(#${p}f)" opacity=".92"/>
-      <ellipse cx="74" cy="24" rx="4.5" ry="7" fill="url(#${p}fh)" opacity=".65" transform="rotate(18 74 24)"/>
+      <path d="M23 57 C11 36 17 12 28 5 C34 20 26 43 35 55Z" fill="url(#${p}f)"/>
+      <ellipse cx="26.5" cy="22" rx="4" ry="7" fill="url(#${p}fhi)" opacity=".7" transform="rotate(-18 26.5 22)"/>
+      <path d="M34 51 C24 29 32 9 39 1 C47 16 44 37 47 49Z" fill="#ffb400"/>
+      <ellipse cx="38" cy="18" rx="3.5" ry="7" fill="url(#${p}fhi)" opacity=".65" transform="rotate(-7 38 18)"/>
+      <path d="M45 46 C39 22 46 6 50 -1 C54 6 61 22 55 46Z" fill="#ffd820"/>
+      <ellipse cx="50" cy="15" rx="4.5" ry="8.5" fill="#fff8c0" opacity=".62"/>
+      <path d="M55 51 C58 32 55 13 63 2 C70 12 78 32 68 51Z" fill="#ffb400"/>
+      <ellipse cx="62" cy="18" rx="3.5" ry="7" fill="url(#${p}fhi)" opacity=".65" transform="rotate(7 62 18)"/>
+      <path d="M67 57 C76 43 84 12 72 5 C83 12 89 36 77 57Z" fill="url(#${p}f)"/>
+      <ellipse cx="73.5" cy="22" rx="4" ry="7" fill="url(#${p}fhi)" opacity=".7" transform="rotate(18 73.5 22)"/>
     </g>
-    <!-- Legs -->
-    <rect class="m-foot" x="37" y="97" width="11" height="14" rx="5.5" fill="#ee7200"/>
-    <rect class="m-foot" x="52" y="97" width="11" height="14" rx="5.5" fill="#ee7200"/>
-    <!-- Sneaker base -->
-    <ellipse class="m-foot" cx="43" cy="112" rx="12" ry="5.5" fill="url(#${p}sh)"/>
-    <ellipse class="m-foot" cx="57" cy="112" rx="12" ry="5.5" fill="url(#${p}sh)"/>
-    <!-- Sneaker tongue detail -->
-    <ellipse class="m-foot" cx="43" cy="107" rx="5" ry="3.5" fill="#e8e0cc"/>
-    <ellipse class="m-foot" cx="57" cy="107" rx="5" ry="3.5" fill="#e8e0cc"/>
-    <!-- Sneaker sole line -->
-    <path class="m-foot" d="M31.5 112.5 Q43 108 54.5 112.5" fill="none" stroke="#b8b0a0" stroke-width="1.4" stroke-linecap="round"/>
-    <path class="m-foot" d="M45.5 112.5 Q57 108 68.5 112.5" fill="none" stroke="#b8b0a0" stroke-width="1.4" stroke-linecap="round"/>
-    <!-- Arms – chubby with 3D highlight -->
+    <!-- Stubby legs -->
+    <rect class="m-foot" x="38" y="98" width="10" height="12" rx="5" fill="#f07000"/>
+    <rect class="m-foot" x="52" y="98" width="10" height="12" rx="5" fill="#f07000"/>
+    <!-- Sneakers -->
+    <ellipse class="m-foot" cx="43" cy="112" rx="11.5" ry="5" fill="url(#${p}shoe)"/>
+    <ellipse class="m-foot" cx="57" cy="112" rx="11.5" ry="5" fill="url(#${p}shoe)"/>
+    <path class="m-foot" d="M32 112 Q43 108.5 54 112" fill="none" stroke="#aaa498" stroke-width="1.4" stroke-linecap="round"/>
+    <path class="m-foot" d="M46 112 Q57 108.5 68 112" fill="none" stroke="#aaa498" stroke-width="1.4" stroke-linecap="round"/>
+    <!-- Arms -->
     <g class="m-arm m-arm-l">
-      <ellipse cx="17" cy="80" rx="8.5" ry="11" fill="url(#${p}arm)" transform="rotate(-22 17 80)" filter="url(#${p}ds)"/>
-      <ellipse cx="14.5" cy="75.5" rx="3.5" ry="5" fill="#fff" opacity=".22" transform="rotate(-22 17 80)"/>
+      <ellipse cx="17.5" cy="80" rx="8" ry="10.5" fill="url(#${p}arm)" transform="rotate(-22 17.5 80)"/>
+      <ellipse cx="15" cy="75.5" rx="3" ry="4.5" fill="#fff" opacity=".22" transform="rotate(-22 17.5 80)"/>
     </g>
     <g class="m-arm m-arm-r">
-      <ellipse cx="83" cy="80" rx="8.5" ry="11" fill="url(#${p}arm)" transform="rotate(22 83 80)" filter="url(#${p}ds)"/>
-      <ellipse cx="80.5" cy="75.5" rx="3.5" ry="5" fill="#fff" opacity=".22" transform="rotate(22 83 80)"/>
+      <ellipse cx="82.5" cy="80" rx="8" ry="10.5" fill="url(#${p}arm)" transform="rotate(22 82.5 80)"/>
+      <ellipse cx="80" cy="75.5" rx="3" ry="4.5" fill="#fff" opacity=".22" transform="rotate(22 82.5 80)"/>
     </g>
-    <!-- Body sphere -->
-    <circle class="m-body" cx="50" cy="75" r="30" fill="url(#${p}b)" filter="url(#${p}ds)"/>
-    <!-- Body 3D highlight – large soft blob top-left -->
-    <ellipse cx="37" cy="59" rx="13" ry="17" fill="#fff" opacity=".26" transform="rotate(-10 37 59)"/>
-    <!-- Face marks – orange-red ovals (key reference feature) -->
-    <ellipse cx="23" cy="74" rx="5.5" ry="3.5" fill="#e04800" opacity=".55" transform="rotate(-12 23 74)"/>
-    <ellipse cx="77" cy="74" rx="5.5" ry="3.5" fill="#e04800" opacity=".55" transform="rotate(12 77 74)"/>
-    <!-- Eye whites – large, round -->
-    <circle cx="37" cy="69" r="13" fill="#fff"/>
-    <circle cx="63" cy="69" r="13" fill="#fff"/>
-    <!-- Eye shadow for depth -->
-    <circle cx="37" cy="70" r="13" fill="rgba(180,60,0,.07)"/>
-    <circle cx="63" cy="70" r="13" fill="rgba(180,60,0,.07)"/>
-    <!-- Open eyes -->
+    <!-- Body -->
+    <circle class="m-body" cx="50" cy="75" r="29.5" fill="url(#${p}b)"/>
+    <!-- Body shine – top-left -->
+    <ellipse cx="37.5" cy="60" rx="12" ry="16" fill="#fff" opacity=".24" transform="rotate(-10 37.5 60)"/>
+    <!-- Eye whites -->
+    <circle cx="36.5" cy="69.5" r="12.5" fill="#fff"/>
+    <circle cx="63.5" cy="69.5" r="12.5" fill="#fff"/>
+    <!-- Iris + pupil + sparkles – smaller iris so whites show nicely -->
     <g class="m-eyes-open">
-      <circle cx="37" cy="70" r="9" fill="url(#${p}eye)"/>
-      <circle cx="63" cy="70" r="9" fill="url(#${p}eye)"/>
-      <circle cx="37" cy="71" r="5.8" fill="#160600"/>
-      <circle cx="63" cy="71" r="5.8" fill="#160600"/>
-      <circle cx="32.5" cy="65.5" r="3.8" fill="#fff"/>
-      <circle cx="58.5" cy="65.5" r="3.8" fill="#fff"/>
-      <circle cx="40.5" cy="68.5" r="1.8" fill="rgba(255,255,255,.7)"/>
-      <circle cx="66.5" cy="68.5" r="1.8" fill="rgba(255,255,255,.7)"/>
-      <circle cx="34" cy="67.5" r="1" fill="rgba(255,255,255,.5)"/>
-      <circle cx="60" cy="67.5" r="1" fill="rgba(255,255,255,.5)"/>
+      <circle cx="36.5" cy="70.5" r="7.5" fill="url(#${p}iris)"/>
+      <circle cx="63.5" cy="70.5" r="7.5" fill="url(#${p}iris)"/>
+      <circle cx="36.5" cy="71.5" r="4.5" fill="#180800"/>
+      <circle cx="63.5" cy="71.5" r="4.5" fill="#180800"/>
+      <!-- big sparkle – most important feature -->
+      <circle cx="31.5" cy="66" r="3.8" fill="#fff"/>
+      <circle cx="58.5" cy="66" r="3.8" fill="#fff"/>
+      <!-- small sparkle -->
+      <circle cx="40" cy="69.5" r="1.6" fill="rgba(255,255,255,.72)"/>
+      <circle cx="67" cy="69.5" r="1.6" fill="rgba(255,255,255,.72)"/>
     </g>
-    <!-- Happy squint eyes -->
+    <!-- Happy squint -->
     <g class="m-eyes-happy">
-      <path d="M25 69 Q37 56 49 69" fill="none" stroke="#160600" stroke-width="5" stroke-linecap="round"/>
-      <path d="M51 69 Q63 56 75 69" fill="none" stroke="#160600" stroke-width="5" stroke-linecap="round"/>
-      <circle cx="29" cy="62" r="3.2" fill="#fff" opacity=".9"/>
-      <circle cx="55" cy="62" r="3.2" fill="#fff" opacity=".9"/>
+      <path d="M25 69 Q36.5 56 48 69" fill="none" stroke="#1a0600" stroke-width="5" stroke-linecap="round"/>
+      <path d="M52 69 Q63.5 56 75 69" fill="none" stroke="#1a0600" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="29" cy="62" r="3" fill="#fff" opacity=".9"/>
+      <circle cx="55.5" cy="62" r="3" fill="#fff" opacity=".9"/>
     </g>
     <!-- Blink -->
     <g class="m-eyes-closed">
-      <path d="M25 68 Q37 78 49 68" fill="none" stroke="#160600" stroke-width="5" stroke-linecap="round"/>
-      <path d="M51 68 Q63 78 75 68" fill="none" stroke="#160600" stroke-width="5" stroke-linecap="round"/>
+      <path d="M25 69 Q36.5 78 48 69" fill="none" stroke="#1a0600" stroke-width="5" stroke-linecap="round"/>
+      <path d="M52 69 Q63.5 78 75 69" fill="none" stroke="#1a0600" stroke-width="5" stroke-linecap="round"/>
     </g>
     <!-- Eyebrows -->
-    <path d="M26 56.5 Q37 51 48 56.5" fill="none" stroke="#c03000" stroke-width="3.5" stroke-linecap="round"/>
-    <path d="M52 56.5 Q63 51 74 56.5" fill="none" stroke="#c03000" stroke-width="3.5" stroke-linecap="round"/>
-    <!-- Cheeks -->
-    <ellipse class="m-cheek" cx="21" cy="80" rx="8" ry="5.2" fill="#ff5580" opacity=".42"/>
-    <ellipse class="m-cheek" cx="79" cy="80" rx="8" ry="5.2" fill="#ff5580" opacity=".42"/>
+    <path d="M27 57.5 Q36.5 52 46 57.5" fill="none" stroke="#c02800" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M54 57.5 Q63.5 52 73 57.5" fill="none" stroke="#c02800" stroke-width="3.2" stroke-linecap="round"/>
+    <!-- Cheek blush first, then freckle dots on top -->
+    <ellipse class="m-cheek" cx="20" cy="83" rx="8.5" ry="5.2" fill="#ff6090" opacity=".38"/>
+    <ellipse class="m-cheek" cx="80" cy="83" rx="8.5" ry="5.2" fill="#ff6090" opacity=".38"/>
+    <!-- Freckle marks – clearly on cheeks, well below eye whites (bottom of eye white ≈ y=82) -->
+    <circle cx="18" cy="83" r="2.4" fill="#e05800" opacity=".58"/>
+    <circle cx="22.5" cy="86" r="1.7" fill="#e05800" opacity=".44"/>
+    <circle cx="82" cy="83" r="2.4" fill="#e05800" opacity=".58"/>
+    <circle cx="77.5" cy="86" r="1.7" fill="#e05800" opacity=".44"/>
     <!-- Smile -->
-    <path class="m-mouth-smile" d="M37 85 Q50 96 63 85" fill="none" stroke="#160600" stroke-width="3.8" stroke-linecap="round"/>
-    <!-- Open grin with teeth + tongue -->
+    <path class="m-mouth-smile" d="M37.5 86 Q50 97 62.5 86" fill="none" stroke="#1a0600" stroke-width="3.6" stroke-linecap="round"/>
+    <!-- Open grin -->
     <g class="m-mouth-grin">
-      <path d="M36 83 Q50 101 64 83 Z" fill="#6a0e00"/>
-      <rect x="37" y="82" width="26" height="7" rx="3.5" fill="#fff"/>
-      <line x1="50" y1="82" x2="50" y2="89" stroke="#ddd" stroke-width="1.2"/>
-      <ellipse cx="50" cy="96" rx="8.5" ry="5.5" fill="#ff7aaa"/>
+      <path d="M36.5 84 Q50 102 63.5 84 Z" fill="#6a0c00"/>
+      <rect x="38" y="83" width="24" height="6.5" rx="3.2" fill="#fff"/>
+      <line x1="50" y1="83" x2="50" y2="89.5" stroke="#e0d8d0" stroke-width="1.3"/>
+      <ellipse cx="50" cy="97" rx="8" ry="5.2" fill="#ff78a8"/>
     </g>
-    <!-- Flat/neutral mouth -->
-    <path class="m-mouth-flat" d="M41 90 Q50 92 59 90" fill="none" stroke="#160600" stroke-width="3.8" stroke-linecap="round"/>
+    <!-- Flat mouth -->
+    <path class="m-mouth-flat" d="M42 90.5 Q50 92.5 58 90.5" fill="none" stroke="#1a0600" stroke-width="3.6" stroke-linecap="round"/>
     <!-- Sparks -->
     <g class="m-spark">
-      <path d="M9 44 l2.2 5 5 2.2 -5 2.2 -2.2 5 -2.2-5 -5-2.2 5-2.2Z" fill="#ffd040"/>
-      <path d="M91 38 l1.8 4 4 1.8 -4 1.8 -1.8 4 -1.8-4 -4-1.8 4-1.8Z" fill="#ffce50"/>
-      <path d="M79 100 l1.5 3.4 3.4 1.5 -3.4 1.5 -1.5 3.4 -1.5-3.4 -3.4-1.5 3.4-1.5Z" fill="#58cc02"/>
+      <path d="M10 44 l2.2 5 5 2.2 -5 2.2 -2.2 5 -2.2-5 -5-2.2 5-2.2Z" fill="#ffd040"/>
+      <path d="M90 38 l1.8 4 4 1.8 -4 1.8 -1.8 4 -1.8-4 -4-1.8 4-1.8Z" fill="#ffce50"/>
+      <path d="M78 100 l1.5 3.4 3.4 1.5 -3.4 1.5 -1.5 3.4 -1.5-3.4 -3.4-1.5 3.4-1.5Z" fill="#58cc02"/>
     </g>
   </g>
 </svg>`;}
 function mascotMatchSVG(p){return `
 <svg class="m-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="${p}b" cx="36%" cy="24%" r="74%">
-      <stop offset="0%" stop-color="#ff9838"/>
-      <stop offset="45%" stop-color="#cc1800"/>
-      <stop offset="100%" stop-color="#780000"/>
+    <radialGradient id="${p}b" cx="36%" cy="26%" r="70%">
+      <stop offset="0%" stop-color="#ff9030"/>
+      <stop offset="42%" stop-color="#cc1a00"/>
+      <stop offset="88%" stop-color="#7e0000"/>
+      <stop offset="100%" stop-color="#600000"/>
     </radialGradient>
-    <radialGradient id="${p}bh" cx="30%" cy="22%" r="65%">
-      <stop offset="0%" stop-color="#ffcc80"/>
-      <stop offset="60%" stop-color="#ff6820"/>
-      <stop offset="100%" stop-color="#cc2000"/>
+    <radialGradient id="${p}stick" cx="30%" cy="30%" r="68%">
+      <stop offset="0%" stop-color="#ffe0a0"/>
+      <stop offset="55%" stop-color="#cc8020"/>
+      <stop offset="100%" stop-color="#8a5010"/>
     </radialGradient>
-    <radialGradient id="${p}w" cx="32%" cy="28%" r="70%">
-      <stop offset="0%" stop-color="#ffe8c0"/>
-      <stop offset="55%" stop-color="#cc8830"/>
-      <stop offset="100%" stop-color="#8c5414"/>
+    <radialGradient id="${p}iris" cx="28%" cy="22%" r="75%">
+      <stop offset="0%" stop-color="#e8a830"/>
+      <stop offset="55%" stop-color="#a05010"/>
+      <stop offset="100%" stop-color="#6a3000"/>
     </radialGradient>
-    <radialGradient id="${p}eye" cx="26%" cy="18%" r="72%">
-      <stop offset="0%" stop-color="#8c5020"/>
-      <stop offset="55%" stop-color="#4c1c00"/>
-      <stop offset="100%" stop-color="#180600"/>
-    </radialGradient>
-    <filter id="${p}ds" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-color="#880000" flood-opacity="0.3"/>
-    </filter>
   </defs>
   <g class="m-bob">
-    <!-- Matchstick body -->
-    <rect x="44" y="64" width="12" height="56" rx="6" fill="url(#${p}w)"/>
-    <line x1="50" y1="73" x2="50" y2="114" stroke="#9c6010" stroke-width="1.5" opacity=".28" stroke-linecap="round"/>
-    <!-- Arm nubs -->
+    <rect x="45" y="66" width="10" height="54" rx="5" fill="url(#${p}stick)"/>
+    <line x1="50" y1="74" x2="50" y2="114" stroke="#a06010" stroke-width="1.2" opacity=".25" stroke-linecap="round"/>
     <g class="m-arm m-arm-l">
-      <ellipse cx="16" cy="55" rx="10" ry="6.5" fill="url(#${p}b)" transform="rotate(-28 16 55)" filter="url(#${p}ds)"/>
-      <ellipse cx="13.5" cy="52" rx="4" ry="3" fill="#ffb060" opacity=".35" transform="rotate(-28 16 55)"/>
+      <ellipse cx="17" cy="53" rx="9.5" ry="6" fill="url(#${p}b)" transform="rotate(-28 17 53)"/>
+      <ellipse cx="14.5" cy="50" rx="3.5" ry="2.5" fill="#ff9040" opacity=".35" transform="rotate(-28 17 53)"/>
     </g>
     <g class="m-arm m-arm-r">
-      <ellipse cx="84" cy="55" rx="10" ry="6.5" fill="url(#${p}b)" transform="rotate(28 84 55)" filter="url(#${p}ds)"/>
-      <ellipse cx="81.5" cy="52" rx="4" ry="3" fill="#ffb060" opacity=".35" transform="rotate(28 84 55)"/>
+      <ellipse cx="83" cy="53" rx="9.5" ry="6" fill="url(#${p}b)" transform="rotate(28 83 53)"/>
+      <ellipse cx="80.5" cy="50" rx="3.5" ry="2.5" fill="#ff9040" opacity=".35" transform="rotate(28 83 53)"/>
     </g>
-    <!-- Matchhead -->
-    <circle class="m-body" cx="50" cy="37" r="31" fill="url(#${p}b)" filter="url(#${p}ds)"/>
-    <!-- 3D body highlight -->
-    <ellipse cx="36" cy="23" rx="13" ry="10" fill="#fff" opacity=".22" transform="rotate(-15 36 23)"/>
-    <!-- Face marks -->
-    <ellipse cx="19" cy="44" rx="5" ry="3.2" fill="#880000" opacity=".45" transform="rotate(-10 19 44)"/>
-    <ellipse cx="81" cy="44" rx="5" ry="3.2" fill="#880000" opacity=".45" transform="rotate(10 81 44)"/>
-    <!-- Eye whites – very large chibi -->
-    <circle cx="35" cy="36" r="14.5" fill="#fff"/>
-    <circle cx="65" cy="36" r="14.5" fill="#fff"/>
+    <circle class="m-body" cx="50" cy="37" r="30.5" fill="url(#${p}b)"/>
+    <ellipse cx="36.5" cy="23" rx="12" ry="9" fill="#fff" opacity=".20" transform="rotate(-14 36.5 23)"/>
+    <!-- eye whites – huge chibi -->
+    <circle cx="35" cy="36" r="14" fill="#fff"/>
+    <circle cx="65" cy="36" r="14" fill="#fff"/>
     <g class="m-eyes-open">
-      <circle cx="35" cy="37" r="10.2" fill="url(#${p}eye)"/>
-      <circle cx="65" cy="37" r="10.2" fill="url(#${p}eye)"/>
-      <circle cx="35" cy="38.5" r="6.6" fill="#140200"/>
-      <circle cx="65" cy="38.5" r="6.6" fill="#140200"/>
-      <circle cx="29.5" cy="31" r="4.5" fill="#fff"/>
-      <circle cx="59.5" cy="31" r="4.5" fill="#fff"/>
-      <circle cx="40" cy="35.5" r="2.2" fill="rgba(255,255,255,.7)"/>
-      <circle cx="70" cy="35.5" r="2.2" fill="rgba(255,255,255,.7)"/>
-      <circle cx="31.5" cy="34" r="1.2" fill="rgba(255,255,255,.5)"/>
-      <circle cx="61.5" cy="34" r="1.2" fill="rgba(255,255,255,.5)"/>
+      <circle cx="35" cy="37" r="8.5" fill="url(#${p}iris)"/>
+      <circle cx="65" cy="37" r="8.5" fill="url(#${p}iris)"/>
+      <circle cx="35" cy="38.5" r="5.2" fill="#180400"/>
+      <circle cx="65" cy="38.5" r="5.2" fill="#180400"/>
+      <circle cx="28.5" cy="31" r="4.5" fill="#fff"/>
+      <circle cx="58.5" cy="31" r="4.5" fill="#fff"/>
+      <circle cx="40" cy="35.5" r="2.1" fill="rgba(255,255,255,.72)"/>
+      <circle cx="70" cy="35.5" r="2.1" fill="rgba(255,255,255,.72)"/>
     </g>
     <g class="m-eyes-happy">
-      <path d="M21 36 Q35 22 49 36" fill="none" stroke="#140200" stroke-width="5.8" stroke-linecap="round"/>
-      <path d="M51 36 Q65 22 79 36" fill="none" stroke="#140200" stroke-width="5.8" stroke-linecap="round"/>
-      <circle cx="25" cy="26" r="3.5" fill="#fff" opacity=".9"/>
-      <circle cx="55" cy="26" r="3.5" fill="#fff" opacity=".9"/>
+      <path d="M21 36 Q35 22 49 36" fill="none" stroke="#180400" stroke-width="5.5" stroke-linecap="round"/>
+      <path d="M51 36 Q65 22 79 36" fill="none" stroke="#180400" stroke-width="5.5" stroke-linecap="round"/>
+      <circle cx="25" cy="26.5" r="3.2" fill="#fff" opacity=".9"/>
+      <circle cx="55" cy="26.5" r="3.2" fill="#fff" opacity=".9"/>
     </g>
     <g class="m-eyes-closed">
-      <path d="M21 35 Q35 47 49 35" fill="none" stroke="#140200" stroke-width="5.8" stroke-linecap="round"/>
-      <path d="M51 35 Q65 47 79 35" fill="none" stroke="#140200" stroke-width="5.8" stroke-linecap="round"/>
+      <path d="M21 35.5 Q35 46 49 35.5" fill="none" stroke="#180400" stroke-width="5.5" stroke-linecap="round"/>
+      <path d="M51 35.5 Q65 46 79 35.5" fill="none" stroke="#180400" stroke-width="5.5" stroke-linecap="round"/>
     </g>
-    <!-- Eyebrows -->
-    <path d="M22 22 Q35 15.5 48 22" fill="none" stroke="#880000" stroke-width="3.2" stroke-linecap="round"/>
-    <path d="M52 22 Q65 15.5 78 22" fill="none" stroke="#880000" stroke-width="3.2" stroke-linecap="round"/>
-    <!-- Cheeks -->
-    <ellipse class="m-cheek" cx="17" cy="48" rx="8.5" ry="5.8" fill="#ff5578" opacity=".40"/>
-    <ellipse class="m-cheek" cx="83" cy="48" rx="8.5" ry="5.8" fill="#ff5578" opacity=".40"/>
-    <!-- Smile -->
-    <path class="m-mouth-smile" d="M36 53 Q50 66 64 53" fill="none" stroke="#140200" stroke-width="3.8" stroke-linecap="round"/>
-    <!-- Grin -->
+    <path d="M22 22.5 Q35 16 48 22.5" fill="none" stroke="#880000" stroke-width="3" stroke-linecap="round"/>
+    <path d="M52 22.5 Q65 16 78 22.5" fill="none" stroke="#880000" stroke-width="3" stroke-linecap="round"/>
+    <!-- blush first, freckles on top – well below eye whites (bottom of eye white ≈ y=50) -->
+    <ellipse class="m-cheek" cx="17" cy="52.5" rx="8.5" ry="5.5" fill="#ff5070" opacity=".36"/>
+    <ellipse class="m-cheek" cx="83" cy="52.5" rx="8.5" ry="5.5" fill="#ff5070" opacity=".36"/>
+    <circle cx="16" cy="52" r="2.4" fill="#cc2000" opacity=".50"/>
+    <circle cx="20" cy="55.5" r="1.7" fill="#cc2000" opacity=".38"/>
+    <circle cx="84" cy="52" r="2.4" fill="#cc2000" opacity=".50"/>
+    <circle cx="80" cy="55.5" r="1.7" fill="#cc2000" opacity=".38"/>
+    <path class="m-mouth-smile" d="M36.5 54 Q50 66 63.5 54" fill="none" stroke="#180400" stroke-width="3.6" stroke-linecap="round"/>
     <g class="m-mouth-grin">
-      <path d="M35 51 Q50 69 65 51 Z" fill="#6a0800"/>
-      <rect x="36.5" y="50" width="27" height="7" rx="3.5" fill="#fff"/>
-      <line x1="50" y1="50" x2="50" y2="57" stroke="#ddd" stroke-width="1.2"/>
-      <ellipse cx="50" cy="64" rx="8" ry="5.5" fill="#ff7aaa"/>
+      <path d="M35.5 52 Q50 70 64.5 52 Z" fill="#680800"/>
+      <rect x="37" y="51" width="26" height="6.5" rx="3.2" fill="#fff"/>
+      <line x1="50" y1="51" x2="50" y2="57.5" stroke="#e0d8d0" stroke-width="1.2"/>
+      <ellipse cx="50" cy="65" rx="8" ry="5" fill="#ff78a8"/>
     </g>
-    <path class="m-mouth-flat" d="M41 59 Q50 61.5 59 59" fill="none" stroke="#140200" stroke-width="3.2" stroke-linecap="round"/>
+    <path class="m-mouth-flat" d="M42 60 Q50 62 58 60" fill="none" stroke="#180400" stroke-width="3" stroke-linecap="round"/>
     <g class="m-spark">
-      <path d="M7 26 l1.8 4 4 1.8 -4 1.8 -1.8 4 -1.8-4 -4-1.8 4-1.8Z" fill="#ffa030"/>
-      <path d="M93 20 l1.5 3.4 3.4 1.5 -3.4 1.5 -1.5 3.4 -1.5-3.4 -3.4-1.5 3.4-1.5Z" fill="#ffcc40"/>
+      <path d="M8 27 l1.8 4 4 1.8 -4 1.8 -1.8 4 -1.8-4 -4-1.8 4-1.8Z" fill="#ffa030"/>
+      <path d="M92 21 l1.5 3.5 3.5 1.5 -3.5 1.5 -1.5 3.5 -1.5-3.5 -3.5-1.5 3.5-1.5Z" fill="#ffcc40"/>
     </g>
   </g>
 </svg>`;}
 function mascotLagerfeueSVG(p){return `
 <svg class="m-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="${p}b" cx="36%" cy="26%" r="72%">
-      <stop offset="0%" stop-color="#ffe048"/>
-      <stop offset="40%" stop-color="#ff8800"/>
-      <stop offset="75%" stop-color="#e03000"/>
-      <stop offset="100%" stop-color="#c02000"/>
+    <radialGradient id="${p}b" cx="36%" cy="28%" r="70%">
+      <stop offset="0%" stop-color="#ffe040"/>
+      <stop offset="38%" stop-color="#ff8800"/>
+      <stop offset="72%" stop-color="#e03200"/>
+      <stop offset="100%" stop-color="#c01e00"/>
     </radialGradient>
-    <radialGradient id="${p}f" cx="50%" cy="86%" r="64%">
-      <stop offset="0%" stop-color="#ffc820"/>
-      <stop offset="44%" stop-color="#ff5400"/>
-      <stop offset="100%" stop-color="#bb1a00"/>
+    <radialGradient id="${p}f" cx="50%" cy="82%" r="64%">
+      <stop offset="0%" stop-color="#ffbf00"/>
+      <stop offset="48%" stop-color="#ff4800"/>
+      <stop offset="100%" stop-color="#bb1600"/>
     </radialGradient>
-    <radialGradient id="${p}fh" cx="40%" cy="28%" r="62%">
-      <stop offset="0%" stop-color="#fff0a0"/>
-      <stop offset="55%" stop-color="#ffbb28"/>
-      <stop offset="100%" stop-color="#ff6600"/>
+    <radialGradient id="${p}fhi" cx="30%" cy="18%" r="70%">
+      <stop offset="0%" stop-color="#fff8d0"/>
+      <stop offset="100%" stop-color="#ffcc50"/>
     </radialGradient>
-    <radialGradient id="${p}eye" cx="28%" cy="20%" r="72%">
-      <stop offset="0%" stop-color="#9a5f1c"/>
-      <stop offset="58%" stop-color="#5a2a00"/>
-      <stop offset="100%" stop-color="#200800"/>
+    <radialGradient id="${p}iris" cx="28%" cy="22%" r="75%">
+      <stop offset="0%" stop-color="#e8a830"/>
+      <stop offset="55%" stop-color="#a85e10"/>
+      <stop offset="100%" stop-color="#6e3800"/>
     </radialGradient>
-    <radialGradient id="${p}arm" cx="34%" cy="24%" r="70%">
-      <stop offset="0%" stop-color="#ffce50"/>
-      <stop offset="55%" stop-color="#ff8800"/>
-      <stop offset="100%" stop-color="#d84000"/>
+    <radialGradient id="${p}arm" cx="30%" cy="24%" r="72%">
+      <stop offset="0%" stop-color="#ffd840"/>
+      <stop offset="55%" stop-color="#ff8000"/>
+      <stop offset="100%" stop-color="#dc3800"/>
     </radialGradient>
-    <linearGradient id="${p}lg" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#4c2004"/>
-      <stop offset="25%" stop-color="#7c4414"/>
-      <stop offset="50%" stop-color="#9a5820"/>
-      <stop offset="75%" stop-color="#7c4414"/>
-      <stop offset="100%" stop-color="#4c2004"/>
+    <linearGradient id="${p}log" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4a1e04"/>
+      <stop offset="30%" stop-color="#7c4412"/>
+      <stop offset="50%" stop-color="#986020"/>
+      <stop offset="70%" stop-color="#7c4412"/>
+      <stop offset="100%" stop-color="#4a1e04"/>
     </linearGradient>
-    <filter id="${p}ds" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-color="#a02800" flood-opacity="0.3"/>
-    </filter>
   </defs>
   <g class="m-bob">
-    <!-- Flame hair – 5 tongues with highlights -->
+    <!-- Flame hair -->
     <g class="m-wisp">
-      <path d="M18 59 C8 37 14 13 25 5 C31 21 23 44 33 55Z" fill="url(#${p}f)" opacity=".93"/>
-      <ellipse cx="22" cy="22" rx="4.5" ry="7.5" fill="url(#${p}fh)" opacity=".62" transform="rotate(-20 22 22)"/>
-      <path d="M30 53 C20 29 28 8 36 0 C44 14 40 38 43 51Z" fill="#ffb600" opacity=".96"/>
-      <ellipse cx="35" cy="18" rx="4" ry="8" fill="url(#${p}fh)" opacity=".58" transform="rotate(-9 35 18)"/>
-      <path d="M43 47 C37 22 44 6 50 -1 C56 6 63 22 57 47Z" fill="#ffdb28"/>
-      <ellipse cx="50" cy="15" rx="5" ry="9" fill="#fff5c0" opacity=".58"/>
-      <path d="M57 53 C60 32 56 12 64 1 C71 12 80 32 69 53Z" fill="#ffb600" opacity=".96"/>
-      <ellipse cx="65" cy="18" rx="4" ry="8" fill="url(#${p}fh)" opacity=".58" transform="rotate(9 65 18)"/>
-      <path d="M70 59 C80 37 88 13 75 5 C87 13 92 37 80 59Z" fill="url(#${p}f)" opacity=".93"/>
-      <ellipse cx="78" cy="22" rx="4.5" ry="7.5" fill="url(#${p}fh)" opacity=".62" transform="rotate(20 78 22)"/>
+      <path d="M19 59 C8 37 14 12 25 4 C31 20 23 44 33 56Z" fill="url(#${p}f)"/>
+      <ellipse cx="22.5" cy="21" rx="4" ry="7.5" fill="url(#${p}fhi)" opacity=".68" transform="rotate(-20 22.5 21)"/>
+      <path d="M31 53 C21 28 29 7 37 -1 C45 14 41 38 44 51Z" fill="#ffb200"/>
+      <ellipse cx="35.5" cy="16" rx="3.5" ry="7.5" fill="url(#${p}fhi)" opacity=".62" transform="rotate(-8 35.5 16)"/>
+      <path d="M44 47 C37 21 44 5 50 -2 C56 5 63 21 56 47Z" fill="#ffda20"/>
+      <ellipse cx="50" cy="14" rx="4.5" ry="9" fill="#fff8c0" opacity=".60"/>
+      <path d="M56 53 C59 31 55 11 64 0 C71 11 80 31 69 53Z" fill="#ffb200"/>
+      <ellipse cx="64.5" cy="16" rx="3.5" ry="7.5" fill="url(#${p}fhi)" opacity=".62" transform="rotate(8 64.5 16)"/>
+      <path d="M69 59 C79 37 86 12 75 4 C86 12 92 37 80 59Z" fill="url(#${p}f)"/>
+      <ellipse cx="77.5" cy="21" rx="4" ry="7.5" fill="url(#${p}fhi)" opacity=".68" transform="rotate(20 77.5 21)"/>
     </g>
-    <!-- Log base -->
-    <rect x="7" y="103" width="86" height="9.5" rx="4.8" fill="url(#${p}lg)" transform="rotate(-7 50 107.5)"/>
-    <rect x="7" y="103" width="86" height="9.5" rx="4.8" fill="url(#${p}lg)" transform="rotate(7 50 107.5)"/>
-    <!-- Log end-grain circles -->
-    <ellipse cx="10" cy="100" rx="6" ry="5" fill="#3a1600" opacity=".90"/>
-    <ellipse cx="10" cy="100" rx="3.5" ry="2.8" fill="#5a2800" opacity=".70"/>
-    <ellipse cx="90" cy="100" rx="6" ry="5" fill="#3a1600" opacity=".90"/>
-    <ellipse cx="90" cy="100" rx="3.5" ry="2.8" fill="#5a2800" opacity=".70"/>
-    <ellipse cx="10" cy="115" rx="6" ry="5" fill="#3a1600" opacity=".90"/>
-    <ellipse cx="10" cy="115" rx="3.5" ry="2.8" fill="#5a2800" opacity=".70"/>
-    <ellipse cx="90" cy="115" rx="6" ry="5" fill="#3a1600" opacity=".90"/>
-    <ellipse cx="90" cy="115" rx="3.5" ry="2.8" fill="#5a2800" opacity=".70"/>
+    <!-- Logs -->
+    <rect x="8" y="104" width="84" height="9" rx="4.5" fill="url(#${p}log)" transform="rotate(-7 50 108)"/>
+    <rect x="8" y="104" width="84" height="9" rx="4.5" fill="url(#${p}log)" transform="rotate(7 50 108)"/>
+    <!-- Log ends -->
+    <ellipse cx="10.5" cy="101" rx="5.5" ry="4.5" fill="#3a1600"/>
+    <ellipse cx="10.5" cy="101" rx="3.2" ry="2.5" fill="#5c2c10" opacity=".8"/>
+    <ellipse cx="89.5" cy="101" rx="5.5" ry="4.5" fill="#3a1600"/>
+    <ellipse cx="89.5" cy="101" rx="3.2" ry="2.5" fill="#5c2c10" opacity=".8"/>
+    <ellipse cx="10.5" cy="114" rx="5.5" ry="4.5" fill="#3a1600"/>
+    <ellipse cx="10.5" cy="114" rx="3.2" ry="2.5" fill="#5c2c10" opacity=".8"/>
+    <ellipse cx="89.5" cy="114" rx="5.5" ry="4.5" fill="#3a1600"/>
+    <ellipse cx="89.5" cy="114" rx="3.2" ry="2.5" fill="#5c2c10" opacity=".8"/>
     <!-- Arms -->
     <g class="m-arm m-arm-l">
-      <ellipse cx="13" cy="78" rx="9.5" ry="12.5" fill="url(#${p}arm)" transform="rotate(-22 13 78)" filter="url(#${p}ds)"/>
-      <ellipse cx="10.5" cy="73.5" rx="4" ry="5.5" fill="#fff" opacity=".20" transform="rotate(-22 13 78)"/>
+      <ellipse cx="13.5" cy="78" rx="9" ry="12" fill="url(#${p}arm)" transform="rotate(-22 13.5 78)"/>
+      <ellipse cx="11" cy="73.5" rx="3.5" ry="5.2" fill="#fff" opacity=".20" transform="rotate(-22 13.5 78)"/>
     </g>
     <g class="m-arm m-arm-r">
-      <ellipse cx="87" cy="78" rx="9.5" ry="12.5" fill="url(#${p}arm)" transform="rotate(22 87 78)" filter="url(#${p}ds)"/>
-      <ellipse cx="84.5" cy="73.5" rx="4" ry="5.5" fill="#fff" opacity=".20" transform="rotate(22 87 78)"/>
+      <ellipse cx="86.5" cy="78" rx="9" ry="12" fill="url(#${p}arm)" transform="rotate(22 86.5 78)"/>
+      <ellipse cx="84" cy="73.5" rx="3.5" ry="5.2" fill="#fff" opacity=".20" transform="rotate(22 86.5 78)"/>
     </g>
     <!-- Body – wide ellipse -->
-    <ellipse class="m-body" cx="50" cy="72" rx="34" ry="26" fill="url(#${p}b)" filter="url(#${p}ds)"/>
-    <!-- Body 3D highlight -->
-    <ellipse cx="36" cy="57" rx="14" ry="16.5" fill="#fff" opacity=".24" transform="rotate(-9 36 57)"/>
-    <!-- Face marks -->
-    <ellipse cx="18" cy="74" rx="5.5" ry="3.5" fill="#c83000" opacity=".52" transform="rotate(-12 18 74)"/>
-    <ellipse cx="82" cy="74" rx="5.5" ry="3.5" fill="#c83000" opacity=".52" transform="rotate(12 82 74)"/>
+    <ellipse class="m-body" cx="50" cy="72" rx="34" ry="25.5" fill="url(#${p}b)"/>
+    <ellipse cx="36.5" cy="57" rx="13.5" ry="16" fill="#fff" opacity=".23" transform="rotate(-9 36.5 57)"/>
     <!-- Eye whites -->
     <circle cx="37" cy="67" r="12.5" fill="#fff"/>
     <circle cx="63" cy="67" r="12.5" fill="#fff"/>
-    <!-- Open eyes -->
     <g class="m-eyes-open">
-      <circle cx="37" cy="68" r="8.8" fill="url(#${p}eye)"/>
-      <circle cx="63" cy="68" r="8.8" fill="url(#${p}eye)"/>
-      <circle cx="37" cy="69" r="5.7" fill="#160600"/>
-      <circle cx="63" cy="69" r="5.7" fill="#160600"/>
-      <circle cx="32.5" cy="63.5" r="3.5" fill="#fff"/>
-      <circle cx="58.5" cy="63.5" r="3.5" fill="#fff"/>
-      <circle cx="40.5" cy="67" r="1.7" fill="rgba(255,255,255,.7)"/>
-      <circle cx="66.5" cy="67" r="1.7" fill="rgba(255,255,255,.7)"/>
+      <circle cx="37" cy="68" r="7.5" fill="url(#${p}iris)"/>
+      <circle cx="63" cy="68" r="7.5" fill="url(#${p}iris)"/>
+      <circle cx="37" cy="69" r="4.5" fill="#180800"/>
+      <circle cx="63" cy="69" r="4.5" fill="#180800"/>
+      <circle cx="31.5" cy="63" r="3.8" fill="#fff"/>
+      <circle cx="57.5" cy="63" r="3.8" fill="#fff"/>
+      <circle cx="40.5" cy="67" r="1.6" fill="rgba(255,255,255,.72)"/>
+      <circle cx="66.5" cy="67" r="1.6" fill="rgba(255,255,255,.72)"/>
     </g>
     <g class="m-eyes-happy">
-      <path d="M26 67 Q37 54 48 67" fill="none" stroke="#160600" stroke-width="5" stroke-linecap="round"/>
-      <path d="M52 67 Q63 54 74 67" fill="none" stroke="#160600" stroke-width="5" stroke-linecap="round"/>
-      <circle cx="30" cy="59" r="3" fill="#fff" opacity=".9"/>
-      <circle cx="56" cy="59" r="3" fill="#fff" opacity=".9"/>
+      <path d="M26 67 Q37 54 48 67" fill="none" stroke="#1a0600" stroke-width="5" stroke-linecap="round"/>
+      <path d="M52 67 Q63 54 74 67" fill="none" stroke="#1a0600" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="30" cy="59.5" r="2.8" fill="#fff" opacity=".9"/>
+      <circle cx="56" cy="59.5" r="2.8" fill="#fff" opacity=".9"/>
     </g>
     <g class="m-eyes-closed">
-      <path d="M26 66 Q37 76 48 66" fill="none" stroke="#160600" stroke-width="5" stroke-linecap="round"/>
-      <path d="M52 66 Q63 76 74 66" fill="none" stroke="#160600" stroke-width="5" stroke-linecap="round"/>
+      <path d="M26 66.5 Q37 76 48 66.5" fill="none" stroke="#1a0600" stroke-width="5" stroke-linecap="round"/>
+      <path d="M52 66.5 Q63 76 74 66.5" fill="none" stroke="#1a0600" stroke-width="5" stroke-linecap="round"/>
     </g>
-    <!-- Eyebrows -->
-    <path d="M26 55 Q37 49.5 48 55" fill="none" stroke="#c03000" stroke-width="3.5" stroke-linecap="round"/>
-    <path d="M52 55 Q63 49.5 74 55" fill="none" stroke="#c03000" stroke-width="3.5" stroke-linecap="round"/>
-    <!-- Cheeks -->
-    <ellipse class="m-cheek" cx="18" cy="79" rx="9.5" ry="6" fill="#ff5580" opacity=".43"/>
-    <ellipse class="m-cheek" cx="82" cy="79" rx="9.5" ry="6" fill="#ff5580" opacity=".43"/>
-    <!-- Smile -->
-    <path class="m-mouth-smile" d="M36 82 Q50 95 64 82" fill="none" stroke="#160600" stroke-width="3.8" stroke-linecap="round"/>
-    <!-- Grin -->
+    <path d="M27 55 Q37 49.5 47 55" fill="none" stroke="#c02800" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M53 55 Q63 49.5 73 55" fill="none" stroke="#c02800" stroke-width="3.2" stroke-linecap="round"/>
+    <!-- blush + freckles below eye whites (bottom of eye ≈ y=79.5) -->
+    <ellipse class="m-cheek" cx="17.5" cy="82" rx="9.5" ry="5.5" fill="#ff5580" opacity=".37"/>
+    <ellipse class="m-cheek" cx="82.5" cy="82" rx="9.5" ry="5.5" fill="#ff5580" opacity=".37"/>
+    <circle cx="16" cy="81.5" r="2.5" fill="#dd4000" opacity=".52"/>
+    <circle cx="20" cy="85" r="1.8" fill="#dd4000" opacity=".40"/>
+    <circle cx="84" cy="81.5" r="2.5" fill="#dd4000" opacity=".52"/>
+    <circle cx="80" cy="85" r="1.8" fill="#dd4000" opacity=".40"/>
+    <path class="m-mouth-smile" d="M37 83 Q50 95 63 83" fill="none" stroke="#1a0600" stroke-width="3.6" stroke-linecap="round"/>
     <g class="m-mouth-grin">
-      <path d="M35 80 Q50 99 65 80 Z" fill="#6a0e00"/>
-      <rect x="36.5" y="79" width="27" height="7" rx="3.5" fill="#fff"/>
-      <line x1="50" y1="79" x2="50" y2="86" stroke="#ddd" stroke-width="1.2"/>
-      <ellipse cx="50" cy="94" rx="9" ry="5.8" fill="#ff7aaa"/>
+      <path d="M36 81 Q50 99 64 81 Z" fill="#6a0c00"/>
+      <rect x="37.5" y="80" width="25" height="6.5" rx="3.2" fill="#fff"/>
+      <line x1="50" y1="80" x2="50" y2="86.5" stroke="#e0d8d0" stroke-width="1.3"/>
+      <ellipse cx="50" cy="94.5" rx="8.5" ry="5.2" fill="#ff78a8"/>
     </g>
-    <path class="m-mouth-flat" d="M40 89 Q50 91.5 60 89" fill="none" stroke="#160600" stroke-width="3.8" stroke-linecap="round"/>
+    <path class="m-mouth-flat" d="M41 89.5 Q50 91.5 59 89.5" fill="none" stroke="#1a0600" stroke-width="3.6" stroke-linecap="round"/>
     <g class="m-spark">
-      <path d="M6 42 l2.2 5 5 2.2 -5 2.2 -2.2 5 -2.2-5 -5-2.2 5-2.2Z" fill="#ffd040"/>
-      <path d="M94 36 l1.8 4 4 1.8 -4 1.8 -1.8 4 -1.8-4 -4-1.8 4-1.8Z" fill="#ffce50"/>
-      <path d="M78 98 l1.5 3.4 3.4 1.5 -3.4 1.5 -1.5 3.4 -1.5-3.4 -3.4-1.5 3.4-1.5Z" fill="#58cc02"/>
+      <path d="M7 43 l2.2 5 5 2.2 -5 2.2 -2.2 5 -2.2-5 -5-2.2 5-2.2Z" fill="#ffd040"/>
+      <path d="M93 37 l1.8 4 4 1.8 -4 1.8 -1.8 4 -1.8-4 -4-1.8 4-1.8Z" fill="#ffce50"/>
+      <path d="M78 99 l1.5 3.4 3.4 1.5 -3.4 1.5 -1.5 3.4 -1.5-3.4 -3.4-1.5 3.4-1.5Z" fill="#58cc02"/>
     </g>
   </g>
 </svg>`;}
 function mascotPhoenixSVG(p){return `
 <svg class="m-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="${p}b" cx="38%" cy="26%" r="70%">
-      <stop offset="0%" stop-color="#fff466"/>
-      <stop offset="35%" stop-color="#ffd000"/>
-      <stop offset="68%" stop-color="#ff8800"/>
-      <stop offset="100%" stop-color="#d84000"/>
+    <radialGradient id="${p}b" cx="36%" cy="28%" r="68%">
+      <stop offset="0%" stop-color="#fff460"/>
+      <stop offset="32%" stop-color="#ffcc00"/>
+      <stop offset="65%" stop-color="#ff8400"/>
+      <stop offset="100%" stop-color="#da3c00"/>
     </radialGradient>
-    <radialGradient id="${p}f" cx="50%" cy="84%" r="66%">
-      <stop offset="0%" stop-color="#ffe040"/>
-      <stop offset="48%" stop-color="#ff6800"/>
-      <stop offset="100%" stop-color="#bf2c00"/>
-    </radialGradient>
-    <radialGradient id="${p}wg" cx="45%" cy="35%" r="72%">
-      <stop offset="0%" stop-color="#ffec60"/>
-      <stop offset="50%" stop-color="#ff9000"/>
+    <radialGradient id="${p}wing" cx="40%" cy="30%" r="72%">
+      <stop offset="0%" stop-color="#ffe840"/>
+      <stop offset="48%" stop-color="#ff8c00"/>
       <stop offset="100%" stop-color="#c84000"/>
     </radialGradient>
-    <radialGradient id="${p}eye" cx="28%" cy="20%" r="72%">
-      <stop offset="0%" stop-color="#b07030"/>
-      <stop offset="55%" stop-color="#703000"/>
-      <stop offset="100%" stop-color="#2c1000"/>
+    <radialGradient id="${p}f" cx="50%" cy="82%" r="64%">
+      <stop offset="0%" stop-color="#ffcc00"/>
+      <stop offset="50%" stop-color="#ff6000"/>
+      <stop offset="100%" stop-color="#c02800"/>
     </radialGradient>
-    <radialGradient id="${p}crown" cx="50%" cy="90%" r="60%">
-      <stop offset="0%" stop-color="#ffee80"/>
-      <stop offset="55%" stop-color="#ffaa00"/>
-      <stop offset="100%" stop-color="#ff5500"/>
+    <radialGradient id="${p}iris" cx="28%" cy="22%" r="75%">
+      <stop offset="0%" stop-color="#f0b830"/>
+      <stop offset="55%" stop-color="#b07020"/>
+      <stop offset="100%" stop-color="#7a4400"/>
     </radialGradient>
-    <filter id="${p}glow" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="2" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <filter id="${p}ds" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-color="#b04000" flood-opacity="0.3"/>
-    </filter>
+    <radialGradient id="${p}crown" cx="50%" cy="88%" r="62%">
+      <stop offset="0%" stop-color="#fff480"/>
+      <stop offset="52%" stop-color="#ffc000"/>
+      <stop offset="100%" stop-color="#ff5400"/>
+    </radialGradient>
   </defs>
   <g class="m-bob">
-    <!-- Crown flame (m-wisp) – 3 tall tongues with highlights -->
+    <!-- Crown – 3 flame tongues -->
     <g class="m-wisp">
-      <path d="M35 17 C31 7 35 1 40 0 C41.5 7 39 13.5 42 18Z" fill="url(#${p}crown)" opacity=".92"/>
-      <ellipse cx="37.5" cy="8" rx="3" ry="5.5" fill="#fff9c0" opacity=".6" transform="rotate(-8 37.5 8)"/>
-      <path d="M47 14 C44 5 48 0 50 0 C52 0 56 5 53 14Z" fill="#fff466" filter="url(#${p}glow)"/>
-      <ellipse cx="50" cy="6" rx="3.5" ry="6" fill="#fff9c0" opacity=".65"/>
-      <path d="M63 17 C67 7 65 1 60 0 C58.5 7 61 13.5 58 18Z" fill="url(#${p}crown)" opacity=".92"/>
-      <ellipse cx="62.5" cy="8" rx="3" ry="5.5" fill="#fff9c0" opacity=".6" transform="rotate(8 62.5 8)"/>
+      <path d="M36 18 C32 7 36 1 41 0 C42.5 7 40 14 43 19Z" fill="url(#${p}crown)"/>
+      <ellipse cx="38.5" cy="8.5" rx="2.8" ry="5.5" fill="#fff8c0" opacity=".65" transform="rotate(-8 38.5 8.5)"/>
+      <path d="M47 15 C44 5 48 0 50 0 C52 0 56 5 53 15Z" fill="#fff460"/>
+      <ellipse cx="50" cy="6.5" rx="3.2" ry="6.2" fill="#fff8c0" opacity=".68"/>
+      <path d="M64 18 C68 7 64 1 59 0 C57.5 7 60 14 57 19Z" fill="url(#${p}crown)"/>
+      <ellipse cx="61.5" cy="8.5" rx="2.8" ry="5.5" fill="#fff8c0" opacity=".65" transform="rotate(8 61.5 8.5)"/>
     </g>
-    <!-- Wings (m-arm) – layered feathers -->
+    <!-- Wings – 3-layer feathers -->
     <g class="m-arm m-arm-l">
-      <path d="M33 55 C18 46 4 38 2 50 C9 54 21 62 31 67Z" fill="url(#${p}wg)" opacity=".94"/>
-      <path d="M33 55 C19 52 8 57 5 64 C12 64 23 68 31 70Z" fill="url(#${p}f)" opacity=".78"/>
-      <path d="M33 55 C22 56 14 63 12 70 C18 69 27 72 33 74Z" fill="#ffee60" opacity=".55"/>
+      <path d="M34 56 C18 47 4 39 2 51 C9 55 22 63 32 68Z" fill="url(#${p}wing)"/>
+      <path d="M32 68 C17 66 5 60 2 51 C6 58 15 69 30 74Z" fill="#ffb000" opacity=".72"/>
+      <path d="M31 73 C19 73 9 69 6 63 C11 65 22 72 31 76Z" fill="#fff060" opacity=".50"/>
     </g>
     <g class="m-arm m-arm-r">
-      <path d="M67 55 C82 46 96 38 98 50 C91 54 79 62 69 67Z" fill="url(#${p}wg)" opacity=".94"/>
-      <path d="M67 55 C81 52 92 57 95 64 C88 64 77 68 69 70Z" fill="url(#${p}f)" opacity=".78"/>
-      <path d="M67 55 C78 56 86 63 88 70 C82 69 73 72 67 74Z" fill="#ffee60" opacity=".55"/>
+      <path d="M66 56 C82 47 96 39 98 51 C91 55 78 63 68 68Z" fill="url(#${p}wing)"/>
+      <path d="M68 68 C83 66 95 60 98 51 C94 58 85 69 70 74Z" fill="#ffb000" opacity=".72"/>
+      <path d="M69 73 C81 73 91 69 94 63 C89 65 78 72 69 76Z" fill="#fff060" opacity=".50"/>
     </g>
     <!-- Flame tail-legs -->
-    <path class="m-foot" d="M40 94 C36 103 34 114 37 119 C40 112 43.5 104 44.5 96Z" fill="url(#${p}f)"/>
-    <path class="m-foot" d="M44.5 96 C43 105 43 115 46 119 C48 112 49 103 48 95Z" fill="#ffcc30" opacity=".8"/>
-    <path class="m-foot" d="M60 94 C64 103 66 114 63 119 C60 112 56.5 104 55.5 96Z" fill="url(#${p}f)"/>
-    <path class="m-foot" d="M55.5 96 C57 105 57 115 54 119 C52 112 51 103 52 95Z" fill="#ffcc30" opacity=".8"/>
-    <!-- Body – slender oval -->
-    <ellipse class="m-body" cx="50" cy="70" rx="19" ry="27" fill="url(#${p}b)" filter="url(#${p}ds)"/>
-    <!-- Body highlight -->
-    <ellipse cx="41" cy="55" rx="8" ry="13" fill="#fff" opacity=".24" transform="rotate(-6 41 55)"/>
+    <path class="m-foot" d="M41 95 C37 104 35 115 38 120 C41 113 44.5 105 45.5 97Z" fill="url(#${p}f)"/>
+    <path class="m-foot" d="M45.5 97 C44 107 44 117 47 120 C49 113 50 104 49 96Z" fill="#ffc820" opacity=".78"/>
+    <path class="m-foot" d="M59 95 C63 104 65 115 62 120 C59 113 55.5 105 54.5 97Z" fill="url(#${p}f)"/>
+    <path class="m-foot" d="M54.5 97 C56 107 56 117 53 120 C51 113 50 104 51 96Z" fill="#ffc820" opacity=".78"/>
+    <!-- Body -->
+    <ellipse class="m-body" cx="50" cy="70" rx="18.5" ry="26.5" fill="url(#${p}b)"/>
+    <ellipse cx="41.5" cy="55.5" rx="7.5" ry="12.5" fill="#fff" opacity=".23" transform="rotate(-6 41.5 55.5)"/>
     <!-- Head -->
-    <ellipse cx="50" cy="28" rx="19" ry="20" fill="url(#${p}b)" filter="url(#${p}ds)"/>
-    <!-- Head 3D highlight -->
-    <ellipse cx="40" cy="17" rx="9" ry="9" fill="#fff" opacity=".22" transform="rotate(-12 40 17)"/>
-    <!-- Gold shimmer marks on cheeks -->
-    <ellipse cx="24" cy="32" rx="5.5" ry="3.5" fill="#d84000" opacity=".45" transform="rotate(-12 24 32)"/>
-    <ellipse cx="76" cy="32" rx="5.5" ry="3.5" fill="#d84000" opacity=".45" transform="rotate(12 76 32)"/>
+    <ellipse cx="50" cy="28" rx="18.5" ry="19.5" fill="url(#${p}b)"/>
+    <ellipse cx="40.5" cy="17.5" rx="8.5" ry="8.5" fill="#fff" opacity=".22" transform="rotate(-12 40.5 17.5)"/>
     <!-- Eye whites -->
     <circle cx="41" cy="27" r="11" fill="#fff"/>
     <circle cx="59" cy="27" r="11" fill="#fff"/>
-    <!-- Open eyes -->
     <g class="m-eyes-open">
-      <circle cx="41" cy="28" r="7.8" fill="url(#${p}eye)"/>
-      <circle cx="59" cy="28" r="7.8" fill="url(#${p}eye)"/>
-      <circle cx="41" cy="29" r="5" fill="#160600"/>
-      <circle cx="59" cy="29" r="5" fill="#160600"/>
-      <circle cx="36.5" cy="23" r="3.2" fill="#fff"/>
-      <circle cx="54.5" cy="23" r="3.2" fill="#fff"/>
-      <circle cx="44.5" cy="27" r="1.6" fill="rgba(255,255,255,.7)"/>
-      <circle cx="62.5" cy="27" r="1.6" fill="rgba(255,255,255,.7)"/>
+      <circle cx="41" cy="28" r="6.5" fill="url(#${p}iris)"/>
+      <circle cx="59" cy="28" r="6.5" fill="url(#${p}iris)"/>
+      <circle cx="41" cy="29" r="4" fill="#160600"/>
+      <circle cx="59" cy="29" r="4" fill="#160600"/>
+      <circle cx="36" cy="22.5" r="3.2" fill="#fff"/>
+      <circle cx="54" cy="22.5" r="3.2" fill="#fff"/>
+      <circle cx="44.5" cy="27" r="1.6" fill="rgba(255,255,255,.72)"/>
+      <circle cx="62.5" cy="27" r="1.6" fill="rgba(255,255,255,.72)"/>
     </g>
     <g class="m-eyes-happy">
-      <path d="M29 27 Q41 14 53 27" fill="none" stroke="#160600" stroke-width="4.8" stroke-linecap="round"/>
-      <path d="M47 27 Q59 14 71 27" fill="none" stroke="#160600" stroke-width="4.8" stroke-linecap="round"/>
-      <circle cx="33" cy="18" r="2.8" fill="#fff" opacity=".9"/>
-      <circle cx="51" cy="18" r="2.8" fill="#fff" opacity=".9"/>
+      <path d="M29 27 Q41 14.5 53 27" fill="none" stroke="#160600" stroke-width="4.8" stroke-linecap="round"/>
+      <path d="M47 27 Q59 14.5 71 27" fill="none" stroke="#160600" stroke-width="4.8" stroke-linecap="round"/>
+      <circle cx="33" cy="18.5" r="2.7" fill="#fff" opacity=".9"/>
+      <circle cx="51" cy="18.5" r="2.7" fill="#fff" opacity=".9"/>
     </g>
     <g class="m-eyes-closed">
-      <path d="M29 26 Q41 37 53 26" fill="none" stroke="#160600" stroke-width="4.8" stroke-linecap="round"/>
-      <path d="M47 26 Q59 37 71 26" fill="none" stroke="#160600" stroke-width="4.8" stroke-linecap="round"/>
+      <path d="M29 26.5 Q41 36.5 53 26.5" fill="none" stroke="#160600" stroke-width="4.8" stroke-linecap="round"/>
+      <path d="M47 26.5 Q59 36.5 71 26.5" fill="none" stroke="#160600" stroke-width="4.8" stroke-linecap="round"/>
     </g>
-    <!-- Eyebrows -->
-    <path d="M30 14.5 Q41 8 52 14.5" fill="none" stroke="#b84000" stroke-width="3.2" stroke-linecap="round"/>
-    <path d="M48 14.5 Q59 8 70 14.5" fill="none" stroke="#b84000" stroke-width="3.2" stroke-linecap="round"/>
-    <!-- Cheeks -->
-    <ellipse class="m-cheek" cx="24" cy="35" rx="7.5" ry="5" fill="#ff9060" opacity=".44"/>
-    <ellipse class="m-cheek" cx="76" cy="35" rx="7.5" ry="5" fill="#ff9060" opacity=".44"/>
-    <!-- Smile -->
-    <path class="m-mouth-smile" d="M37 40 Q50 52 63 40" fill="none" stroke="#160600" stroke-width="3.8" stroke-linecap="round"/>
-    <!-- Grin -->
+    <path d="M30.5 14.5 Q41 8.5 51.5 14.5" fill="none" stroke="#b83800" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M48.5 14.5 Q59 8.5 69.5 14.5" fill="none" stroke="#b83800" stroke-width="3.2" stroke-linecap="round"/>
+    <!-- blush + freckles below eye whites (bottom of eye ≈ y=38) -->
+    <ellipse class="m-cheek" cx="23.5" cy="38.5" rx="7.5" ry="4.5" fill="#ff9060" opacity=".38"/>
+    <ellipse class="m-cheek" cx="76.5" cy="38.5" rx="7.5" ry="4.5" fill="#ff9060" opacity=".38"/>
+    <circle cx="22" cy="38" r="2.3" fill="#cc4000" opacity=".50"/>
+    <circle cx="25.5" cy="41" r="1.6" fill="#cc4000" opacity=".38"/>
+    <circle cx="78" cy="38" r="2.3" fill="#cc4000" opacity=".50"/>
+    <circle cx="74.5" cy="41" r="1.6" fill="#cc4000" opacity=".38"/>
+    <path class="m-mouth-smile" d="M38 40 Q50 52 62 40" fill="none" stroke="#160600" stroke-width="3.6" stroke-linecap="round"/>
     <g class="m-mouth-grin">
-      <path d="M36 38 Q50 56 64 38 Z" fill="#6a1c00"/>
-      <rect x="37.5" y="37" width="25" height="7" rx="3.5" fill="#fff"/>
-      <line x1="50" y1="37" x2="50" y2="44" stroke="#ddd" stroke-width="1.2"/>
-      <ellipse cx="50" cy="51" rx="8" ry="5.2" fill="#ff9a90"/>
+      <path d="M37 38 Q50 56 63 38 Z" fill="#6a1800"/>
+      <rect x="38.5" y="37" width="23" height="6.5" rx="3.2" fill="#fff"/>
+      <line x1="50" y1="37" x2="50" y2="43.5" stroke="#e0d8d0" stroke-width="1.2"/>
+      <ellipse cx="50" cy="51.5" rx="7.5" ry="5" fill="#ff9890"/>
     </g>
-    <path class="m-mouth-flat" d="M40 45 Q50 47.5 60 45" fill="none" stroke="#160600" stroke-width="3.8" stroke-linecap="round"/>
+    <path class="m-mouth-flat" d="M41 45.5 Q50 47.5 59 45.5" fill="none" stroke="#160600" stroke-width="3.6" stroke-linecap="round"/>
     <g class="m-spark">
-      <path d="M5 46 l2.2 5 5 2.2 -5 2.2 -2.2 5 -2.2-5 -5-2.2 5-2.2Z" fill="#ffd040"/>
-      <path d="M93 38 l1.8 4 4 1.8 -4 1.8 -1.8 4 -1.8-4 -4-1.8 4-1.8Z" fill="#fff060"/>
+      <path d="M6 46 l2.2 5 5 2.2 -5 2.2 -2.2 5 -2.2-5 -5-2.2 5-2.2Z" fill="#ffd040"/>
+      <path d="M94 38 l1.8 4 4 1.8 -4 1.8 -1.8 4 -1.8-4 -4-1.8 4-1.8Z" fill="#fff060"/>
       <path d="M80 108 l1.5 3.4 3.4 1.5 -3.4 1.5 -1.5 3.4 -1.5-3.4 -3.4-1.5 3.4-1.5Z" fill="#ffe040"/>
     </g>
   </g>
