@@ -327,47 +327,7 @@
   .ms-num{font-size:48px;font-weight:900;color:var(--fire);line-height:1;margin-top:6px;}
   .ms-lbl{font-size:14px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--text);margin-top:4px;}
 
-  /* ===== mascot "Ember" ===== */
-  .mascot{display:inline-block;width:52px;height:62px;flex:none;}
-  .m-svg{width:100%;height:100%;display:block;overflow:visible;}
-  .m-bob{transform-box:fill-box;transform-origin:50% 100%;}
-  .m-wisp{transform-box:fill-box;transform-origin:50% 100%;}
-  .m-arm{transform-box:fill-box;transform-origin:50% 14%;transition:transform .28s cubic-bezier(.2,1.6,.4,1);}
-  .m-eyes-happy,.m-eyes-closed,.m-mouth-grin,.m-mouth-flat,.m-spark{display:none;}
-  .mascot.mood-neutral .m-mouth-smile{display:none;}
-  .mascot.mood-neutral .m-mouth-flat{display:block;}
-  .mascot.mood-neutral .m-body,.mascot.mood-neutral .m-wisp,.mascot.mood-neutral .m-arm,.mascot.mood-neutral .m-foot{filter:saturate(.72) brightness(.97);}
-  .mascot.mood-happy .m-eyes-open{display:none;}
-  .mascot.mood-happy .m-eyes-happy{display:block;}
-  .mascot.mood-happy .m-mouth-smile{display:none;}
-  .mascot.mood-happy .m-mouth-grin{display:block;}
-  .mascot.blink .m-eyes-open{display:none;}
-  .mascot.blink .m-eyes-closed{display:block;}
-  .mascot.celebrate .m-eyes-open{display:none;}
-  .mascot.celebrate .m-eyes-happy{display:block;}
-  .mascot.celebrate .m-mouth-smile,.mascot.celebrate .m-mouth-flat{display:none;}
-  .mascot.celebrate .m-mouth-grin{display:block;}
-  .mascot.celebrate .m-spark{display:block;}
-  .mascot.celebrate .m-arm-l{transform:rotate(-62deg);}
-  .mascot.celebrate .m-arm-r{transform:rotate(62deg);}
-  .ms-mascot{width:108px;height:128px;}
-  @media(prefers-reduced-motion:no-preference){
-    .m-bob{animation:mbreathe 3.2s ease-in-out infinite;}
-    .m-wisp{animation:mwisp 2.3s ease-in-out infinite;}
-    .mascot.celebrate .m-bob{animation:mjump .82s cubic-bezier(.2,1.3,.35,1);}
-    .mascot.celebrate .m-spark{animation:mspark .82s ease;}
-  }
-  @keyframes mbreathe{0%,100%{transform:translateY(0) scale(1,1)}50%{transform:translateY(-1.5px) scale(1.03,.975)}}
-  @keyframes mwisp{0%,100%{transform:rotate(-8deg) scaleY(1)}50%{transform:rotate(8deg) scaleY(1.12)}}
-  @keyframes mjump{
-    0%{transform:translateY(0) scale(1,1)}
-    12%{transform:translateY(4px) scale(1.12,.86)}
-    38%{transform:translateY(-18px) scale(.88,1.16)}
-    62%{transform:translateY(0) scale(1.14,.88)}
-    80%{transform:translateY(-4px) scale(.97,1.05)}
-    100%{transform:translateY(0) scale(1,1)}
-  }
-  @keyframes mspark{0%{opacity:0;transform:scale(.3)}40%{opacity:1;transform:scale(1.05)}100%{opacity:0;transform:scale(1.25)}}
+
 </style>
 <style id="themes">
   /* ===== Theme system ===== */
@@ -520,57 +480,6 @@
   @keyframes ffClapA{0%{transform:translateX(-13px) rotate(-10deg)}55%{transform:translateX(-1px) rotate(-20deg) scale(1.22)}100%{transform:translateX(-3px) rotate(-16deg)}}
   @keyframes ffClapB{0%{transform:translateX(13px) rotate(10deg) scaleX(-1)}55%{transform:translateX(1px) rotate(20deg) scale(1.22) scaleX(-1)}100%{transform:translateX(3px) rotate(16deg) scaleX(-1)}}
 
-  /* ===== XP & Level System ===== */
-  .brand{position:relative;}
-  .level-badge{
-    margin-left:auto;display:inline-flex;align-items:center;
-    background:linear-gradient(135deg,var(--accent),var(--accent-d));
-    color:#fff;border-radius:10px;padding:3px 10px;font-size:11px;font-weight:900;
-    letter-spacing:.3px;box-shadow:0 2px 0 var(--accent-d),inset 0 1px 0 rgba(255,255,255,.4);}
-  .xp-bar-wrap{
-    height:4px;background:rgba(0,0,0,.08);border-radius:0;
-    margin-top:10px;margin-left:-18px;margin-right:-18px;margin-bottom:-14px;
-    overflow:hidden;}
-  .xp-bar{
-    height:100%;border-radius:0;background:var(--accent);
-    transition:width .7s cubic-bezier(.2,1,.3,1);
-    box-shadow:0 0 6px var(--accent);}
-  [data-theme="dark"] .xp-bar-wrap{background:rgba(255,255,255,.08);}
-
-  /* Floating XP text */
-  .xp-float{
-    position:fixed;pointer-events:none;font-size:13px;font-weight:900;
-    color:var(--accent);text-shadow:0 0 10px rgba(0,0,0,.18);z-index:100;white-space:nowrap;
-    animation:xpfloat .9s ease-out forwards;}
-  @keyframes xpfloat{
-    0%{opacity:1;transform:translateY(0) scale(1)}
-    25%{opacity:1;transform:translateY(-10px) scale(1.12)}
-    100%{opacity:0;transform:translateY(-52px) scale(.8)}}
-
-  /* ===== Achievement Cards ===== */
-  .ach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:16px;}
-  @media(min-width:700px){.ach-grid{grid-template-columns:repeat(4,1fr);}}
-  .ach{
-    background:var(--glass);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
-    border:1px solid var(--glass-edge);box-shadow:var(--glass-hi),var(--glass-elev);
-    border-radius:18px;padding:14px 8px 12px;text-align:center;transition:.2s;}
-  .ach.locked{opacity:.35;filter:grayscale(1) brightness(.88);}
-  .ach .ae{font-size:28px;line-height:1;margin-bottom:5px;}
-  .ach .an{font-size:10px;font-weight:800;color:var(--text);line-height:1.3;}
-  .ach.unlocked{border-color:var(--accent);box-shadow:var(--glass-hi),var(--glass-elev),0 0 0 1.5px var(--accent);}
-
-  /* Level-up overlay */
-  .lvlup-badge{
-    font-size:40px;font-weight:900;line-height:1;margin-top:8px;
-    background:linear-gradient(135deg,var(--accent),var(--accent-d));
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-  .lvlup-sub{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-top:3px;}
-
-  /* XP card bar in stats */
-  .xp-card-bar-wrap{height:8px;background:rgba(0,0,0,.07);border-radius:4px;margin-top:7px;overflow:hidden;}
-  .xp-card-bar{height:100%;border-radius:4px;background:var(--accent);box-shadow:0 0 6px var(--accent);transition:width .6s cubic-bezier(.2,1,.3,1);}
-  [data-theme="dark"] .xp-card-bar-wrap{background:rgba(255,255,255,.08);}
-
   /* Enhanced streak meta colors */
   .s.s-epic{color:#1cb0f6!important;}
   .s.s-hot{color:#ff4b4b!important;}
@@ -698,37 +607,15 @@ header{
     var(--glass-hi)!important;
 }
 
-/* ---- XP bar: gradient glow ---- */
-.xp-bar{
-  background:linear-gradient(90deg,var(--accent-d),var(--accent))!important;
-  box-shadow:0 0 10px color-mix(in oklch,var(--accent) 55%,transparent)!important;
-}
-.xp-card-bar{
-  background:linear-gradient(90deg,var(--accent-d),var(--accent))!important;
-  box-shadow:0 0 6px color-mix(in oklch,var(--accent) 45%,transparent)!important;
-}
-
-/* ---- Level badge ---- */
-.level-badge{
-  padding:4px 11px!important;font-size:12px!important;letter-spacing:.5px!important;
-  box-shadow:0 2px 0 var(--accent-d),0 4px 12px color-mix(in oklch,var(--accent) 25%,transparent),inset 0 1px 0 rgba(255,255,255,.5)!important;
-}
-
-/* ---- Achievement: unlocked tint ---- */
-.ach.unlocked{
-  background:color-mix(in oklch,var(--accent) 10%,rgba(255,255,255,.28))!important;
-  transform:scale(1.02);
-}
-
 /* ---- Statcard emoji ---- */
 .statcard .emoji{
   width:44px!important;height:44px!important;border-radius:13px!important;
   box-shadow:0 2px 6px rgba(0,0,0,.10),inset 0 1px 0 rgba(255,255,255,.6)!important;
 }
 
-/* ---- Milestone / level-up card ---- */
+/* ---- Milestone card ---- */
 .ms-card{
-  padding:30px 42px!important;
+  padding:28px 42px!important;
   box-shadow:var(--glass-hi),0 28px 70px rgba(33,46,40,.32)!important;
 }
 .ms-num{font-size:54px!important;}
@@ -762,125 +649,67 @@ header{
   background:linear-gradient(90deg,rgba(200,80,255,.16),rgba(200,80,255,.06))!important;
 }
 </style>
-<style id="level2">
-/* ---- Ember: float in header ---- */
-@media(prefers-reduced-motion:no-preference){
-  #mascotHeader{animation:emberDrift 2.8s ease-in-out infinite;}
-  @keyframes emberDrift{
-    0%,100%{transform:translateY(0) rotate(-.4deg);}
-    50%{transform:translateY(-6px) rotate(.4deg);}
-  }
-}
-/* ---- Ember: bigger in header ---- */
-#mascotHeader{width:80px!important;height:95px!important;}
-
-/* ---- Level badge: num + name stacked ---- */
-.level-badge{flex-direction:column!important;align-items:center!important;padding:5px 11px!important;gap:1px;line-height:1;}
-.level-badge .lv-num{font-size:12px;font-weight:900;line-height:1;}
-.level-badge .lv-name{font-size:8px;font-weight:700;opacity:.82;white-space:nowrap;max-width:72px;overflow:hidden;text-overflow:ellipsis;}
-
-/* ---- Level roadmap ---- */
-.level-road-wrap{
-  overflow-x:auto;scrollbar-width:none;
-  background:var(--glass);
+<style id="heatmap">
+/* ---- Heatmap ---- */
+.heatmap-wrap{
+  background:rgba(255,255,255,.22);
   -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
   border:1px solid var(--glass-edge);box-shadow:var(--glass-hi),var(--glass-elev);
-  border-radius:22px;padding:16px 16px 18px;margin-bottom:16px;
+  border-radius:22px;padding:16px;margin-bottom:14px;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
 }
-.level-road-wrap::-webkit-scrollbar{display:none;}
-.lr-header{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:14px;}
-.lr-track{display:flex;align-items:center;min-width:max-content;}
-.lr-node{
-  width:34px;height:34px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:16px;font-weight:900;flex:none;position:relative;
-}
-.lr-node.lv-done{background:var(--accent);color:#fff;box-shadow:0 2px 0 var(--accent-d);font-size:11px;}
-.lr-node.lv-cur{
-  background:var(--accent);color:#fff;
-  box-shadow:0 0 0 3px rgba(255,255,255,.9),0 0 0 5px var(--accent),0 4px 14px rgba(88,204,2,.45);
-  transform:scale(1.22);z-index:2;
-}
-.lr-node.lv-next{background:rgba(0,0,0,.06);color:var(--muted);}
-.lr-node.lv-mile{font-size:20px;width:40px;height:40px;}
-.lr-node.lv-mile.lv-done{font-size:14px;}
-.lr-line{height:4px;width:14px;flex:none;background:rgba(0,0,0,.1);border-radius:2px;}
-.lr-line.done{background:var(--accent);}
-[data-theme="dark"] .lr-node.lv-next{background:rgba(255,255,255,.1);}
-[data-theme="dark"] .lr-line{background:rgba(255,255,255,.12);}
+.heatmap-wrap::-webkit-scrollbar{display:none;}
+.hm-wrap-inner{min-width:max-content;}
+.hm-months{display:flex;gap:0;height:16px;margin-bottom:3px;padding-left:20px;}
+.hm-month-lbl{font-size:10px;font-weight:800;color:var(--muted);}
+.hm-body{display:flex;gap:4px;}
+.hm-days{display:flex;flex-direction:column;gap:3px;justify-content:space-between;padding-top:1px;width:16px;}
+.hm-days span{font-size:9px;font-weight:800;color:var(--muted);height:13px;display:flex;align-items:center;line-height:1;}
+.hm-cells{display:flex;gap:3px;}
+.hm-col{display:flex;flex-direction:column;gap:3px;}
+.hm-cell{width:13px;height:13px;border-radius:3px;}
+.hm-future{background:transparent!important;}
+.hm-l0{background:rgba(0,0,0,.07);}
+.hm-l1{background:color-mix(in srgb,var(--accent) 30%,rgba(0,0,0,.07));}
+.hm-l2{background:color-mix(in srgb,var(--accent) 55%,rgba(0,0,0,.05));}
+.hm-l3{background:color-mix(in srgb,var(--accent) 80%,rgba(0,0,0,.02));}
+.hm-l4{background:var(--accent);}
+.hm-today{outline:2px solid var(--accent-d);outline-offset:1px;border-radius:4px;}
+[data-theme="dark"] .hm-l0{background:rgba(255,255,255,.10);}
 
-/* ---- Stage path (Streichholz → Phönix) ---- */
-.lr-stages{
-  display:flex;align-items:center;
-  background:rgba(0,0,0,.04);border-radius:14px;
-  padding:10px 6px 8px;margin-bottom:16px;
+/* ---- Streak hero (replaces flamebox in header) ---- */
+.streak-hero{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.28);
+  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
+  border:1px solid var(--glass-edge);box-shadow:var(--glass-hi),var(--glass-elev);
+  border-radius:16px;padding:10px 18px;flex:1;min-width:0;
 }
-.lr-stage{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;min-width:0;}
-.lr-stage-icon{font-size:20px;line-height:1;}
-.lr-stage-name{
-  font-size:8px;font-weight:800;color:var(--muted);
-  letter-spacing:.3px;white-space:nowrap;max-width:54px;
-  overflow:hidden;text-overflow:ellipsis;text-align:center;
-}
-.lr-stage.s-done .lr-stage-icon{filter:saturate(.55) brightness(.9);}
-.lr-stage.s-done .lr-stage-name{color:var(--accent-d);}
-.lr-stage.s-cur .lr-stage-name{color:var(--accent-d);font-weight:900;font-size:9px;}
-.lr-stage.s-lock{opacity:.28;}
-.lr-conn{height:2px;width:10px;flex:none;background:rgba(0,0,0,.1);
-  border-radius:1px;margin-bottom:12px;}
-.lr-conn.done{background:var(--accent);}
-[data-theme="dark"] .lr-stages{background:rgba(255,255,255,.06);}
-[data-theme="dark"] .lr-conn{background:rgba(255,255,255,.14);}
-@media(prefers-reduced-motion:no-preference){
-  .lr-stage.s-cur .lr-stage-icon{animation:stageGlow 2s ease-in-out infinite;}
-  @keyframes stageGlow{0%,100%{transform:scale(1)}50%{transform:scale(1.2);}}
-}
-
-/* ---- Level-up sparkles ---- */
-.lvlup-sparks{position:absolute;inset:0;pointer-events:none;border-radius:inherit;overflow:hidden;}
-.lvlup-spark{
-  position:absolute;width:9px;height:9px;border-radius:50%;
-  left:50%;top:42%;opacity:0;
-  transform:translate(-50%,-50%);
-}
-@media(prefers-reduced-motion:no-preference){
-  .ms-overlay.show .lvlup-spark{
-    animation:lvlspark 1s ease-out forwards;
-    animation-delay:var(--sd,0s);
-  }
-  @keyframes lvlspark{
-    0%{opacity:1;transform:translate(-50%,-50%) scale(1.3);}
-    100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),calc(-50% + var(--dy,0px))) scale(.25);}
-  }
-}
+.streak-num{font-size:32px;font-weight:900;color:var(--fire);line-height:1;}
+.streak-lbl{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+[data-theme="aurora"] .streak-hero{background:rgba(255,220,185,.36);}
+[data-theme="dark"] .streak-hero{background:rgba(255,150,0,.10);}
+[data-theme="dark"] .streak-num{color:var(--accent);}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <div class="brand"><span class="logo">🔥</span><h1>Streak</h1><span class="level-badge" id="levelBadge"><span class="lv-num">Lv.1</span><span class="lv-name" id="lvName"></span></span></div>
+    <div class="brand"><span class="logo">🔥</span><h1>Streak</h1></div>
     <div class="summary">
+      <div class="streak-hero" id="mainFlamebox">
+        <div class="streak-num" id="topStreak">0</div>
+        <div class="streak-lbl">🔥 Tage Serie</div>
+      </div>
       <div class="ring">
-        <svg width="64" height="64">
-          <circle cx="32" cy="32" r="27" fill="none" stroke="#eee" stroke-width="7"/>
-          <circle id="ringProg" cx="32" cy="32" r="27" fill="none" stroke="var(--green)" stroke-width="7"
-                  stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="169.6"/>
-        </svg>
+        <svg width="64" height="64"><circle cx="32" cy="32" r="27" fill="none" stroke="#eee" stroke-width="7"/><circle id="ringProg" cx="32" cy="32" r="27" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="169.6"/></svg>
         <div class="ring-label"><span class="ring-num" id="ringNum">0/0</span><span class="ring-sub">heute</span></div>
       </div>
-      <div class="flamebox" id="mainFlamebox">
-        <span class="mascot" id="mascotHeader" aria-hidden="true"></span>
-        <div><div class="num" id="topStreak">0</div><div class="lbl">längste Serie</div></div>
-      </div>
-      <div class="flamebox friend-flamebox" id="friendFlamebox" style="display:none">
-        <div class="ff-flames" id="ffFlames">
-          <span class="ff-flame ff-a" id="ffA" aria-hidden="true"></span>
-          <span class="ff-flame ff-b" id="ffB" aria-hidden="true"></span>
-        </div>
-        <div><div class="num" id="ffNum">0</div><div class="lbl" id="ffLbl">gemeinsame Tage</div></div>
+      <div class="streak-hero friend-flamebox" id="friendFlamebox" style="display:none">
+        <div class="streak-num" id="ffNum">0</div>
+        <div class="streak-lbl" id="ffLbl">💜 Gemeinsam</div>
       </div>
     </div>
-    <div class="xp-bar-wrap"><div class="xp-bar" id="xpBar" style="width:0%"></div></div>
   </header>
 
   <div class="tabs">
@@ -905,28 +734,14 @@ header{
 <canvas id="fx"></canvas>
 <div class="ms-overlay" id="milestone">
   <div class="ms-card">
-    <div class="ms-flame"><span class="mascot ms-mascot mood-happy" id="mascotMs" aria-hidden="true"></span></div>
     <div class="ms-num">7</div>
     <div class="ms-lbl">Tage Serie!</div>
   </div>
 </div>
-<div class="ms-overlay" id="levelup">
-  <div class="ms-card" style="position:relative;overflow:hidden">
-    <div class="lvlup-sparks" id="lvlupSparks"></div>
-    <div class="ms-flame"><span class="mascot ms-mascot mood-happy" id="mascotLvl" aria-hidden="true"></span></div>
-    <div class="lvlup-badge">Level 2</div>
-    <div class="lvlup-sub">Aufsteiger</div>
-  </div>
-</div>
 <div class="ms-overlay" id="hug">
   <div class="ms-card">
-    <div class="hug-scene">
-      <span class="mascot mood-happy hugA" id="hugA" aria-hidden="true"></span>
-      <span class="hug-flame" id="hugFlame" aria-hidden="true"></span>
-      <span class="mascot mood-happy hugB" id="hugB" aria-hidden="true"></span>
-    </div>
     <div class="ms-num" id="hugNum" style="color:var(--purple)">2</div>
-    <div class="ms-lbl" id="hugLbl">Tage gemeinsam</div>
+    <div class="ms-lbl" id="hugLbl">💜 Tage gemeinsam</div>
   </div>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -963,25 +778,7 @@ const STARTERS=[
   {name:'Lesen',emoji:'📚',color:'orange',duration:15},
 ];
 
-/* ---- XP & Gamification constants ---- */
-const LEVEL_XP=[0,50,150,300,500,750,1050,1400,1800,2250,2750,3300,3900,4550,5250,6000,7000,8000,9000,10000,11500,13000,14500,16000,17500,19000,20500,22000,23500,25000,27500,30000,32500,35000,37500,40000,42500,45000,47500,50000];
-const LEVEL_NAMES=['Neuling','Anfänger','Einsteiger','Funke','Glimmer','Entzündet','Aufflackern','Brennend','Feuergeist','Streichholz','Flämmchen','Leuchtend','Flammend','Feuerläufer','Fackel','Lichtbringer','Feuerspeier','Flammenwächter','Meisterläufer','Meisterflamme','Holzleger','Funkenmeister','Zündmeister','Wärmegeber','Lagerfeuer','Gluthalter','Flammenherr','Feuerwächter','Feuermeister','Großfeuer','Auferstehung','Phönixflügel','Feuervogel','Unsterblich','Göttlich','Legendär','Mythisch','Übermensch','Ewige Flamme','Phönix'];
-const ACHIEVEMENTS=[
-  {id:'first_habit',e:'🌱',n:'Erster Schritt'},
-  {id:'first_check',e:'✅',n:'Abgehakt!'},
-  {id:'streak_3',e:'🔥',n:'Heiß'},
-  {id:'streak_7',e:'⭐',n:'Wochensieger'},
-  {id:'streak_14',e:'⚡',n:'Blitz'},
-  {id:'streak_30',e:'🏆',n:'Champion'},
-  {id:'total_10',e:'💪',n:'Fleißig'},
-  {id:'total_50',e:'🎯',n:'Zielstrebig'},
-  {id:'total_100',e:'💯',n:'Profi'},
-  {id:'level_5',e:'🌟',n:'Aufsteiger'},
-  {id:'level_10',e:'🌠',n:'Meister'},
-  {id:'perfect_day',e:'🎖️',n:'Perfekter Tag'},
-  {id:'habit_5',e:'📋',n:'Sammler'},
-  {id:'streak_100',e:'👑',n:'Legende'},
-];
+
 
 let state={habits:[]};
 let tab='today';
@@ -993,8 +790,6 @@ function load(){
   try{state=JSON.parse(localStorage.getItem(aKey()))||{habits:[]};}
   catch(e){state={habits:[]};}
   if(!state.habits)state.habits=[];
-  if(state.xp==null)state.xp=0;
-  if(!state.achievements)state.achievements={};
 }
 function save(){localStorage.setItem(aKey(),JSON.stringify(state));scheduleSync();}
 
@@ -1120,7 +915,6 @@ function renderInsights(){
 
 /* ---- render ---- */
 function render(){
-  updateXPBar();
   const done=state.habits.filter(h=>h.history[TODAY]).length;
   const tot=state.habits.length;
   document.getElementById('ringNum').textContent=done+'/'+tot;
@@ -1135,7 +929,6 @@ function render(){
   renderFriends();
   renderSettings();
   updateFriendFlame(false);
-  updateMascotMood(done,tot);
 }
 
 function streakMeta(h){
@@ -1206,70 +999,75 @@ function renderToday(done,tot){
   v.innerHTML=html;
 }
 
+function renderHeatmap(weeks){
+  weeks=weeks||16;
+  const today=new Date(),todayKey=ymd(today);
+  const total=state.habits.length;
+  // Align start to Monday, 'weeks' weeks back
+  let start=addDays(today,-(weeks*7-1));
+  const dow=start.getDay();
+  start=addDays(start,-(dow===0?6:dow-1));
+  // Month labels: track where each month begins
+  const monthMap=[];let prevMo=-1;
+  for(let col=0;col<weeks;col++){
+    const d=addDays(start,col*7);
+    const mo=d.getMonth();
+    if(mo!==prevMo){monthMap[col]=d.toLocaleDateString('de-DE',{month:'short'});prevMo=mo;}
+  }
+  // Build month label row (positioned by flex-basis)
+  let mHtml='';
+  let prevLabelCol=-1;
+  for(let col=0;col<weeks;col++){
+    const cellW=13+3; // cell + gap
+    const lbl=monthMap[col];
+    if(lbl){
+      const left=(col*(cellW))+'px';
+      mHtml+=`<span class="hm-month-lbl" style="position:absolute;left:${left}">${lbl}</span>`;
+    }
+  }
+  // Build cell grid
+  let cells='<div class="hm-cells">';
+  for(let col=0;col<weeks;col++){
+    cells+='<div class="hm-col">';
+    for(let row=0;row<7;row++){
+      const d=addDays(start,col*7+row),k=ymd(d);
+      if(k>todayKey){cells+='<div class="hm-cell hm-future"></div>';continue;}
+      const poss=state.habits.filter(h=>h.createdAt<=k).length;
+      if(!poss){cells+='<div class="hm-cell hm-l0"></div>';continue;}
+      const done=state.habits.filter(h=>h.createdAt<=k&&h.history[k]).length;
+      const rate=done/poss;
+      const lvl=rate===0?0:rate<=0.25?1:rate<=0.5?2:rate<=0.75?3:4;
+      const tc=k===todayKey?' hm-today':'';
+      cells+=`<div class="hm-cell hm-l${lvl}${tc}"></div>`;
+    }
+    cells+='</div>';
+  }
+  cells+='</div>';
+  const dayLabels='<div class="hm-days"><span></span><span>Mo</span><span></span><span>Mi</span><span></span><span>Fr</span><span></span></div>';
+  const totalW=weeks*(13+3)-3;
+  return`<div class="heatmap-wrap">
+  <div class="section-title" style="margin-top:0;margin-bottom:8px">Aktivität</div>
+  <div class="hm-wrap-inner">
+    <div style="position:relative;height:16px;width:${totalW}px;margin-bottom:3px;padding-left:20px">${mHtml}</div>
+    <div class="hm-body">${dayLabels}${cells}</div>
+  </div>
+</div>`;
+}
+
 function renderStats(){
   const v=document.getElementById('statsView');
   if(!state.habits.length){v.innerHTML='<div class="empty"><div class="e">📊</div><p>Statistiken erscheinen,<br>sobald du Habits hast.</p></div>';return;}
   const done=state.habits.filter(h=>h.history[TODAY]).length;
   const best=state.habits.reduce((m,h)=>Math.max(m,bestStreak(h)),0);
-  const xp=state.xp||0;
-  const lv=levelFromXP(xp);
-  const{cur,need,pct}=xpProgress(xp);
-  const lvName=LEVEL_NAMES[lv-1]||'Meister';
-  let html=`<div class="statcard" style="margin-bottom:14px">
-    <div style="display:flex;align-items:center;gap:12px">
-      <div style="font-size:36px;line-height:1">⭐</div>
-      <div style="flex:1">
-        <div style="display:flex;align-items:baseline;gap:8px">
-          <span style="font-size:20px;font-weight:900;color:var(--accent)">Level ${lv}</span>
-          <span style="font-size:13px;font-weight:800;color:var(--muted)">${lvName}</span>
-        </div>
-        <div class="xp-card-bar-wrap"><div class="xp-card-bar" style="width:${Math.round(pct*100)}%"></div></div>
-        <div style="font-size:10px;font-weight:700;color:var(--muted);margin-top:4px">${cur} / ${need} XP bis Level ${lv+1}</div>
-      </div>
-    </div>
-  </div>`;
-  // ---- Level roadmap: Streichholz → Phönix ----
-  const STAGES=[
-    {from:1,to:10,name:'Streichholz',icon:'✨'},
-    {from:11,to:20,name:'Flamme',icon:'🔥'},
-    {from:21,to:30,name:'Lagerfeuer',icon:'🏕️'},
-    {from:31,to:40,name:'Phönix',icon:'🦅'},
-  ];
-  const csi=Math.max(0,STAGES.findIndex(s=>lv>=s.from&&lv<=s.to));
-  const SI={};for(let _i=1;_i<=40;_i++)SI[_i]=_i<=10?'✨':_i<=20?'🔥':_i<=30?'🏕️':'🦅';
-  const MILES={10:true,20:true,30:true,40:true};
-
-  let sgHtml='<div class="lr-stages">';
-  STAGES.forEach((s,i)=>{
-    const d=lv>s.to,c=i===csi;
-    sgHtml+=`<div class="lr-stage ${d?'s-done':c?'s-cur':'s-lock'}">
-      <span class="lr-stage-icon">${s.icon}</span>
-      <span class="lr-stage-name">${s.name}</span>
-    </div>`;
-    if(i<STAGES.length-1)sgHtml+=`<div class="lr-conn${d?' done':''}"></div>`;
-  });
-  sgHtml+='</div>';
-
-  html+='<div class="level-road-wrap"><div class="lr-header">'+STAGES[csi].icon+' '+STAGES[csi].name+' · Level '+lv+'</div>';
-  html+=sgHtml;
-  html+='<div class="lr-track" id="lrTrack">';
-  const sStart=STAGES[csi].from,sEnd=STAGES[csi].to;
-  for(let i=sStart;i<=sEnd;i++){
-    const iD=i<lv,iC=i===lv;
-    const cls=iD?'lv-done':iC?'lv-cur':'lv-next';
-    const ml=MILES[i];
-    html+=`<div class="lr-node ${cls}${ml?' lv-mile':''}">${iD?i:SI[i]}</div>`;
-    if(i<sEnd)html+=`<div class="lr-line${iD||iC?' done':''}"></div>`;
-  }
-  html+='</div></div>';
-  html+=`<div class="stat-row">
-    <div class="stat"><div class="v">${state.habits.length}</div><div class="k">Habits</div></div>
-    <div class="stat"><div class="v">${done}/${state.habits.length}</div><div class="k">heute</div></div>
+  const topCur=state.habits.reduce((m,h)=>Math.max(m,currentStreak(h)),0);
+  const totalDone=state.habits.reduce((s,h)=>s+Object.values(h.history).filter(Boolean).length,0);
+  let html=`<div class="stat-row">
+    <div class="stat"><div class="v" style="color:var(--fire)">${topCur}</div><div class="k">Aktuelle Serie</div></div>
     <div class="stat"><div class="v" style="color:var(--fire)">${best}</div><div class="k">Rekord</div></div>
+    <div class="stat"><div class="v">${totalDone}</div><div class="k">Gesamt</div></div>
   </div>`;
-
+  html+=renderHeatmap(16);
   html+=renderInsights();
-
   // last 7 days bar
   const dayNames=['So','Mo','Di','Mi','Do','Fr','Sa'];
   let counts=[],maxc=1;
@@ -1288,11 +1086,6 @@ function renderStats(){
       <div class="dlabel">${dayNames[o.d.getDay()]}</div></div>`;
   });
   html+='</div>';
-
-  // achievements
-  html+=renderAchievements();
-
-  // per habit
   html+='<div class="section-title">Pro Habit</div>';
   state.habits.forEach(h=>{
     const cs=currentStreak(h);
@@ -1310,18 +1103,11 @@ function renderStats(){
     </div>`;
   });
   v.innerHTML=html;
-  // Scroll roadmap to center current level node
   requestAnimationFrame(()=>{
-    const track=document.getElementById('lrTrack');
-    if(!track)return;
-    const cur=track.querySelector('.lv-cur');
-    if(cur){
-      const wrap=track.parentElement;
-      wrap.scrollLeft=cur.offsetLeft+cur.offsetWidth/2-wrap.clientWidth/2;
-    }
+    const wrap=v.querySelector('.heatmap-wrap');
+    if(wrap)wrap.scrollLeft=wrap.scrollWidth;
   });
 }
-
 function renderFriends(){
   const v=document.getElementById('friendsView');if(!v)return;
   if(!sbUser){
@@ -1432,9 +1218,6 @@ function toggle(id,btn){
     ensureAudio();
     sndCheck();
     celebrateAt(nb,big);
-    const xpGain=10+Math.min(Math.floor(s*1.5),30)+(big?25:0);
-    awardXP(xpGain,nb);
-    checkAchievements(h,s);
     if(big){milestoneBanner(s);emberRain();sndMilestone();}
     else{toast(s>0?('🔥 '+s+' '+(s===1?'Tag':'Tage')+' Serie'):'Erledigt');if(s>0)sndStreak(s);}
   }
@@ -1484,9 +1267,6 @@ function tick(){
     toast('🔥 '+doneName+' geschafft!');
     sndCheck();
     celebrateAt(nb,big);
-    const xpGain=10+Math.min(Math.floor(s*1.5),30)+(big?25:0);
-    awardXP(xpGain,nb);
-    if(h)checkAchievements(h,s);
     if(big){milestoneBanner(s);emberRain();sndMilestone();}
     else if(s>0)sndStreak(s);
   }
@@ -1606,7 +1386,6 @@ function saveHabit(){
     state.habits.push({id:'h'+Date.now(),name,emoji:selEmoji,color:selColor,duration:selDuration,createdAt:TODAY,history:{},timer:null});
   }
   save();render();ensureTicker();closeSheet();
-  if(!editId)checkAchievementsHabit();
 }
 function deleteHabit(){
   const del=document.getElementById('delBtn');
@@ -1828,7 +1607,6 @@ function spawnRing(x,y){
 }
 function celebrateAt(el,big){
   if(navigator.vibrate)navigator.vibrate(big?[28,38,28,38,60]:10);
-  mascotCheer(big);
   if(reduceMotion()||!el||!fxCtx)return;
   const r=el.getBoundingClientRect();
   const x=r.left+r.width/2,y=r.top+r.height/2;
@@ -1840,479 +1618,10 @@ function milestoneBanner(streak){
   const o=document.getElementById('milestone');if(!o)return;
   o.querySelector('.ms-num').textContent=streak;
   o.classList.add('show');
-  const mm=document.getElementById('mascotMs');
-  if(mm){mm.classList.add('celebrate');clearTimeout(mm._c);mm._c=setTimeout(()=>mm.classList.remove('celebrate'),720);}
   clearTimeout(o._t);o._t=setTimeout(()=>o.classList.remove('show'),1800);
 }
 
-/* ---- mascot v6 – Disney-style, complete redesign ---- */
-function mascotEmbSVG(p){return `
-<svg class="m-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="${p}b" cx="34%" cy="28%" r="70%">
-      <stop offset="0%" stop-color="#fffce0"/>
-      <stop offset="18%" stop-color="#ffe840"/>
-      <stop offset="52%" stop-color="#ffaa00"/>
-      <stop offset="100%" stop-color="#e06000"/>
-    </radialGradient>
-    <radialGradient id="${p}f" cx="50%" cy="88%" r="62%">
-      <stop offset="0%" stop-color="#ffbb00"/>
-      <stop offset="50%" stop-color="#ff4000"/>
-      <stop offset="100%" stop-color="#be0e00"/>
-    </radialGradient>
-    <radialGradient id="${p}fh" cx="32%" cy="18%" r="68%">
-      <stop offset="0%" stop-color="#fffce0"/>
-      <stop offset="100%" stop-color="#ffd040"/>
-    </radialGradient>
-    <radialGradient id="${p}arm" cx="32%" cy="26%" r="68%">
-      <stop offset="0%" stop-color="#ffe840"/>
-      <stop offset="55%" stop-color="#ff8800"/>
-      <stop offset="100%" stop-color="#dc3800"/>
-    </radialGradient>
-    <radialGradient id="${p}iris" cx="28%" cy="22%" r="72%">
-      <stop offset="0%" stop-color="#f0b830"/>
-      <stop offset="58%" stop-color="#a06010"/>
-      <stop offset="100%" stop-color="#7a4000"/>
-    </radialGradient>
-    <radialGradient id="${p}sh" cx="28%" cy="22%" r="70%">
-      <stop offset="0%" stop-color="#f8f4ea"/>
-      <stop offset="100%" stop-color="#c8c0ac"/>
-    </radialGradient>
-  </defs>
-  <g class="m-bob">
-    <g class="m-wisp">
-      <path d="M21 59 C13 39 17 14 27 5 C35 19 28 43 36 57Z" fill="url(#${p}f)"/>
-      <ellipse cx="24.5" cy="23" rx="4" ry="9" fill="url(#${p}fh)" opacity=".72" transform="rotate(-18 24.5 23)"/>
-      <path d="M33 53 C24 31 31 10 39 1 C48 15 46 37 48 51Z" fill="#ffaa00"/>
-      <ellipse cx="38" cy="17" rx="4" ry="9.5" fill="url(#${p}fh)" opacity=".68" transform="rotate(-6 38 17)"/>
-      <path d="M44 49 C38 23 44 4 50 -2 C56 4 62 23 56 49Z" fill="#ffda20"/>
-      <ellipse cx="50" cy="13" rx="5" ry="10.5" fill="#fff8c0" opacity=".68"/>
-      <path d="M52 53 C54 36 52 14 62 1 C70 10 76 31 68 53Z" fill="#ffaa00"/>
-      <ellipse cx="62" cy="17" rx="4" ry="9.5" fill="url(#${p}fh)" opacity=".68" transform="rotate(6 62 17)"/>
-      <path d="M64 59 C72 43 83 14 73 5 C83 14 87 39 79 59Z" fill="url(#${p}f)"/>
-      <ellipse cx="75.5" cy="23" rx="4" ry="9" fill="url(#${p}fh)" opacity=".72" transform="rotate(18 75.5 23)"/>
-    </g>
-    <rect class="m-foot" x="37" y="97" width="11" height="13" rx="5.5" fill="#ee7200"/>
-    <rect class="m-foot" x="52" y="97" width="11" height="13" rx="5.5" fill="#ee7200"/>
-    <ellipse class="m-foot" cx="43" cy="112" rx="13" ry="5.5" fill="url(#${p}sh)"/>
-    <ellipse class="m-foot" cx="57" cy="112" rx="13" ry="5.5" fill="url(#${p}sh)"/>
-    <path class="m-foot" d="M30.5 112 Q43 108 55.5 112" fill="none" stroke="#b0a898" stroke-width="1.4" stroke-linecap="round"/>
-    <path class="m-foot" d="M44.5 112 Q57 108 69.5 112" fill="none" stroke="#b0a898" stroke-width="1.4" stroke-linecap="round"/>
-    <g class="m-arm m-arm-l">
-      <ellipse cx="15.5" cy="79" rx="8.5" ry="11" fill="url(#${p}arm)" transform="rotate(-22 15.5 79)"/>
-      <ellipse cx="13" cy="74" rx="3.2" ry="5" fill="#fff" opacity=".28" transform="rotate(-22 15.5 79)"/>
-    </g>
-    <g class="m-arm m-arm-r">
-      <ellipse cx="84.5" cy="79" rx="8.5" ry="11" fill="url(#${p}arm)" transform="rotate(22 84.5 79)"/>
-      <ellipse cx="82" cy="74" rx="3.2" ry="5" fill="#fff" opacity=".28" transform="rotate(22 84.5 79)"/>
-    </g>
-    <circle class="m-body" cx="50" cy="75" r="30" fill="url(#${p}b)"/>
-    <ellipse cx="50" cy="96" rx="27" ry="9" fill="#c04000" opacity=".15"/>
-    <ellipse cx="36.5" cy="59.5" rx="13.5" ry="18" fill="#fff" opacity=".30" transform="rotate(-11 36.5 59.5)"/>
-    <circle cx="36.5" cy="69" r="13.5" fill="#200c00"/>
-    <circle cx="63.5" cy="69" r="13.5" fill="#200c00"/>
-    <circle cx="36.5" cy="69" r="12.5" fill="#fff"/>
-    <circle cx="63.5" cy="69" r="12.5" fill="#fff"/>
-    <g class="m-eyes-open">
-      <circle cx="36.5" cy="70" r="7.8" fill="url(#${p}iris)"/>
-      <circle cx="63.5" cy="70" r="7.8" fill="url(#${p}iris)"/>
-      <circle cx="36.5" cy="71" r="4.8" fill="#160600"/>
-      <circle cx="63.5" cy="71" r="4.8" fill="#160600"/>
-      <circle cx="31" cy="64.5" r="4.2" fill="#fff"/>
-      <circle cx="58" cy="64.5" r="4.2" fill="#fff"/>
-      <circle cx="40.5" cy="68.5" r="2" fill="rgba(255,255,255,.78)"/>
-      <circle cx="67.5" cy="68.5" r="2" fill="rgba(255,255,255,.78)"/>
-    </g>
-    <g class="m-eyes-happy">
-      <path d="M24 69 Q36.5 55 49 69" fill="none" stroke="#160600" stroke-width="5.2" stroke-linecap="round"/>
-      <path d="M51 69 Q63.5 55 76 69" fill="none" stroke="#160600" stroke-width="5.2" stroke-linecap="round"/>
-      <circle cx="28" cy="61" r="3.2" fill="#fff" opacity=".9"/>
-      <circle cx="55" cy="61" r="3.2" fill="#fff" opacity=".9"/>
-    </g>
-    <g class="m-eyes-closed">
-      <path d="M24 69 Q36.5 78.5 49 69" fill="none" stroke="#160600" stroke-width="5.2" stroke-linecap="round"/>
-      <path d="M51 69 Q63.5 78.5 76 69" fill="none" stroke="#160600" stroke-width="5.2" stroke-linecap="round"/>
-    </g>
-    <path d="M26.5 56 Q36.5 50 46.5 56" fill="none" stroke="#bf2800" stroke-width="3.5" stroke-linecap="round"/>
-    <path d="M53.5 56 Q63.5 50 73.5 56" fill="none" stroke="#bf2800" stroke-width="3.5" stroke-linecap="round"/>
-    <ellipse class="m-cheek" cx="19.5" cy="81.5" rx="8.5" ry="5.5" fill="#ff6090" opacity=".38"/>
-    <ellipse class="m-cheek" cx="80.5" cy="81.5" rx="8.5" ry="5.5" fill="#ff6090" opacity=".38"/>
-    <circle cx="19" cy="82" r="2.5" fill="#e84800" opacity=".52"/>
-    <circle cx="23" cy="85.5" r="1.8" fill="#e84800" opacity=".40"/>
-    <circle cx="81" cy="82" r="2.5" fill="#e84800" opacity=".52"/>
-    <circle cx="77" cy="85.5" r="1.8" fill="#e84800" opacity=".40"/>
-    <path class="m-mouth-smile" d="M37.5 85.5 Q50 97 62.5 85.5" fill="none" stroke="#160600" stroke-width="3.8" stroke-linecap="round"/>
-    <g class="m-mouth-grin">
-      <path d="M36.5 83.5 Q50 101 63.5 83.5 Z" fill="#6a0c00"/>
-      <rect x="38" y="82.5" width="24" height="7" rx="3.5" fill="#fff"/>
-      <line x1="50" y1="82.5" x2="50" y2="89.5" stroke="#e0d8d0" stroke-width="1.3"/>
-      <ellipse cx="50" cy="97" rx="8.5" ry="5.5" fill="#ff7aaa"/>
-    </g>
-    <path class="m-mouth-flat" d="M42 90.5 Q50 92.5 58 90.5" fill="none" stroke="#160600" stroke-width="3.8" stroke-linecap="round"/>
-    <g class="m-spark">
-      <path d="M9 43 l2.2 5 5 2.2 -5 2.2 -2.2 5 -2.2-5 -5-2.2 5-2.2Z" fill="#ffd040"/>
-      <path d="M91 37 l1.8 4 4 1.8 -4 1.8 -1.8 4 -1.8-4 -4-1.8 4-1.8Z" fill="#ffce50"/>
-      <path d="M79 99 l1.5 3.4 3.4 1.5 -3.4 1.5 -1.5 3.4 -1.5-3.4 -3.4-1.5 3.4-1.5Z" fill="#58cc02"/>
-    </g>
-  </g>
-</svg>`;}
-function mascotMatchSVG(p){return `
-<svg class="m-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="${p}b" cx="34%" cy="26%" r="70%">
-      <stop offset="0%" stop-color="#ffa060"/>
-      <stop offset="40%" stop-color="#d01800"/>
-      <stop offset="85%" stop-color="#880000"/>
-      <stop offset="100%" stop-color="#620000"/>
-    </radialGradient>
-    <radialGradient id="${p}stick" cx="30%" cy="28%" r="68%">
-      <stop offset="0%" stop-color="#ffe4ac"/>
-      <stop offset="58%" stop-color="#cc8020"/>
-      <stop offset="100%" stop-color="#8a5010"/>
-    </radialGradient>
-    <radialGradient id="${p}iris" cx="28%" cy="22%" r="72%">
-      <stop offset="0%" stop-color="#f0b830"/>
-      <stop offset="58%" stop-color="#a06010"/>
-      <stop offset="100%" stop-color="#7a4000"/>
-    </radialGradient>
-  </defs>
-  <g class="m-bob">
-    <rect x="45.5" y="67" width="9" height="53" rx="4.5" fill="url(#${p}stick)"/>
-    <line x1="50" y1="76" x2="50" y2="113" stroke="#a06010" stroke-width="1.2" opacity=".25" stroke-linecap="round"/>
-    <g class="m-arm m-arm-l">
-      <ellipse cx="17" cy="53" rx="9.5" ry="6" fill="url(#${p}b)" transform="rotate(-28 17 53)"/>
-      <ellipse cx="14.5" cy="49.5" rx="3.5" ry="2.5" fill="#ff9040" opacity=".38" transform="rotate(-28 17 53)"/>
-    </g>
-    <g class="m-arm m-arm-r">
-      <ellipse cx="83" cy="53" rx="9.5" ry="6" fill="url(#${p}b)" transform="rotate(28 83 53)"/>
-      <ellipse cx="80.5" cy="49.5" rx="3.5" ry="2.5" fill="#ff9040" opacity=".38" transform="rotate(28 83 53)"/>
-    </g>
-    <circle class="m-body" cx="50" cy="37" r="31" fill="url(#${p}b)"/>
-    <ellipse cx="36" cy="22" rx="13" ry="9.5" fill="#fff" opacity=".22" transform="rotate(-14 36 22)"/>
-    <circle cx="35" cy="36" r="15" fill="#200c00"/>
-    <circle cx="65" cy="36" r="15" fill="#200c00"/>
-    <circle cx="35" cy="36" r="14" fill="#fff"/>
-    <circle cx="65" cy="36" r="14" fill="#fff"/>
-    <g class="m-eyes-open">
-      <circle cx="35" cy="37" r="8.8" fill="url(#${p}iris)"/>
-      <circle cx="65" cy="37" r="8.8" fill="url(#${p}iris)"/>
-      <circle cx="35" cy="38.5" r="5.5" fill="#180400"/>
-      <circle cx="65" cy="38.5" r="5.5" fill="#180400"/>
-      <circle cx="28.5" cy="31" r="4.8" fill="#fff"/>
-      <circle cx="58.5" cy="31" r="4.8" fill="#fff"/>
-      <circle cx="40" cy="35.5" r="2.2" fill="rgba(255,255,255,.78)"/>
-      <circle cx="70" cy="35.5" r="2.2" fill="rgba(255,255,255,.78)"/>
-    </g>
-    <g class="m-eyes-happy">
-      <path d="M21 36 Q35 21 49 36" fill="none" stroke="#180400" stroke-width="5.8" stroke-linecap="round"/>
-      <path d="M51 36 Q65 21 79 36" fill="none" stroke="#180400" stroke-width="5.8" stroke-linecap="round"/>
-      <circle cx="25" cy="26" r="3.5" fill="#fff" opacity=".9"/>
-      <circle cx="55" cy="26" r="3.5" fill="#fff" opacity=".9"/>
-    </g>
-    <g class="m-eyes-closed">
-      <path d="M21 35 Q35 46 49 35" fill="none" stroke="#180400" stroke-width="5.8" stroke-linecap="round"/>
-      <path d="M51 35 Q65 46 79 35" fill="none" stroke="#180400" stroke-width="5.8" stroke-linecap="round"/>
-    </g>
-    <path d="M22 22 Q35 15 48 22" fill="none" stroke="#880000" stroke-width="3.2" stroke-linecap="round"/>
-    <path d="M52 22 Q65 15 78 22" fill="none" stroke="#880000" stroke-width="3.2" stroke-linecap="round"/>
-    <ellipse class="m-cheek" cx="17" cy="52" rx="8.5" ry="5.5" fill="#ff5070" opacity=".36"/>
-    <ellipse class="m-cheek" cx="83" cy="52" rx="8.5" ry="5.5" fill="#ff5070" opacity=".36"/>
-    <circle cx="16" cy="52" r="2.4" fill="#cc1800" opacity=".50"/>
-    <circle cx="20" cy="55.5" r="1.7" fill="#cc1800" opacity=".38"/>
-    <circle cx="84" cy="52" r="2.4" fill="#cc1800" opacity=".50"/>
-    <circle cx="80" cy="55.5" r="1.7" fill="#cc1800" opacity=".38"/>
-    <path class="m-mouth-smile" d="M36.5 53 Q50 66 63.5 53" fill="none" stroke="#180400" stroke-width="3.8" stroke-linecap="round"/>
-    <g class="m-mouth-grin">
-      <path d="M35.5 51 Q50 69 64.5 51 Z" fill="#680800"/>
-      <rect x="37" y="50" width="26" height="7" rx="3.5" fill="#fff"/>
-      <line x1="50" y1="50" x2="50" y2="57" stroke="#e0d8d0" stroke-width="1.2"/>
-      <ellipse cx="50" cy="65" rx="8.5" ry="5.5" fill="#ff78a8"/>
-    </g>
-    <path class="m-mouth-flat" d="M42 60.5 Q50 62.5 58 60.5" fill="none" stroke="#180400" stroke-width="3.2" stroke-linecap="round"/>
-    <g class="m-spark">
-      <path d="M8 27 l1.8 4 4 1.8 -4 1.8 -1.8 4 -1.8-4 -4-1.8 4-1.8Z" fill="#ffa030"/>
-      <path d="M92 21 l1.5 3.5 3.5 1.5 -3.5 1.5 -1.5 3.5 -1.5-3.5 -3.5-1.5 3.5-1.5Z" fill="#ffcc40"/>
-    </g>
-  </g>
-</svg>`;}
-function mascotLagerfeueSVG(p){return `
-<svg class="m-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="${p}b" cx="34%" cy="28%" r="70%">
-      <stop offset="0%" stop-color="#fffce0"/>
-      <stop offset="20%" stop-color="#ffe040"/>
-      <stop offset="55%" stop-color="#ff8800"/>
-      <stop offset="100%" stop-color="#de2e00"/>
-    </radialGradient>
-    <radialGradient id="${p}f" cx="50%" cy="88%" r="62%">
-      <stop offset="0%" stop-color="#ffbb00"/>
-      <stop offset="50%" stop-color="#ff4000"/>
-      <stop offset="100%" stop-color="#be0e00"/>
-    </radialGradient>
-    <radialGradient id="${p}fh" cx="32%" cy="18%" r="68%">
-      <stop offset="0%" stop-color="#fffce0"/>
-      <stop offset="100%" stop-color="#ffd040"/>
-    </radialGradient>
-    <radialGradient id="${p}arm" cx="32%" cy="26%" r="68%">
-      <stop offset="0%" stop-color="#ffe840"/>
-      <stop offset="55%" stop-color="#ff8800"/>
-      <stop offset="100%" stop-color="#dc3800"/>
-    </radialGradient>
-    <radialGradient id="${p}iris" cx="28%" cy="22%" r="72%">
-      <stop offset="0%" stop-color="#f0b830"/>
-      <stop offset="58%" stop-color="#a06010"/>
-      <stop offset="100%" stop-color="#7a4000"/>
-    </radialGradient>
-    <linearGradient id="${p}log" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#4a1e04"/>
-      <stop offset="28%" stop-color="#7c4212"/>
-      <stop offset="50%" stop-color="#a06030"/>
-      <stop offset="72%" stop-color="#7c4212"/>
-      <stop offset="100%" stop-color="#4a1e04"/>
-    </linearGradient>
-    <radialGradient id="${p}logend" cx="35%" cy="35%" r="70%">
-      <stop offset="0%" stop-color="#8c4c1c"/>
-      <stop offset="55%" stop-color="#4c2008"/>
-      <stop offset="100%" stop-color="#2e1004"/>
-    </radialGradient>
-  </defs>
-  <g class="m-bob">
-    <g class="m-wisp">
-      <path d="M19 60 C11 39 15 13 26 4 C34 18 27 43 35 58Z" fill="url(#${p}f)"/>
-      <ellipse cx="22.5" cy="21" rx="4" ry="9" fill="url(#${p}fh)" opacity=".72" transform="rotate(-20 22.5 21)"/>
-      <path d="M31 54 C22 31 29 10 37 0 C46 14 44 37 46 52Z" fill="#ffaa00"/>
-      <ellipse cx="36" cy="16" rx="4" ry="9.5" fill="url(#${p}fh)" opacity=".68" transform="rotate(-8 36 16)"/>
-      <path d="M44 48 C37 22 43 3 50 -3 C57 3 63 22 56 48Z" fill="#ffda20"/>
-      <ellipse cx="50" cy="12" rx="5" ry="10.5" fill="#fff8c0" opacity=".68"/>
-      <path d="M56 54 C58 36 56 13 64 0 C72 10 78 31 69 54Z" fill="#ffaa00"/>
-      <ellipse cx="64" cy="16" rx="4" ry="9.5" fill="url(#${p}fh)" opacity=".68" transform="rotate(8 64 16)"/>
-      <path d="M69 60 C78 43 85 13 74 4 C85 13 89 39 80 60Z" fill="url(#${p}f)"/>
-      <ellipse cx="77.5" cy="21" rx="4" ry="9" fill="url(#${p}fh)" opacity=".72" transform="rotate(20 77.5 21)"/>
-    </g>
-    <rect x="6" y="104" width="88" height="9" rx="4.5" fill="url(#${p}log)" transform="rotate(-7 50 108.5)"/>
-    <rect x="6" y="104" width="88" height="9" rx="4.5" fill="url(#${p}log)" transform="rotate(7 50 108.5)"/>
-    <circle cx="9.5" cy="101" r="6" fill="url(#${p}logend)"/>
-    <circle cx="9.5" cy="101" r="4" fill="none" stroke="#3a1808" stroke-width="1.2" opacity=".6"/>
-    <circle cx="9.5" cy="101" r="2" fill="none" stroke="#3a1808" stroke-width="0.8" opacity=".5"/>
-    <circle cx="90.5" cy="101" r="6" fill="url(#${p}logend)"/>
-    <circle cx="90.5" cy="101" r="4" fill="none" stroke="#3a1808" stroke-width="1.2" opacity=".6"/>
-    <circle cx="90.5" cy="101" r="2" fill="none" stroke="#3a1808" stroke-width="0.8" opacity=".5"/>
-    <circle cx="9.5" cy="115" r="6" fill="url(#${p}logend)"/>
-    <circle cx="9.5" cy="115" r="4" fill="none" stroke="#3a1808" stroke-width="1.2" opacity=".6"/>
-    <circle cx="90.5" cy="115" r="6" fill="url(#${p}logend)"/>
-    <circle cx="90.5" cy="115" r="4" fill="none" stroke="#3a1808" stroke-width="1.2" opacity=".6"/>
-    <g class="m-arm m-arm-l">
-      <ellipse cx="13" cy="78" rx="9.5" ry="12" fill="url(#${p}arm)" transform="rotate(-22 13 78)"/>
-      <ellipse cx="10.5" cy="73" rx="3.5" ry="5.5" fill="#fff" opacity=".26" transform="rotate(-22 13 78)"/>
-    </g>
-    <g class="m-arm m-arm-r">
-      <ellipse cx="87" cy="78" rx="9.5" ry="12" fill="url(#${p}arm)" transform="rotate(22 87 78)"/>
-      <ellipse cx="84.5" cy="73" rx="3.5" ry="5.5" fill="#fff" opacity=".26" transform="rotate(22 87 78)"/>
-    </g>
-    <ellipse class="m-body" cx="50" cy="73" rx="34" ry="25" fill="url(#${p}b)"/>
-    <ellipse cx="50" cy="91" rx="31" ry="9" fill="#c04000" opacity=".14"/>
-    <ellipse cx="36" cy="57.5" rx="14" ry="17.5" fill="#fff" opacity=".30" transform="rotate(-10 36 57.5)"/>
-    <circle cx="37" cy="67" r="13.5" fill="#200c00"/>
-    <circle cx="63" cy="67" r="13.5" fill="#200c00"/>
-    <circle cx="37" cy="67" r="12.5" fill="#fff"/>
-    <circle cx="63" cy="67" r="12.5" fill="#fff"/>
-    <g class="m-eyes-open">
-      <circle cx="37" cy="68" r="7.8" fill="url(#${p}iris)"/>
-      <circle cx="63" cy="68" r="7.8" fill="url(#${p}iris)"/>
-      <circle cx="37" cy="69" r="4.8" fill="#160600"/>
-      <circle cx="63" cy="69" r="4.8" fill="#160600"/>
-      <circle cx="31.5" cy="62.5" r="4.2" fill="#fff"/>
-      <circle cx="57.5" cy="62.5" r="4.2" fill="#fff"/>
-      <circle cx="41" cy="67" r="2" fill="rgba(255,255,255,.78)"/>
-      <circle cx="67" cy="67" r="2" fill="rgba(255,255,255,.78)"/>
-    </g>
-    <g class="m-eyes-happy">
-      <path d="M25 67 Q37 53 49 67" fill="none" stroke="#160600" stroke-width="5.2" stroke-linecap="round"/>
-      <path d="M51 67 Q63 53 75 67" fill="none" stroke="#160600" stroke-width="5.2" stroke-linecap="round"/>
-      <circle cx="29" cy="59" r="3.2" fill="#fff" opacity=".9"/>
-      <circle cx="55" cy="59" r="3.2" fill="#fff" opacity=".9"/>
-    </g>
-    <g class="m-eyes-closed">
-      <path d="M25 66.5 Q37 76 49 66.5" fill="none" stroke="#160600" stroke-width="5.2" stroke-linecap="round"/>
-      <path d="M51 66.5 Q63 76 75 66.5" fill="none" stroke="#160600" stroke-width="5.2" stroke-linecap="round"/>
-    </g>
-    <path d="M27 54.5 Q37 48.5 47 54.5" fill="none" stroke="#bf2800" stroke-width="3.5" stroke-linecap="round"/>
-    <path d="M53 54.5 Q63 48.5 73 54.5" fill="none" stroke="#bf2800" stroke-width="3.5" stroke-linecap="round"/>
-    <ellipse class="m-cheek" cx="18.5" cy="80" rx="9" ry="5.5" fill="#ff6090" opacity=".38"/>
-    <ellipse class="m-cheek" cx="81.5" cy="80" rx="9" ry="5.5" fill="#ff6090" opacity=".38"/>
-    <circle cx="18" cy="80" r="2.5" fill="#dd4000" opacity=".52"/>
-    <circle cx="22" cy="83.5" r="1.8" fill="#dd4000" opacity=".40"/>
-    <circle cx="82" cy="80" r="2.5" fill="#dd4000" opacity=".52"/>
-    <circle cx="78" cy="83.5" r="1.8" fill="#dd4000" opacity=".40"/>
-    <path class="m-mouth-smile" d="M37.5 83.5 Q50 95 62.5 83.5" fill="none" stroke="#160600" stroke-width="3.8" stroke-linecap="round"/>
-    <g class="m-mouth-grin">
-      <path d="M36.5 81.5 Q50 99 63.5 81.5 Z" fill="#6a0c00"/>
-      <rect x="38" y="80.5" width="24" height="7" rx="3.5" fill="#fff"/>
-      <line x1="50" y1="80.5" x2="50" y2="87.5" stroke="#e0d8d0" stroke-width="1.3"/>
-      <ellipse cx="50" cy="95.5" rx="8.5" ry="5.5" fill="#ff7aaa"/>
-    </g>
-    <path class="m-mouth-flat" d="M41 90 Q50 92 59 90" fill="none" stroke="#160600" stroke-width="3.8" stroke-linecap="round"/>
-    <g class="m-spark">
-      <path d="M7 43 l2.2 5 5 2.2 -5 2.2 -2.2 5 -2.2-5 -5-2.2 5-2.2Z" fill="#ffd040"/>
-      <path d="M93 37 l1.8 4 4 1.8 -4 1.8 -1.8 4 -1.8-4 -4-1.8 4-1.8Z" fill="#ffce50"/>
-      <path d="M78 99 l1.5 3.4 3.4 1.5 -3.4 1.5 -1.5 3.4 -1.5-3.4 -3.4-1.5 3.4-1.5Z" fill="#58cc02"/>
-    </g>
-  </g>
-</svg>`;}
-function mascotPhoenixSVG(p){return `
-<svg class="m-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <radialGradient id="${p}b" cx="34%" cy="28%" r="70%">
-      <stop offset="0%" stop-color="#fffce0"/>
-      <stop offset="18%" stop-color="#ffe840"/>
-      <stop offset="55%" stop-color="#ffaa00"/>
-      <stop offset="100%" stop-color="#e06000"/>
-    </radialGradient>
-    <radialGradient id="${p}wing" cx="38%" cy="28%" r="72%">
-      <stop offset="0%" stop-color="#ffe840"/>
-      <stop offset="50%" stop-color="#ff8800"/>
-      <stop offset="100%" stop-color="#cc4000"/>
-    </radialGradient>
-    <radialGradient id="${p}tail" cx="50%" cy="20%" r="72%">
-      <stop offset="0%" stop-color="#fff480"/>
-      <stop offset="50%" stop-color="#ff8800"/>
-      <stop offset="100%" stop-color="#c01800"/>
-    </radialGradient>
-    <radialGradient id="${p}crown" cx="50%" cy="90%" r="62%">
-      <stop offset="0%" stop-color="#fff480"/>
-      <stop offset="55%" stop-color="#ffb800"/>
-      <stop offset="100%" stop-color="#ff5200"/>
-    </radialGradient>
-    <radialGradient id="${p}iris" cx="28%" cy="22%" r="72%">
-      <stop offset="0%" stop-color="#f8c040"/>
-      <stop offset="58%" stop-color="#b07020"/>
-      <stop offset="100%" stop-color="#844800"/>
-    </radialGradient>
-  </defs>
-  <g class="m-bob">
-    <!-- Phoenix tail feathers -->
-    <path class="m-foot" d="M50 95 C42 100 34 112 33 120" fill="none" stroke="url(#${p}tail)" stroke-width="6" stroke-linecap="round"/>
-    <path class="m-foot" d="M50 95 C50 105 50 116 50 120" fill="none" stroke="#fff480" stroke-width="4.5" stroke-linecap="round" opacity=".85"/>
-    <path class="m-foot" d="M50 95 C58 100 66 112 67 120" fill="none" stroke="url(#${p}tail)" stroke-width="6" stroke-linecap="round"/>
-    <path class="m-foot" d="M50 95 C40 98 28 108 24 119" fill="none" stroke="url(#${p}tail)" stroke-width="4" stroke-linecap="round" opacity=".65"/>
-    <path class="m-foot" d="M50 95 C60 98 72 108 76 119" fill="none" stroke="url(#${p}tail)" stroke-width="4" stroke-linecap="round" opacity=".65"/>
-    <!-- Left wing -->
-    <g class="m-arm m-arm-l">
-      <path d="M27 72 C11 56 0 36 2 26 C10 38 22 58 30 72Z" fill="url(#${p}wing)"/>
-      <path d="M30 72 C16 62 6 46 8 34 C14 48 26 64 33 76Z" fill="#ffb000" opacity=".75"/>
-      <path d="M33 76 C21 70 14 56 16 44 C20 56 30 68 35 78Z" fill="#fff060" opacity=".55"/>
-    </g>
-    <!-- Right wing -->
-    <g class="m-arm m-arm-r">
-      <path d="M73 72 C89 56 100 36 98 26 C90 38 78 58 70 72Z" fill="url(#${p}wing)"/>
-      <path d="M70 72 C84 62 94 46 92 34 C86 48 74 64 67 76Z" fill="#ffb000" opacity=".75"/>
-      <path d="M67 76 C79 70 86 56 84 44 C80 56 70 68 65 78Z" fill="#fff060" opacity=".55"/>
-    </g>
-    <!-- 5-tongue crown flame -->
-    <g class="m-wisp">
-      <path d="M28 35 C23 22 27 12 31 9 C33 17 32 27 34 35Z" fill="url(#${p}crown)"/>
-      <ellipse cx="30.5" cy="21" rx="2.5" ry="6" fill="#fff8c0" opacity=".65" transform="rotate(-12 30.5 21)"/>
-      <path d="M37 29 C33 15 37 5 41 2 C43 11 41 23 43 29Z" fill="url(#${p}crown)"/>
-      <ellipse cx="39.5" cy="14.5" rx="2.8" ry="5.5" fill="#fff8c0" opacity=".68" transform="rotate(-6 39.5 14.5)"/>
-      <path d="M47 26 C44 11 47 2 50 1 C53 2 56 11 53 26Z" fill="#fff480"/>
-      <ellipse cx="50" cy="12.5" rx="3" ry="6" fill="#fff8c0" opacity=".72"/>
-      <path d="M63 29 C67 15 63 5 59 2 C57 11 59 23 57 29Z" fill="url(#${p}crown)"/>
-      <ellipse cx="60.5" cy="14.5" rx="2.8" ry="5.5" fill="#fff8c0" opacity=".68" transform="rotate(6 60.5 14.5)"/>
-      <path d="M72 35 C77 22 73 12 69 9 C67 17 68 27 66 35Z" fill="url(#${p}crown)"/>
-      <ellipse cx="69.5" cy="21" rx="2.5" ry="6" fill="#fff8c0" opacity=".65" transform="rotate(12 69.5 21)"/>
-    </g>
-    <!-- Main body sphere -->
-    <circle class="m-body" cx="50" cy="72" r="30" fill="url(#${p}b)"/>
-    <ellipse cx="50" cy="93" rx="26" ry="8" fill="#c04000" opacity=".15"/>
-    <ellipse cx="37" cy="57" rx="13" ry="17.5" fill="#fff" opacity=".28" transform="rotate(-11 37 57)"/>
-    <!-- Disney eye outline rings -->
-    <circle cx="36.5" cy="68" r="13.5" fill="#200c00"/>
-    <circle cx="63.5" cy="68" r="13.5" fill="#200c00"/>
-    <circle cx="36.5" cy="68" r="12.5" fill="#fff"/>
-    <circle cx="63.5" cy="68" r="12.5" fill="#fff"/>
-    <g class="m-eyes-open">
-      <circle cx="36.5" cy="69" r="7.8" fill="url(#${p}iris)"/>
-      <circle cx="63.5" cy="69" r="7.8" fill="url(#${p}iris)"/>
-      <circle cx="36.5" cy="70" r="4.8" fill="#160600"/>
-      <circle cx="63.5" cy="70" r="4.8" fill="#160600"/>
-      <circle cx="31" cy="63.5" r="4.2" fill="#fff"/>
-      <circle cx="58" cy="63.5" r="4.2" fill="#fff"/>
-      <circle cx="40.5" cy="67.5" r="2" fill="rgba(255,255,255,.78)"/>
-      <circle cx="67.5" cy="67.5" r="2" fill="rgba(255,255,255,.78)"/>
-    </g>
-    <g class="m-eyes-happy">
-      <path d="M23 68 Q36.5 54 50 68" fill="none" stroke="#160600" stroke-width="5" stroke-linecap="round"/>
-      <path d="M50 68 Q63.5 54 77 68" fill="none" stroke="#160600" stroke-width="5" stroke-linecap="round"/>
-      <circle cx="27" cy="58" r="3" fill="#fff" opacity=".9"/>
-      <circle cx="54" cy="58" r="3" fill="#fff" opacity=".9"/>
-    </g>
-    <g class="m-eyes-closed">
-      <path d="M23 67.5 Q36.5 81 50 67.5" fill="none" stroke="#160600" stroke-width="5" stroke-linecap="round"/>
-      <path d="M50 67.5 Q63.5 81 77 67.5" fill="none" stroke="#160600" stroke-width="5" stroke-linecap="round"/>
-    </g>
-    <path d="M23.5 54 Q36.5 47 49.5 54" fill="none" stroke="#b83800" stroke-width="3.2" stroke-linecap="round"/>
-    <path d="M50.5 54 Q63.5 47 76.5 54" fill="none" stroke="#b83800" stroke-width="3.2" stroke-linecap="round"/>
-    <ellipse class="m-cheek" cx="18" cy="75" rx="8.5" ry="5.5" fill="#ff9060" opacity=".38"/>
-    <ellipse class="m-cheek" cx="82" cy="75" rx="8.5" ry="5.5" fill="#ff9060" opacity=".38"/>
-    <circle cx="16" cy="74.5" r="2.5" fill="#cc4000" opacity=".45"/>
-    <circle cx="20" cy="78.5" r="1.6" fill="#cc4000" opacity=".33"/>
-    <circle cx="84" cy="74.5" r="2.5" fill="#cc4000" opacity=".45"/>
-    <circle cx="80" cy="78.5" r="1.6" fill="#cc4000" opacity=".33"/>
-    <path class="m-mouth-smile" d="M37 84 Q50 96 63 84" fill="none" stroke="#160600" stroke-width="3.6" stroke-linecap="round"/>
-    <g class="m-mouth-grin">
-      <path d="M36 82 Q50 100 64 82 Z" fill="#6a1800"/>
-      <rect x="37.5" y="81" width="25" height="7" rx="3.5" fill="#fff"/>
-      <line x1="50" y1="81" x2="50" y2="88" stroke="#e0d8d0" stroke-width="1.2"/>
-      <ellipse cx="50" cy="95" rx="8" ry="5.5" fill="#ff9890"/>
-    </g>
-    <path class="m-mouth-flat" d="M41 88.5 Q50 90.5 59 88.5" fill="none" stroke="#160600" stroke-width="3.6" stroke-linecap="round"/>
-    <g class="m-spark">
-      <path d="M5 44 l2.2 5 5 2.2 -5 2.2 -2.2 5 -2.2-5 -5-2.2 5-2.2Z" fill="#ffd040"/>
-      <path d="M95 36 l1.8 4 4 1.8 -4 1.8 -1.8 4 -1.8-4 -4-1.8 4-1.8Z" fill="#fff060"/>
-      <path d="M82 108 l1.5 3.4 3.4 1.5 -3.4 1.5 -1.5 3.4 -1.5-3.4 -3.4-1.5 3.4-1.5Z" fill="#ffe040"/>
-    </g>
-  </g>
-</svg>`;}
-function mascotForm(lv){return lv<=10?1:lv<=20?2:lv<=30?3:4;}
-function mascotSVG(p,form){
-  if(form===1)return mascotMatchSVG(p);
-  if(form===3)return mascotLagerfeueSVG(p);
-  if(form===4)return mascotPhoenixSVG(p);
-  return mascotEmbSVG(p);
-}
-function mascotInit(){
-  const lv=levelFromXP(state.xp||0);
-  const form=mascotForm(lv);
-  const h=document.getElementById('mascotHeader');if(h)h.innerHTML=mascotSVG('mh',form);
-  const m=document.getElementById('mascotMs');if(m)m.innerHTML=mascotSVG('mm',form);
-  const ml=document.getElementById('mascotLvl');if(ml)ml.innerHTML=mascotSVG('mlv',form);
-  const ha=document.getElementById('hugA');if(ha)ha.innerHTML=mascotSVG('ha',form);
-  const hb=document.getElementById('hugB');if(hb)hb.innerHTML=mascotSVG('hb',form);
-  const hf=document.getElementById('hugFlame');if(hf)hf.innerHTML=purpleFlame(46);
-  const fa=document.getElementById('ffA');if(fa)fa.innerHTML=purpleFlame(30);
-  const fb=document.getElementById('ffB');if(fb)fb.innerHTML=purpleFlame(30);
-  startBlink();
-}
-function updateMascotMood(done,tot){
-  const m=document.getElementById('mascotHeader');if(!m)return;
-  m.classList.remove('mood-neutral','mood-ok','mood-happy');
-  if(!tot||!done)m.classList.add('mood-neutral');
-  else if(done>=tot)m.classList.add('mood-happy');
-  else m.classList.add('mood-ok');
-}
-function mascotCheer(big){
-  const m=document.getElementById('mascotHeader');if(!m)return;
-  m.classList.add('celebrate');
-  clearTimeout(m._c);m._c=setTimeout(()=>m.classList.remove('celebrate'),720);
-}
-function startBlink(){
-  setInterval(()=>{
-    const m=document.getElementById('mascotHeader');if(!m)return;
-    if(m.classList.contains('celebrate')||m.classList.contains('mood-happy'))return;
-    if(Math.random()<0.6){m.classList.add('blink');setTimeout(()=>m.classList.remove('blink'),150);}
-  },4200);
-}
-
+/* ---- (mascot removed) ---- */
 /* ---- starter habits ---- */
 function addStarter(i){
   const s=STARTERS[i];
@@ -2569,7 +1878,7 @@ function purpleBurst(x,y){
 function showHug(streak,friendName){
   const o=document.getElementById('hug');if(!o)return;
   document.getElementById('hugNum').textContent=streak;
-  document.getElementById('hugLbl').textContent=(streak===1?'Tag':'Tage')+' gemeinsam mit '+friendName;
+  document.getElementById('hugLbl').textContent='💜 Tage gemeinsam mit '+friendName;
   o.classList.remove('show');void o.offsetWidth;o.classList.add('show');
   toast('💜 Gemeinsamer Streak mit '+friendName+'!');
   if(navigator.vibrate)navigator.vibrate([30,40,30,40,70]);
@@ -2635,175 +1944,12 @@ async function pushCloud(){
   try{await sb.from('app_state').upsert({user_id:sbUser.id,state:state,updated_at:new Date().toISOString()});}catch(e){}
 }
 
-/* ---- XP / Level / Achievement functions ---- */
-function levelFromXP(xp){
-  for(let i=LEVEL_XP.length-1;i>=0;i--)if(xp>=LEVEL_XP[i])return i+1;
-  return 1;
-}
-function xpProgress(xp){
-  const lv=levelFromXP(xp);
-  if(lv>=LEVEL_XP.length)return{cur:xp,need:1,pct:1};
-  const base=LEVEL_XP[lv-1],next=LEVEL_XP[lv];
-  return{cur:xp-base,need:next-base,pct:(xp-base)/(next-base)};
-}
-function totalCompletions(){
-  return state.habits.reduce((s,h)=>s+Object.values(h.history).filter(Boolean).length,0);
-}
-function migrateXP(){
-  if(state.xp!=null&&state.xp>0)return;
-  let xp=0;
-  state.habits.forEach(h=>Object.values(h.history).filter(Boolean).forEach(()=>xp+=10));
-  state.xp=xp;
-  if(!state.achievements)state.achievements={};
-  const ach=state.achievements;
-  const tc=totalCompletions();
-  if(state.habits.length>=1&&!ach.first_habit)ach.first_habit=1;
-  if(tc>=1&&!ach.first_check)ach.first_check=1;
-  if(tc>=10&&!ach.total_10)ach.total_10=1;
-  if(tc>=50&&!ach.total_50)ach.total_50=1;
-  if(tc>=100&&!ach.total_100)ach.total_100=1;
-  if(state.habits.length>=5&&!ach.habit_5)ach.habit_5=1;
-  const ms=state.habits.reduce((m,h)=>Math.max(m,bestStreak(h)),0);
-  if(ms>=3&&!ach.streak_3)ach.streak_3=1;
-  if(ms>=7&&!ach.streak_7)ach.streak_7=1;
-  if(ms>=14&&!ach.streak_14)ach.streak_14=1;
-  if(ms>=30&&!ach.streak_30)ach.streak_30=1;
-  if(ms>=100&&!ach.streak_100)ach.streak_100=1;
-  const lv=levelFromXP(xp);
-  if(lv>=5&&!ach.level_5)ach.level_5=1;
-  if(lv>=10&&!ach.level_10)ach.level_10=1;
-  save();
-}
-function updateXPBar(){
-  const xp=state.xp||0;
-  const{pct}=xpProgress(xp);
-  const bar=document.getElementById('xpBar');
-  if(bar)bar.style.width=(pct*100)+'%';
-  const lv=levelFromXP(xp);
-  const numEl=document.querySelector('#levelBadge .lv-num');
-  const nameEl=document.getElementById('lvName');
-  if(numEl)numEl.textContent='Lv.'+lv;
-  if(nameEl)nameEl.textContent=LEVEL_NAMES[lv-1]||'';
-}
-function awardXP(amount,el){
-  const old=state.xp||0;
-  const oldLv=levelFromXP(old);
-  state.xp=old+amount;
-  const newLv=levelFromXP(state.xp);
-  save();
-  updateXPBar();
-  if(newLv>oldLv){
-    setTimeout(()=>showLevelUp(newLv),500);
-    checkAchievementsLevel(newLv);
-    if(mascotForm(newLv)!==mascotForm(oldLv))setTimeout(()=>mascotInit(),650);
-  }
-  if(el&&!reduceMotion())showXPFloat(el,'+'+amount+' XP');
-}
-function showXPFloat(el,text){
-  const r=el.getBoundingClientRect();
-  const d=document.createElement('div');
-  d.className='xp-float';d.textContent=text;
-  d.style.cssText='left:'+(r.left+r.width/2-22)+'px;top:'+(r.top-2)+'px';
-  document.body.appendChild(d);
-  setTimeout(()=>d.remove(),950);
-}
-function showLevelUp(level){
-  const o=document.getElementById('levelup');if(!o)return;
-  o.querySelector('.lvlup-badge').textContent='Level '+level;
-  o.querySelector('.lvlup-sub').textContent=LEVEL_NAMES[level-1]||'Meister';
-  const mm=document.getElementById('mascotLvl');
-  if(mm){mm.classList.add('celebrate');clearTimeout(mm._c);mm._c=setTimeout(()=>mm.classList.remove('celebrate'),720);}
-  // Sparkle burst
-  const sparksEl=document.getElementById('lvlupSparks');
-  if(sparksEl&&!reduceMotion()){
-    sparksEl.innerHTML='';
-    const colors=['#58cc02','#ffc800','#1cb0f6','#ff9600','#ce82ff','#ff4b4b','#fff','#ffff00'];
-    for(let i=0;i<14;i++){
-      const s=document.createElement('div');
-      s.className='lvlup-spark';
-      const angle=(i/14)*360;
-      const dist=70+Math.random()*55;
-      const dx=Math.round(Math.cos(angle*Math.PI/180)*dist);
-      const dy=Math.round(Math.sin(angle*Math.PI/180)*dist);
-      s.style.cssText=`--dx:${dx}px;--dy:${dy}px;--sd:${(i*0.035).toFixed(3)}s;background:${colors[i%colors.length]}`;
-      sparksEl.appendChild(s);
-    }
-  }
-  o.classList.add('show');
-  clearTimeout(o._t);o._t=setTimeout(()=>o.classList.remove('show'),2800);
-  if(!reduceMotion())emberRain();
-  sndMilestone();
-  if(navigator.vibrate)navigator.vibrate([40,50,40,50,80]);
-}
-function checkAchievements(h,streak){
-  const ach=state.achievements||{};
-  const unlock=id=>{
-    if(!ach[id]){
-      ach[id]=Date.now();
-      const def=ACHIEVEMENTS.find(a=>a.id===id);
-      if(def)setTimeout(()=>toast(def.e+' Erfolg: '+def.n),900);
-    }
-  };
-  unlock('first_check');
-  if(streak>=3)unlock('streak_3');
-  if(streak>=7)unlock('streak_7');
-  if(streak>=14)unlock('streak_14');
-  if(streak>=30)unlock('streak_30');
-  if(streak>=100)unlock('streak_100');
-  const tc=totalCompletions();
-  if(tc>=10)unlock('total_10');
-  if(tc>=50)unlock('total_50');
-  if(tc>=100)unlock('total_100');
-  const done=state.habits.filter(hh=>hh.history[TODAY]).length;
-  if(done===state.habits.length&&state.habits.length>0)unlock('perfect_day');
-  state.achievements=ach;
-}
-function checkAchievementsLevel(level){
-  const ach=state.achievements||{};
-  const unlock=id=>{
-    if(!ach[id]){
-      ach[id]=Date.now();
-      const def=ACHIEVEMENTS.find(a=>a.id===id);
-      if(def)setTimeout(()=>toast(def.e+' Erfolg: '+def.n),1300);
-    }
-  };
-  if(level>=5)unlock('level_5');
-  if(level>=10)unlock('level_10');
-  state.achievements=ach;
-}
-function checkAchievementsHabit(){
-  const ach=state.achievements||{};
-  const unlock=id=>{
-    if(!ach[id]){
-      ach[id]=Date.now();
-      const def=ACHIEVEMENTS.find(a=>a.id===id);
-      if(def)setTimeout(()=>toast(def.e+' Erfolg: '+def.n),400);
-    }
-  };
-  if(state.habits.length>=1)unlock('first_habit');
-  if(state.habits.length>=5)unlock('habit_5');
-  state.achievements=ach;
-}
-function renderAchievements(){
-  const ach=state.achievements||{};
-  const cnt=ACHIEVEMENTS.filter(a=>ach[a.id]).length;
-  return'<div class="section-title">Erfolge ('+cnt+'/'+ACHIEVEMENTS.length+')</div>'+
-    '<div class="ach-grid">'+
-    ACHIEVEMENTS.map(a=>{
-      const u=!!ach[a.id];
-      return`<div class="ach ${u?'unlocked':'locked'}"><div class="ae">${a.e}</div><div class="an">${a.n}</div></div>`;
-    }).join('')+
-    '</div>';
-}
-
 /* ---- init ---- */
 load();
 loadTheme();
 loadSound();
-migrateXP();
 reconcileTimers();
 fxInit();
-mascotInit();
 render();
 renderInstall();
 ensureTicker();
