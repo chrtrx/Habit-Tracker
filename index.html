@@ -136,6 +136,17 @@
 
     .tool-row { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
 
+    /* Streak card */
+    .stk-flame { font-size: 42px; line-height: 1; filter: grayscale(1) opacity(.45); transition: filter .4s; flex-shrink: 0; }
+    .stk-flame.lit { filter: none; animation: flamePulse 1.6s ease-in-out infinite; }
+    @keyframes flamePulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.12) rotate(-3deg); } }
+    .stk-num { font-size: 30px; font-weight: 900; line-height: 1; color: var(--amber); }
+    .stk-lbl { font-size: 12px; font-weight: 700; color: var(--text-2); margin-top: 3px; }
+    .stk-chips { display: flex; gap: 6px; margin-top: 7px; }
+    .stk-chip { font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 12px; background: var(--bg); color: var(--text-3); }
+    .stk-chip.done { background: var(--green-l); color: var(--green); }
+    .stk-btn { flex-shrink: 0; }
+
     /* ═══ PACKLISTE ═══ */
     .pack-stat { display: flex; align-items: center; gap: 12px; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 13px 16px; margin-bottom: 12px; animation: rise .35s ease both; }
     .pack-stat .nums { font-size: 13px; color: var(--text-2); white-space: nowrap; font-weight: 700; }
@@ -430,7 +441,13 @@ function load() {
   });
 }
 function save() {
-  if (!applyingRemote) S.updatedAt = Date.now();
+  if (!applyingRemote) {
+    S.updatedAt = Date.now();
+    // Jede echte Aktion zählt als Tages-Check-in für den Streak
+    const t = today();
+    S.checkins = S.checkins || {};
+    (S.checkins[t] = S.checkins[t] || {})[devId()] = true;
+  }
   try { localStorage.setItem(SKEY, JSON.stringify(S)); }
   catch { alert('Speicher voll! Bitte lösche einige Fotos im Tagebuch.'); }
   if (sync && !applyingRemote) {
@@ -477,6 +494,69 @@ function render() {
   else if (tab === 'pack') renderPack();
   else if (tab === 'kosten') renderKosten();
   else renderDiary();
+}
+
+// ═══ Gemeinsamer Streak ═══
+function devId() {
+  let id = localStorage.getItem('urlaub-dev');
+  if (!id) { id = 'd' + Math.random().toString(36).slice(2, 10); localStorage.setItem('urlaub-dev', id); }
+  return id;
+}
+function addDaysIso(iso, delta) { const t = new Date(iso + 'T12:00:00'); t.setDate(t.getDate() + delta); return t.toISOString().slice(0, 10); }
+// Ein Tag zählt, wenn (mit Sync) BEIDE eingecheckt haben, sonst wenn ich selbst dran war
+function duoDone(d) {
+  const ids = Object.keys(S.checkins?.[d] || {});
+  return sync ? ids.length >= 2 : ids.length >= 1;
+}
+function calcStreak() {
+  let d = today(), n = 0;
+  if (!duoDone(d)) d = addDaysIso(d, -1); // heute darf noch offen sein
+  while (duoDone(d)) { n++; d = addDaysIso(d, -1); }
+  return n;
+}
+function calcRecord() {
+  const days = Object.keys(S.checkins || {}).filter(duoDone).sort();
+  let best = 0, run = 0, prev = null;
+  for (const d of days) {
+    run = (prev && daysBetween(prev, d) === 1) ? run + 1 : 1;
+    best = Math.max(best, run);
+    prev = d;
+  }
+  return Math.max(best, calcStreak());
+}
+function checkinToday() {
+  const t = today();
+  const ck = S.checkins?.[t] || {};
+  const partnerWasDone = Object.keys(ck).some(id => id !== devId());
+  const meWasDone = !!ck[devId()];
+  if (meWasDone) return;
+  save(); // save() markiert den Check-in
+  renderReise();
+  if (sync && partnerWasDone) confetti(); // Flamme komplett → feiern!
+}
+function streakCardHtml() {
+  const now = today();
+  const ck = S.checkins?.[now] || {};
+  const meDone = !!ck[devId()];
+  const partnerDone = Object.keys(ck).some(id => id !== devId());
+  const lit = sync ? (meDone && partnerDone) : meDone;
+  const streak = calcStreak();
+  const started = S.trip && daysBetween(now, S.trip.startDate) <= 0;
+  const label = started ? 'Urlaubs-Streak' : 'Vorfreude-Streak';
+  return `<div class="card">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div class="stk-flame${lit ? ' lit' : ''}">🔥</div>
+      <div style="flex:1;min-width:0">
+        <div class="stk-num">${streak} <span style="font-size:14px;color:var(--text-2);font-weight:700">Tage</span></div>
+        <div class="stk-lbl">${label} · Rekord: ${calcRecord()}</div>
+        ${sync ? `<div class="stk-chips">
+          <span class="stk-chip${meDone ? ' done' : ''}">${meDone ? '✓' : '·'} Du</span>
+          <span class="stk-chip${partnerDone ? ' done' : ''}">${partnerDone ? '✓' : '·'} Partner/in</span>
+        </div>` : `<div class="stk-chips"><span class="stk-chip">Starte den Live-Sync unten, um gemeinsam zu sammeln 👫</span></div>`}
+      </div>
+      <button class="btn ${meDone ? 'btn-ghost' : 'btn-primary'} btn-sm stk-btn" ${meDone ? 'disabled style="opacity:.55"' : ''} onclick="checkinToday()">${meDone ? '✓ Heute' : '🔥 Check-in'}</button>
+    </div>
+  </div>`;
 }
 
 // ═══ TAB 1: REISE ═══
@@ -559,6 +639,8 @@ function renderReise() {
         ${t.persons?.length ? `<div class="bpass-cell"><div class="bc-v">${t.persons.length} 👥</div><div class="bc-l">Reisende</div></div>` : ''}
       </div>
     </div>
+
+    ${streakCardHtml()}
 
     ${syncCardHtml()}
 
@@ -1170,8 +1252,12 @@ function applyRemote(remote) {
   applyingRemote = true;
   const localPhotos = {};
   Object.entries(S.diary || {}).forEach(([d, e]) => { if (e.photos?.length) localPhotos[d] = e.photos; });
+  const localCheckins = S.checkins || {};
   S = Object.assign({ trip: null, budget: 0, packing: [], expenses: [], diary: {} }, remote);
   Object.entries(localPhotos).forEach(([d, ph]) => { S.diary[d] = S.diary[d] || {}; S.diary[d].photos = ph; });
+  // Check-ins vereinigen statt überschreiben – so geht kein Streak-Tag verloren
+  S.checkins = S.checkins || {};
+  Object.entries(localCheckins).forEach(([d, ids]) => { S.checkins[d] = Object.assign({}, S.checkins[d] || {}, ids); });
   save();
   applyingRemote = false;
   render();
