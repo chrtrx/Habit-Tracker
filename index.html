@@ -9,6 +9,8 @@
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <title>Urlaubsplaner</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer onload="if(typeof tab!=='undefined'&&tab==='karte')renderKarte()"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -244,6 +246,18 @@
     .fab:active { transform: scale(.9); filter: brightness(.9); }
     @media (min-width: 480px) { .fab { right: calc((100vw - 480px) / 2 + 16px); } }
 
+    /* ═══ ROUTE / KARTE ═══ */
+    .map-card { background: var(--surface); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 12px; animation: rise .35s ease both; }
+    #map { height: 300px; width: 100%; z-index: 1; }
+    .step-marker { width: 28px; height: 28px; border-radius: 50%; background: var(--sky); border: 2.5px solid #fff; color: #fff; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(2,132,199,.5); }
+    .step-item { display: flex; align-items: center; gap: 11px; background: var(--surface); border-radius: var(--radius-sm); padding: 11px 12px; margin-bottom: 7px; box-shadow: var(--shadow); cursor: pointer; }
+    .step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--sky-l); color: var(--sky-d); font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-name { font-weight: 700; font-size: 14px; }
+    .step-meta { font-size: 12px; color: var(--text-2); }
+    .geo-results { margin-top: 6px; }
+    .geo-item { padding: 9px 11px; background: var(--bg); border-radius: 9px; margin-bottom: 5px; font-size: 13px; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .geo-item:active { background: var(--sky-l); }
+
     .views > div { display: none; }
     .views > div.active { display: block; }
     .section-label { font-size: 12px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: .07em; margin: 16px 2px 8px; }
@@ -256,6 +270,7 @@
   <div id="content">
     <div class="views" id="views">
       <div id="v-reise" class="active"></div>
+      <div id="v-karte"></div>
       <div id="v-pack"></div>
       <div id="v-kosten"></div>
       <div id="v-diary"></div>
@@ -263,7 +278,8 @@
   </div>
   <nav>
     <button class="active" data-tab="reise" onclick="go('reise')"><span class="ni">🏝️</span>Reise</button>
-    <button data-tab="pack" onclick="go('pack')"><span class="ni">🧳</span>Packliste</button>
+    <button data-tab="karte" onclick="go('karte')"><span class="ni">🗺️</span>Route</button>
+    <button data-tab="pack" onclick="go('pack')"><span class="ni">🧳</span>Packen</button>
     <button data-tab="kosten" onclick="go('kosten')"><span class="ni">💰</span>Kosten</button>
     <button data-tab="diary" onclick="go('diary')"><span class="ni">📔</span>Tagebuch</button>
   </nav>
@@ -417,21 +433,56 @@
   </div>
 </div>
 
+<!-- Step Sheet (Route) -->
+<div class="overlay" id="stepSheet" onclick="bgClose(event,'stepSheet')">
+  <div class="sheet">
+    <div class="sheet-inner">
+      <div class="sheet-hd">
+        <span class="sheet-title">Ort zur Route hinzufügen 📍</span>
+        <button class="close-btn" onclick="closeSheet('stepSheet')">✕</button>
+      </div>
+      <div class="frow">
+        <label class="label">Ort suchen</label>
+        <input id="st-q" type="text" placeholder="z.B. Palma de Mallorca" autocomplete="off" oninput="stepSearchDebounced()" />
+        <div id="st-results" class="geo-results"></div>
+      </div>
+      <button class="file-btn" style="margin-top:0" onclick="useMyLocation()">📡 Aktuellen Standort verwenden</button>
+      <div id="st-sel" style="margin:10px 2px;font-size:13.5px;font-weight:700;color:var(--sky-d);min-height:18px"></div>
+      <div class="fgrid">
+        <div class="frow">
+          <label class="label">Datum</label>
+          <input id="st-date" type="date" />
+        </div>
+        <div class="frow">
+          <label class="label">Notiz (optional)</label>
+          <input id="st-note" type="text" placeholder="z.B. Hotel, Strandtag" />
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveStep()">Zur Route hinzufügen</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ═══ State ═══
 const SKEY = 'urlaub-v1';
-let S = { trip: null, budget: 0, packing: [], expenses: [], diary: {} };
+let S = { trip: null, budget: 0, packing: [], expenses: [], diary: {}, steps: [] };
 
 function load() {
-  try { const d = localStorage.getItem(SKEY); if (d) S = Object.assign({ trip: null, budget: 0, packing: [], expenses: [], diary: {} }, JSON.parse(d)); } catch {}
+  try { const d = localStorage.getItem(SKEY); if (d) S = Object.assign({ trip: null, budget: 0, packing: [], expenses: [], diary: {}, steps: [] }, JSON.parse(d)); } catch {}
   // Migration: single photo → photos array
   Object.values(S.diary || {}).forEach(e => {
     if (e.photo) { e.photos = e.photos || []; e.photos.push(e.photo); delete e.photo; }
   });
 }
 function save() {
+  if (!applyingRemote) S.updatedAt = Date.now();
   try { localStorage.setItem(SKEY, JSON.stringify(S)); }
   catch { alert('Speicher voll! Bitte lösche einige Fotos im Tagebuch.'); }
+  if (sync && !applyingRemote) {
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(syncPush, 1500);
+  }
 }
 
 // ═══ Navigation ═══
@@ -441,7 +492,7 @@ function go(t) {
   document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
   document.querySelectorAll('.views > div').forEach(v => v.classList.remove('active'));
   document.getElementById('v-' + t).classList.add('active');
-  document.getElementById('fab').style.display = (t === 'pack' || t === 'kosten') ? 'flex' : 'none';
+  document.getElementById('fab').style.display = (t === 'pack' || t === 'kosten' || t === 'karte') ? 'flex' : 'none';
   render();
 }
 function fabAction() {
@@ -450,6 +501,7 @@ function fabAction() {
     if (!S.trip?.persons?.length) { alert('Bitte füge zuerst Mitreisende im Reise-Tab hinzu.'); return; }
     resetExpForm(); openSheet('expSheet');
   }
+  else if (tab === 'karte') { resetStepSheet(); openSheet('stepSheet'); setTimeout(() => document.getElementById('st-q').focus(), 350); }
 }
 
 // ═══ Sheets ═══
@@ -469,9 +521,159 @@ function esc(s) { return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&
 // ═══ Render ═══
 function render() {
   if (tab === 'reise') renderReise();
+  else if (tab === 'karte') renderKarte();
   else if (tab === 'pack') renderPack();
   else if (tab === 'kosten') renderKosten();
   else renderDiary();
+}
+
+// ═══ TAB: ROUTE / KARTE (Polarsteps-Style) ═══
+let map = null;
+let stepSel = null, stepSearchTimer = null, geoResults = [];
+
+function sortedSteps() {
+  return (S.steps || []).slice().sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+}
+function haversineKm(a, b) {
+  const R = 6371, rad = x => x * Math.PI / 180;
+  const dLat = rad(b.lat - a.lat), dLon = rad(b.lon - a.lon);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(+a.lat)) * Math.cos(rad(+b.lat)) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+function routeKm(steps) {
+  let km = 0;
+  for (let i = 1; i < steps.length; i++) km += haversineKm(steps[i - 1], steps[i]);
+  return Math.round(km);
+}
+
+function renderKarte() {
+  const el = document.getElementById('v-karte');
+  const steps = sortedSteps();
+  const km = routeKm(steps);
+  const countries = new Set(steps.map(s => s.country).filter(Boolean)).size;
+
+  let html = `<div class="page-title">Route 🗺️${steps.length ? `<span class="pt-sub">${steps.length} Stopps</span>` : ''}</div>
+  <div class="cost-stats">
+    <div class="cs-box"><div class="cs-num">${steps.length}</div><div class="cs-lbl">📍 Orte</div></div>
+    <div class="cs-box"><div class="cs-num">${km}</div><div class="cs-lbl">🛣️ Kilometer</div></div>
+    <div class="cs-box"><div class="cs-num">${countries || '–'}</div><div class="cs-lbl">🌍 Länder</div></div>
+  </div>
+  <div class="map-card"><div id="map"></div></div>`;
+
+  if (!steps.length) {
+    html += `<div class="empty" style="padding-top:16px"><span class="ei">🧭</span><div class="et">Noch keine Stopps</div><p>Tippe auf <b>+</b> und füge euren<br>ersten Ort zur Route hinzu.</p></div>`;
+  } else {
+    html += `<div class="section-label">Eure Stopps</div>`;
+    html += steps.map((s, i) => `<div class="step-item" onclick="focusStep('${s.id}')">
+      <div class="step-num">${i + 1}</div>
+      <div style="flex:1;min-width:0">
+        <div class="step-name">${esc(s.name)}${s.country ? ` <span style="font-weight:600;color:var(--text-3);font-size:12px">· ${esc(s.country)}</span>` : ''}</div>
+        <div class="step-meta">${s.date ? fmtDate(s.date) : ''}${s.note ? (s.date ? ' · ' : '') + esc(s.note) : ''}</div>
+      </div>
+      <span class="pi-del" onclick="event.stopPropagation();deleteStep('${s.id}')">🗑</span>
+    </div>`).join('');
+  }
+  el.innerHTML = html;
+  initMap(steps);
+}
+
+function initMap(steps) {
+  const div = document.getElementById('map');
+  if (!div) return;
+  if (!window.L) {
+    div.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-2);font-size:13px;text-align:center;padding:20px">🌐 Für die Karte wird Internet gebraucht.<br>Deine Stopps-Liste funktioniert trotzdem.</div>';
+    return;
+  }
+  if (map) { map.remove(); map = null; }
+  map = L.map('map', { scrollWheelZoom: false });
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
+  const pts = steps.map(s => [+s.lat, +s.lon]);
+  steps.forEach((s, i) => {
+    L.marker([+s.lat, +s.lon], { icon: L.divIcon({ className: '', html: `<div class="step-marker">${i + 1}</div>`, iconSize: [28, 28], iconAnchor: [14, 14] }) })
+      .addTo(map)
+      .bindPopup(`<b>${esc(s.name)}</b>${s.date ? '<br>' + fmtDate(s.date) : ''}${s.note ? '<br>' + esc(s.note) : ''}`);
+  });
+  if (pts.length > 1) {
+    L.polyline(pts, { color: '#0ea5e9', weight: 3, dashArray: '6 9' }).addTo(map);
+    map.fitBounds(pts, { padding: [34, 34] });
+  } else if (pts.length === 1) {
+    map.setView(pts[0], 10);
+  } else {
+    map.setView([48.7, 9.1], 4);
+  }
+}
+
+function focusStep(id) {
+  const s = (S.steps || []).find(x => x.id === id);
+  if (!s || !map) return;
+  map.setView([+s.lat, +s.lon], 12);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function deleteStep(id) {
+  S.steps = (S.steps || []).filter(s => s.id !== id);
+  save(); renderKarte();
+}
+
+function resetStepSheet() {
+  stepSel = null; geoResults = [];
+  document.getElementById('st-q').value = '';
+  document.getElementById('st-results').innerHTML = '';
+  document.getElementById('st-sel').textContent = '';
+  document.getElementById('st-date').value = today();
+  document.getElementById('st-note').value = '';
+}
+function stepSearchDebounced() {
+  clearTimeout(stepSearchTimer);
+  stepSearchTimer = setTimeout(stepSearch, 600);
+}
+async function stepSearch() {
+  const q = document.getElementById('st-q').value.trim();
+  const box = document.getElementById('st-results');
+  if (q.length < 2) { box.innerHTML = ''; return; }
+  box.innerHTML = '<div class="geo-item" style="color:var(--text-3)">Suche…</div>';
+  try {
+    const r = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&addressdetails=1&q=' + encodeURIComponent(q));
+    geoResults = await r.json();
+    box.innerHTML = geoResults.length
+      ? geoResults.map((p, i) => `<div class="geo-item" onclick="pickPlace(${i})">📍 ${esc(p.display_name)}</div>`).join('')
+      : '<div class="geo-item" style="color:var(--text-3)">Nichts gefunden</div>';
+  } catch {
+    box.innerHTML = '<div class="geo-item" style="color:var(--text-3)">Suche fehlgeschlagen – bist du online?</div>';
+  }
+}
+function pickPlace(i) {
+  const p = geoResults[i];
+  if (!p) return;
+  stepSel = { name: p.name || (p.display_name || '').split(',')[0], lat: +p.lat, lon: +p.lon, country: p.address?.country || '' };
+  document.getElementById('st-sel').textContent = '✓ ' + stepSel.name + (stepSel.country ? ' · ' + stepSel.country : '');
+  document.getElementById('st-results').innerHTML = '';
+  document.getElementById('st-q').value = stepSel.name;
+}
+function useMyLocation() {
+  if (!navigator.geolocation) { alert('Standort ist auf diesem Gerät nicht verfügbar.'); return; }
+  document.getElementById('st-sel').textContent = '📡 Ermittle Standort…';
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const lat = pos.coords.latitude, lon = pos.coords.longitude;
+    let name = 'Mein Standort', country = '';
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+      const j = await r.json();
+      name = j.name || j.address?.city || j.address?.town || j.address?.village || (j.display_name || '').split(',')[0] || name;
+      country = j.address?.country || '';
+    } catch {}
+    stepSel = { name, lat, lon, country };
+    document.getElementById('st-sel').textContent = '✓ ' + name + (country ? ' · ' + country : '');
+    document.getElementById('st-q').value = name;
+  }, () => {
+    document.getElementById('st-sel').textContent = '';
+    alert('Standort konnte nicht ermittelt werden.');
+  }, { enableHighAccuracy: true, timeout: 10000 });
+}
+function saveStep() {
+  if (!stepSel) { alert('Bitte zuerst einen Ort suchen und antippen.'); return; }
+  S.steps = S.steps || [];
+  S.steps.push({ id: uid(), name: stepSel.name, lat: stepSel.lat, lon: stepSel.lon, country: stepSel.country, date: document.getElementById('st-date').value, note: document.getElementById('st-note').value.trim() });
+  save(); closeSheet('stepSheet'); renderKarte();
 }
 
 // ═══ TAB 1: REISE ═══
@@ -486,6 +688,7 @@ function renderReise() {
       <div class="et">Noch kein Urlaub geplant</div>
       <p>Lege deine Reise an und<br>zähle die Tage!</p>
       <button class="btn btn-primary" style="margin-top:20px" onclick="openTripSheet()">Reise anlegen ✈️</button>
+      <p style="margin-top:16px"><button class="btn btn-ghost btn-sm" onclick="joinPrompt()">🔗 Geteilte Reise beitreten</button></p>
     </div>`;
     return;
   }
@@ -553,6 +756,8 @@ function renderReise() {
         ${t.persons?.length ? `<div class="bpass-cell"><div class="bc-v">${t.persons.length} 👥</div><div class="bc-l">Reisende</div></div>` : ''}
       </div>
     </div>
+
+    ${syncCardHtml()}
 
     <div class="card">
       <div class="card-hd"><span class="card-title">Auf einen Blick</span></div>
@@ -1000,7 +1205,8 @@ function renderDiary() {
     const entry = S.diary[d] || {};
     const isToday = d === now;
     const dt = new Date(d + 'T12:00:00');
-    const preview = [entry.weather, entry.activities ? entry.activities.slice(0, 40) : ''].filter(Boolean).join(' ');
+    const dayPlaces = (S.steps || []).filter(s => s.date === d).map(s => s.name).join(', ');
+    const preview = [dayPlaces ? '📍 ' + dayPlaces : '', entry.weather, entry.activities ? entry.activities.slice(0, 40) : ''].filter(Boolean).join(' ');
 
     return `<div class="diary-card${isToday ? ' today open' : ''}" id="card-${d}">
       <div class="diary-hd" onclick="toggleDay('${d}')">
@@ -1088,7 +1294,8 @@ function setDF(d, field, val) {
   if (card) {
     const prev = card.querySelector('.dh-preview');
     if (prev) {
-      const p = [entry.weather, entry.activities ? entry.activities.slice(0, 40) : ''].filter(Boolean).join(' ');
+      const dayPlaces = (S.steps || []).filter(s => s.date === d).map(s => s.name).join(', ');
+      const p = [dayPlaces ? '📍 ' + dayPlaces : '', entry.weather, entry.activities ? entry.activities.slice(0, 40) : ''].filter(Boolean).join(' ');
       prev.textContent = p || fmtLong(d);
     }
     const moodEl = card.querySelector('.dh-mood');
@@ -1134,9 +1341,172 @@ function removePhoto(d, i) {
   if (grid) grid.innerHTML = photoGridHtml(d);
 }
 
+// ═══ LIVE-SYNC (gemeinsam planen) ═══
+const SYNC_KEY = 'urlaub-sync';
+const SYNC_API = 'https://extendsclass.com/api/json-storage/bin';
+let sync = null;            // { bin, key }
+let pushTimer = null;
+let applyingRemote = false;
+let syncBusy = false;
+
+function loadSyncCfg() { try { const d = localStorage.getItem(SYNC_KEY); if (d) sync = JSON.parse(d); } catch {} }
+function saveSyncCfg() { sync ? localStorage.setItem(SYNC_KEY, JSON.stringify(sync)) : localStorage.removeItem(SYNC_KEY); }
+function syncCode() { return sync ? sync.bin + '.' + sync.key : ''; }
+
+function setSyncStatus(st) {
+  const el = document.getElementById('syncDot');
+  if (!el) return;
+  el.textContent = st === 'ok' ? '🟢 Synchron' : st === 'sync' ? '🔄 Synchronisiere…' : '⚠️ Offline';
+}
+
+// Fotos werden nicht mitgesendet (Größenlimit) – sie bleiben pro Gerät
+function syncPayload() {
+  const c = JSON.parse(JSON.stringify(S));
+  Object.values(c.diary || {}).forEach(e => { delete e.photos; });
+  return JSON.stringify(c);
+}
+function applyRemote(remote) {
+  applyingRemote = true;
+  const localPhotos = {};
+  Object.entries(S.diary || {}).forEach(([d, e]) => { if (e.photos?.length) localPhotos[d] = e.photos; });
+  S = Object.assign({ trip: null, budget: 0, packing: [], expenses: [], diary: {}, steps: [] }, remote);
+  Object.entries(localPhotos).forEach(([d, ph]) => { S.diary[d] = S.diary[d] || {}; S.diary[d].photos = ph; });
+  save();
+  applyingRemote = false;
+  render();
+}
+
+async function syncApi(method, body) {
+  const r = await fetch(SYNC_API + '/' + sync.bin, {
+    method,
+    headers: Object.assign({ 'Security-key': sync.key }, body ? { 'Content-Type': 'application/json' } : {}),
+    body
+  });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+
+async function syncPush() {
+  if (!sync) return;
+  setSyncStatus('sync');
+  try { await syncApi('PUT', syncPayload()); setSyncStatus('ok'); }
+  catch { setSyncStatus('err'); }
+}
+
+async function syncPull() {
+  if (!sync || syncBusy) return;
+  syncBusy = true;
+  setSyncStatus('sync');
+  try {
+    const remote = await syncApi('GET');
+    if ((remote.updatedAt || 0) > (S.updatedAt || 0)) applyRemote(remote);
+    setSyncStatus('ok');
+  } catch { setSyncStatus('err'); }
+  syncBusy = false;
+}
+
+async function startSync() {
+  const key = [...crypto.getRandomValues(new Uint8Array(12))].map(b => b.toString(16).padStart(2, '0')).join('');
+  try {
+    const r = await fetch(SYNC_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Security-key': key, 'Private': 'true' },
+      body: syncPayload()
+    });
+    const j = await r.json();
+    if (!r.ok || !j.id) throw 0;
+    sync = { bin: j.id, key };
+    saveSyncCfg();
+    renderReise();
+    shareSync();
+  } catch {
+    alert('Sync konnte nicht gestartet werden. Bitte Internetverbindung prüfen und erneut versuchen.');
+  }
+}
+
+async function joinSync(code) {
+  code = (code || '').trim();
+  const m = code.match(/^([a-zA-Z0-9]+)\.([a-f0-9]+)$/);
+  if (!m) { alert('Ungültiger Code. Format: xxxxxxx.xxxxxxxxxxxx'); return; }
+  const prev = sync;
+  sync = { bin: m[1], key: m[2] };
+  try {
+    const remote = await syncApi('GET');
+    saveSyncCfg();
+    applyRemote(remote);
+    go('reise');
+    alert('Verbunden! Ihr plant jetzt gemeinsam. 🎉');
+  } catch {
+    sync = prev;
+    alert('Code nicht gefunden oder falsch geschrieben.');
+  }
+}
+
+function joinPrompt() {
+  const c = prompt('Sync-Code eingeben (z.B. aus dem geteilten Link hinter #join=):');
+  if (c) joinSync(c);
+}
+
+function stopSync() {
+  if (!confirm('Live-Sync beenden? Deine Daten bleiben auf diesem Handy erhalten.')) return;
+  sync = null;
+  saveSyncCfg();
+  renderReise();
+}
+
+async function shareSync() {
+  const url = location.origin + location.pathname + '#join=' + syncCode();
+  const text = 'Plane unseren Urlaub mit! 🏝️ Öffne den Link, dann teilen wir Packliste, Kosten & Tagebuch: ';
+  if (navigator.share) {
+    try { await navigator.share({ title: 'Urlaubsplaner', text, url }); return; } catch {}
+  }
+  try { await navigator.clipboard.writeText(text + url); alert('Link kopiert! Schick ihn deiner Freundin. 💌'); }
+  catch { prompt('Diesen Link teilen:', text + url); }
+}
+
+function syncCardHtml() {
+  if (sync) {
+    return `<div class="card">
+      <div class="card-hd" style="margin-bottom:6px">
+        <span class="card-title">👫 Gemeinsam planen</span>
+        <span id="syncDot" style="font-size:12px;font-weight:700;color:var(--text-2)">🟢 Synchron</span>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-2);margin-bottom:8px">Änderungen an Reise, Packliste, Kosten &amp; Tagebuch landen automatisch auf beiden Handys. Fotos bleiben auf dem eigenen Gerät.</p>
+      <div style="font-size:12px;background:var(--bg);border-radius:8px;padding:7px 10px;margin-bottom:10px;word-break:break-all"><b>Code:</b> <span style="font-family:monospace">${esc(syncCode())}</span></div>
+      <div class="tool-row" style="margin-top:0">
+        <button class="btn btn-primary btn-sm" onclick="shareSync()">💌 Link teilen</button>
+        <button class="btn btn-ghost btn-sm" onclick="syncPull()">🔄 Aktualisieren</button>
+        <button class="btn btn-danger btn-sm" onclick="stopSync()">Beenden</button>
+      </div>
+    </div>`;
+  }
+  return `<div class="card">
+    <div class="card-hd" style="margin-bottom:6px"><span class="card-title">👫 Gemeinsam planen</span></div>
+    <p style="font-size:12.5px;color:var(--text-2);margin-bottom:10px">Teile die Reise mit deiner Freundin: Packliste, Kosten &amp; Tagebuch werden live auf beiden Handys synchronisiert — ohne Konto, ohne Anmeldung.</p>
+    <button class="btn btn-primary btn-sm" onclick="startSync()">🔗 Live-Sync starten</button>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <input type="text" id="joinCode" placeholder="Oder Code eingeben…" style="flex:1;font-size:13px;padding:8px 10px" />
+      <button class="btn btn-ghost btn-sm" onclick="joinSync(document.getElementById('joinCode').value)">Beitreten</button>
+    </div>
+  </div>`;
+}
+
 // ═══ Init ═══
 load();
+loadSyncCfg();
 render();
+
+// Beitritt über geteilten Link (#join=CODE)
+const joinMatch = location.hash.match(/#join=([a-zA-Z0-9.]+)/);
+if (joinMatch) {
+  history.replaceState(null, '', location.pathname + location.search);
+  if (confirm('Geteilte Reise laden? Deine aktuellen Daten auf diesem Gerät werden ersetzt.')) joinSync(joinMatch[1]);
+}
+
+if (sync) syncPull();
+setInterval(() => { if (sync && document.visibilityState === 'visible') syncPull(); }, 45000);
+document.addEventListener('visibilitychange', () => { if (sync && document.visibilityState === 'visible') syncPull(); });
+
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
 </script>
 </body>
