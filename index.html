@@ -1,1959 +1,765 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#eafadb">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Streak">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="icon" type="image/png" href="icon-192.png">
-<title>Streak · Habit Tracker</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --green:#58cc02; --green-dark:#46a302; --green-tint:#eafadb;
-    --blue:#1cb0f6;  --blue-dark:#1690cc;  --blue-tint:#e2f5ff;
-    --purple:#ce82ff;--purple-dark:#a568cc;--purple-tint:#f4e9ff;
-    --orange:#ff9600;--orange-dark:#cc7800;--orange-tint:#fff0db;
-    --red:#ff4b4b;   --red-dark:#d43a3a;   --red-tint:#ffe6e6;
-    --yellow:#ffc800;--yellow-dark:#e0a800;--yellow-tint:#fff6d6;
-    --teal:#00cd9c;  --teal-dark:#00a37d;  --teal-tint:#d9fbf2;
-    --pink:#ff86d0;  --pink-dark:#d96bad;  --pink-tint:#ffe7f6;
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0ea5e9">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <title>Urlaubsplaner</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --sky: #0ea5e9;
+      --sky-d: #0284c7;
+      --sky-l: #e0f2fe;
+      --amber: #f59e0b;
+      --amber-l: #fef3c7;
+      --green: #10b981;
+      --green-l: #d1fae5;
+      --rose: #f43f5e;
+      --rose-l: #ffe4e6;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #111827;
+      --text-2: #6b7280;
+      --text-3: #9ca3af;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+      --tab-h: 62px;
+      --safe: env(safe-area-inset-bottom, 0px);
+    }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.5; -webkit-tap-highlight-color: transparent; }
 
-    --fire:#ff9600;
-    --text:#3c3c3c; --muted:#afafaf; --line:#e5e5e5; --bg:#ffffff; --card:#ffffff;
-    --soft:#f7f7f7;
-    --r:18px;
-    font-family:'Nunito',system-ui,sans-serif;
-  }
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html,body{margin:0;padding:0;background:var(--soft);color:var(--text);}
-  body{font-family:'Nunito',system-ui,sans-serif;font-weight:700;overscroll-behavior-y:contain;}
-  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
-  input{font-family:inherit;}
+    #app { display: flex; flex-direction: column; min-height: 100%; max-width: 480px; margin: 0 auto; }
+    #content { flex: 1; padding: 16px 16px calc(var(--tab-h) + var(--safe) + 20px); overflow-x: hidden; }
 
-  .app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--soft);
-       display:flex;flex-direction:column;position:relative;}
+    nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: calc(var(--tab-h) + var(--safe)); background: rgba(255,255,255,.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; z-index: 100; padding-bottom: var(--safe); }
+    nav button { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border: none; background: none; cursor: pointer; padding: 8px 4px; font-size: 10.5px; color: var(--text-3); font-weight: 500; transition: color .2s; }
+    nav button .ni { font-size: 23px; line-height: 1; }
+    nav button.active { color: var(--sky); }
 
-  /* ---------- Header ---------- */
-  header{padding:calc(20px + env(safe-area-inset-top)) 18px 14px;background:var(--bg);border-bottom:2px solid var(--line);
-         position:sticky;top:0;z-index:20;}
-  .brand{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
-  .brand .logo{font-size:24px;}
-  .brand h1{font-size:20px;font-weight:900;margin:0;letter-spacing:-.3px;}
-  .summary{display:flex;align-items:center;gap:16px;}
-  .ring{position:relative;width:64px;height:64px;flex:none;}
-  .ring svg{transform:rotate(-90deg);}
-  .ring .ring-label{position:absolute;inset:0;display:flex;flex-direction:column;
-        align-items:center;justify-content:center;line-height:1;}
-  .ring .ring-num{font-size:16px;font-weight:900;}
-  .ring .ring-sub{font-size:9px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
-  .flamebox{display:flex;align-items:center;gap:10px;background:#fff4e5;
-        border:2px solid #ffe1bd;border-radius:14px;padding:10px 14px;flex:1;}
-  .flamebox .big{font-size:30px;line-height:1;}
-  .flamebox .num{font-size:24px;font-weight:900;color:var(--fire);line-height:1;}
-  .flamebox .lbl{font-size:11px;font-weight:800;color:#c98a3a;text-transform:uppercase;letter-spacing:.4px;}
+    .card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; margin-bottom: 12px; }
+    .card-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .card-title { font-size: 12px; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: .06em; }
 
-  /* ---------- Tabs ---------- */
-  .tabs{display:flex;gap:6px;padding:12px 14px 4px;background:var(--bg);position:sticky;
-        top:0;z-index:19;}
-  .tab{flex:1;padding:10px 4px;border-radius:12px;font-weight:800;font-size:13px;color:var(--muted);
-       background:var(--soft);transition:.15s;}
-  .tab.active{color:var(--green-dark);background:var(--green-tint);}
-  .tab-gear{flex:0 0 46px;font-size:18px;padding:10px 0;}
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 14px; font-weight: 600; padding: 11px 18px; transition: filter .15s; font-family: inherit; }
+    .btn:active { filter: brightness(.9); }
+    .btn-primary { background: var(--sky); color: #fff; }
+    .btn-ghost { background: transparent; color: var(--sky); border: 1.5px solid var(--sky); }
+    .btn-sm { padding: 7px 13px; font-size: 13px; border-radius: 8px; }
+    .btn-danger { background: var(--rose-l); color: var(--rose); border: none; }
+    .btn-full { width: 100%; margin-top: 8px; }
 
-  /* ---------- Content ---------- */
-  main{flex:1;padding:14px 16px 120px;}
-  .alldone{display:flex;align-items:center;gap:10px;background:var(--green-tint);
-        border:2px solid #c5eb9e;border-radius:14px;padding:12px 14px;margin-bottom:14px;
-        font-weight:800;color:var(--green-dark);font-size:14px;}
+    input[type=text], input[type=number], input[type=date], select, textarea {
+      width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 14px; color: var(--text); background: var(--surface); outline: none; transition: border-color .15s; font-family: inherit; appearance: none; -webkit-appearance: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--sky); }
+    textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+    .label { display: block; font-size: 12px; font-weight: 600; color: var(--text-2); margin-bottom: 5px; }
+    .frow { margin-bottom: 12px; }
+    .fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-  /* habit card */
-  .habit{display:flex;align-items:center;gap:12px;background:var(--card);
-        border:2px solid var(--line);border-radius:var(--r);padding:12px;margin-bottom:12px;
-        box-shadow:0 3px 0 var(--line);transition:transform .1s;}
-  .habit.done{border-color:#cdeeb0;box-shadow:0 3px 0 #cdeeb0;background:#fbfff5;}
-  .habit .emoji{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;
-        justify-content:center;font-size:24px;flex:none;}
-  .habit .body{flex:1;min-width:0;cursor:pointer;}
-  .habit .name{font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .habit .meta{font-size:12px;font-weight:700;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:5px;}
-  .habit .meta .s{color:var(--fire);}
-  .check{width:46px;height:46px;border-radius:50%;flex:none;border:3px solid var(--line);
-        background:#fff;display:flex;align-items:center;justify-content:center;
-        font-size:22px;color:transparent;transition:.12s;box-shadow:0 3px 0 var(--line);}
-  .check:active{transform:translateY(3px);box-shadow:none;}
-  .check.on{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 3px 0 var(--green-dark);}
-  .check.on:active{box-shadow:none;}
-  .check.play{color:var(--green);}
-  .check.timing{background:var(--orange);border-color:var(--orange);color:#fff;box-shadow:0 3px 0 var(--orange-dark);}
-  .check.timing:active{box-shadow:none;}
-  .check.paused{background:#fff;border-color:var(--orange);color:var(--orange);box-shadow:0 3px 0 var(--orange-dark);}
-  .check.paused:active{box-shadow:none;}
-  .cd{color:var(--orange);font-weight:800;}
-  .metalink{color:var(--red);font-weight:800;}
-  .dur-opt{padding:9px 14px;border-radius:12px;background:var(--soft);font-weight:800;font-size:14px;border:2px solid transparent;transition:.1s;}
-  .dur-opt.sel{border-color:var(--blue);background:#e9f7ff;color:var(--blue-dark);}
-  .pop{animation:pop .3s ease;}
-  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+    .pbar-wrap { background: var(--border); border-radius: 8px; height: 7px; overflow: hidden; }
+    .pbar { height: 100%; border-radius: 8px; transition: width .6s ease; }
 
-  /* empty state */
-  .empty{text-align:center;padding:60px 20px;color:var(--muted);}
-  .empty .e{font-size:52px;margin-bottom:12px;}
-  .empty p{font-size:15px;font-weight:700;line-height:1.5;}
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .chip { display: inline-flex; align-items: center; gap: 3px; background: var(--sky-l); border-radius: 20px; padding: 4px 10px; font-size: 13px; font-weight: 500; color: var(--sky-d); }
+    .chip .x { cursor: pointer; color: var(--text-3); margin-left: 1px; line-height: 1; }
 
-  /* ---------- Stats ---------- */
-  .stat-row{display:flex;gap:10px;margin-bottom:16px;}
-  .stat{flex:1;background:#fff;border:2px solid var(--line);border-radius:14px;padding:12px 10px;text-align:center;box-shadow:0 3px 0 var(--line);}
-  .stat .v{font-size:22px;font-weight:900;line-height:1;}
-  .stat .k{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:5px;}
-  .section-title{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:18px 2px 10px;}
-  .week{display:flex;justify-content:space-between;gap:6px;background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px 12px;box-shadow:0 3px 0 var(--line);}
-  .week .day{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;}
-  .week .bar-wrap{width:100%;height:64px;display:flex;align-items:flex-end;justify-content:center;}
-  .week .bar{width:60%;max-width:22px;background:var(--green);border-radius:6px 6px 3px 3px;min-height:4px;transition:height .3s;}
-  .week .bar.zero{background:var(--line);}
-  .week .dlabel{font-size:10px;font-weight:800;color:var(--muted);}
-  .week .dval{font-size:11px;font-weight:800;}
+    .empty { text-align: center; padding: 44px 20px; color: var(--text-2); }
+    .empty .ei { font-size: 52px; margin-bottom: 14px; }
+    .empty .et { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .empty p { font-size: 14px; }
 
-  .statcard{background:#fff;border:2px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:12px;box-shadow:0 3px 0 var(--line);}
-  .statcard .head{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
-  .statcard .emoji{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex:none;}
-  .statcard .hname{font-weight:800;font-size:15px;flex:1;}
-  .statcard .nums{display:flex;gap:16px;margin-bottom:12px;}
-  .statcard .nums .b{font-size:11px;font-weight:800;color:var(--muted);}
-  .statcard .nums .b span{display:block;font-size:18px;font-weight:900;color:var(--text);margin-top:2px;}
-  .statcard .nums .b .fire{color:var(--fire);}
-  .statcard .nums .b .fire.out{color:var(--muted);}
-  .statcard .nums .b .fire.out .flm{filter:grayscale(1) brightness(.8) opacity(.5);}
-  .grid30{display:grid;grid-template-columns:repeat(15,1fr);gap:4px;}
-  .grid30 .cell{aspect-ratio:1;border-radius:4px;background:var(--soft);}
-  .grid30 .cell.future{background:transparent;}
-  .grid30 .cell.miss{background:#ededed;}
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); z-index: 200; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .22s; }
+    .overlay.open { opacity: 1; pointer-events: all; }
+    .sheet { background: var(--surface); border-radius: 24px 24px 0 0; width: 100%; max-width: 480px; max-height: 92vh; overflow-y: auto; transform: translateY(100%); transition: transform .3s cubic-bezier(.32,.72,0,1); }
+    .overlay.open .sheet { transform: translateY(0); }
+    .sheet-inner { padding: 20px 20px calc(20px + var(--safe)); }
+    .sheet-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .sheet-title { font-size: 17px; font-weight: 700; }
+    .close-btn { width: 30px; height: 30px; border-radius: 50%; background: var(--bg); border: none; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-2); }
 
-  /* ---------- FAB ---------- */
-  .fab{position:fixed;bottom:24px;right:calc(50% - 240px + 20px);width:60px;height:60px;border-radius:18px;
-       background:var(--green);color:#fff;font-size:34px;font-weight:700;display:flex;align-items:center;justify-content:center;
-       box-shadow:0 5px 0 var(--green-dark);z-index:30;line-height:1;padding-bottom:4px;}
-  .fab:active{transform:translateY(5px);box-shadow:none;}
-  @media(max-width:520px){.fab{right:20px;}}
+    /* ── REISE ── */
+    .cd-box { background: linear-gradient(145deg, #e0f2fe 0%, #f0f9ff 60%, #fef3c7 100%); border-radius: var(--radius); padding: 32px 20px 28px; text-align: center; margin-bottom: 12px; position: relative; overflow: hidden; }
+    .cd-box::before { content: ''; position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; background: rgba(14,165,233,.08); border-radius: 50%; }
+    .cd-num { font-size: 88px; font-weight: 900; color: var(--sky); line-height: 1; letter-spacing: -3px; }
+    .cd-label { font-size: 17px; font-weight: 700; color: var(--sky-d); margin-top: 4px; }
+    .cd-sub { font-size: 13px; color: var(--text-2); margin-top: 6px; }
+    .trip-row { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); }
+    .trip-row:last-child { border-bottom: none; }
+    .trip-row .ri { font-size: 20px; width: 26px; text-align: center; flex-shrink: 0; }
+    .trip-row .rv { font-weight: 600; font-size: 14px; }
+    .trip-row .rl { font-size: 12px; color: var(--text-2); margin-top: 1px; }
 
-  /* ---------- Sheet ---------- */
-  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:40;opacity:0;pointer-events:none;transition:.2s;}
-  .scrim.show{opacity:1;pointer-events:auto;}
-  .sheet{position:fixed;left:0;right:0;bottom:0;z-index:50;background:#fff;border-radius:22px 22px 0 0;
-        max-width:480px;margin:0 auto;padding:18px 18px calc(20px + env(safe-area-inset-bottom));
-        transform:translateY(110%);transition:transform .25s cubic-bezier(.2,.8,.2,1);max-height:90vh;overflow-y:auto;}
-  .sheet.show{transform:translateY(0);}
-  .sheet .grab{width:42px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 14px;}
-  .sheet h2{font-size:18px;font-weight:900;margin:0 0 16px;}
-  .field-label{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:0 0 8px;}
-  .name-input{width:100%;padding:14px;border:2px solid var(--line);border-radius:14px;font-size:16px;font-weight:700;outline:none;transition:.15s;}
-  .name-input:focus{border-color:var(--blue);}
-  .picker{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
-  .emoji-opt{width:46px;height:46px;border-radius:12px;background:var(--soft);display:flex;align-items:center;justify-content:center;font-size:23px;border:2px solid transparent;transition:.1s;}
-  .emoji-opt.sel{border-color:var(--blue);background:#e9f7ff;}
-  .color-opt{width:38px;height:38px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px var(--line);transition:.1s;}
-  .color-opt.sel{box-shadow:0 0 0 3px var(--text);transform:scale(1.08);}
-  .btn{width:100%;padding:15px;border-radius:15px;font-size:16px;font-weight:800;color:#fff;background:var(--green);box-shadow:0 4px 0 var(--green-dark);transition:.1s;text-transform:uppercase;letter-spacing:.5px;}
-  .btn:active{transform:translateY(4px);box-shadow:none;}
-  .btn:disabled{background:var(--line);box-shadow:0 4px 0 #d0d0d0;color:#fff;cursor:default;}
-  .btn-del{width:100%;margin-top:10px;padding:13px;border-radius:14px;font-size:14px;font-weight:800;color:var(--red);background:#fff;border:2px solid var(--line);transition:.15s;text-transform:uppercase;letter-spacing:.4px;}
-  .btn-del.arm{background:var(--red);color:#fff;border-color:var(--red);box-shadow:0 4px 0 var(--red-dark);}
-  .btn-del.arm:active{transform:translateY(4px);box-shadow:none;}
+    /* ── PACKLISTE ── */
+    .pack-stat { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .pack-stat .nums { font-size: 13px; color: var(--text-2); white-space: nowrap; font-weight: 500; }
+    .cat-hd { font-size: 12px; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: .06em; padding: 10px 0 6px; display: flex; align-items: center; gap: 6px; }
+    .pack-item { display: flex; align-items: center; gap: 10px; background: var(--surface); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 6px; box-shadow: var(--shadow); cursor: pointer; transition: background .15s; }
+    .pack-item.done { background: var(--green-l); }
+    .pi-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; transition: all .2s; }
+    .pack-item.done .pi-check { background: var(--green); border-color: var(--green); color: #fff; }
+    .pi-name { flex: 1; font-size: 14px; }
+    .pack-item.done .pi-name { text-decoration: line-through; color: var(--text-2); }
+    .pi-qty { font-size: 12px; color: var(--text-3); background: var(--border); padding: 2px 7px; border-radius: 10px; }
+    .pi-del { color: var(--text-3); font-size: 15px; padding: 3px 4px; cursor: pointer; }
 
-  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+    /* ── KOSTEN ── */
+    .cost-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
+    .cs-box { background: var(--surface); border-radius: var(--radius-sm); padding: 12px 8px; text-align: center; box-shadow: var(--shadow); }
+    .cs-num { font-size: 17px; font-weight: 800; color: var(--sky); line-height: 1.2; }
+    .cs-lbl { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+    .exp-item { display: flex; align-items: flex-start; gap: 10px; background: var(--surface); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 8px; box-shadow: var(--shadow); }
+    .exp-ava { width: 38px; height: 38px; border-radius: 50%; background: var(--sky-l); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+    .exp-info { flex: 1; min-width: 0; }
+    .exp-desc { font-weight: 600; font-size: 14px; }
+    .exp-meta { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+    .exp-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+    .exp-amt { font-weight: 700; font-size: 15px; }
+    .exp-del { font-size: 14px; cursor: pointer; color: var(--text-3); }
+    .settle-card { border-radius: var(--radius-sm); padding: 10px 12px; background: var(--surface); box-shadow: var(--shadow); margin-bottom: 7px; display: flex; align-items: center; gap: 8px; font-size: 13px; }
+    .settle-arrow { color: var(--rose); font-size: 16px; flex-shrink: 0; }
+    .settle-amt { font-weight: 700; color: var(--rose); margin-left: auto; white-space: nowrap; }
+    .split-check { display: flex; align-items: center; gap: 8px; padding: 7px 0; font-size: 14px; border-bottom: 1px solid var(--border); }
+    .split-check:last-child { border-bottom: none; }
+    .split-check input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--sky); flex-shrink: 0; }
+    .amount-row { position: relative; }
+    .amount-row .prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-2); font-weight: 600; pointer-events: none; }
+    .amount-row input { padding-left: 24px; }
 
-  /* install banner */
-  .install{display:flex;align-items:center;gap:11px;background:#fff;border:2px solid var(--line);
-        border-radius:14px;padding:11px 12px;margin-bottom:14px;box-shadow:0 3px 0 var(--line);}
-  .install .ic{font-size:22px;flex:none;}
-  .install .tx{flex:1;font-size:12.5px;font-weight:700;line-height:1.4;}
-  .install .tx b{font-weight:900;}
-  .install .go{background:var(--green);color:#fff;padding:9px 13px;border-radius:11px;font-weight:800;font-size:13px;box-shadow:0 3px 0 var(--green-dark);flex:none;}
-  .install .go:active{transform:translateY(3px);box-shadow:none;}
-  .install .x{font-size:22px;color:var(--muted);padding:2px 6px;flex:none;line-height:1;}
+    /* ── TAGEBUCH ── */
+    .diary-card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 10px; }
+    .diary-hd { padding: 13px 16px; display: flex; align-items: center; cursor: pointer; gap: 10px; }
+    .diary-hd:active { background: var(--bg); }
+    .dh-left { flex: 1; min-width: 0; }
+    .dh-date { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+    .today-badge { background: var(--sky); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; }
+    .dh-sub { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+    .dh-preview { font-size: 12px; color: var(--text-3); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dh-mood { font-size: 24px; flex-shrink: 0; }
+    .dh-caret { font-size: 11px; color: var(--text-3); flex-shrink: 0; }
+    .diary-body { padding: 14px 16px 16px; border-top: 1px solid var(--border); }
+    .df { margin-bottom: 14px; }
+    .df:last-child { margin-bottom: 0; }
+    .weather-grid { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 6px; }
+    .wopt { width: 40px; height: 40px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg); font-size: 19px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color .15s, background .15s; }
+    .wopt.sel { border-color: var(--sky); background: var(--sky-l); }
+    .mood-grid { display: flex; gap: 7px; margin-top: 6px; }
+    .mopt { flex: 1; height: 42px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color .15s, background .15s; }
+    .mopt.sel { border-color: var(--amber); background: var(--amber-l); }
+    .diary-photo { width: 100%; max-height: 220px; object-fit: cover; border-radius: 10px; margin: 8px 0 4px; display: block; }
+    .file-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--sky-l); color: var(--sky-d); border: none; border-radius: 8px; padding: 7px 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 6px; font-family: inherit; }
 
-  /* starter suggestions */
-  .starters{display:flex;flex-direction:column;gap:10px;margin-top:6px;}
-  .starter{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--line);
-        border-radius:14px;padding:11px 12px;box-shadow:0 3px 0 var(--line);font-weight:800;text-align:left;transition:transform .1s;}
-  .starter:active{transform:translateY(3px);box-shadow:none;}
-  .starter .emoji{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:21px;flex:none;}
-  .starter .stx{flex:1;font-size:15px;}
-  .starter .add{color:var(--green-dark);font-size:24px;font-weight:700;}
+    /* FAB */
+    .fab { position: fixed; right: 16px; bottom: calc(var(--tab-h) + var(--safe) + 14px); width: 52px; height: 52px; border-radius: 50%; background: var(--sky); color: #fff; border: none; box-shadow: 0 4px 14px rgba(14,165,233,.45); cursor: pointer; font-size: 28px; display: flex; align-items: center; justify-content: center; z-index: 90; transition: transform .15s, filter .15s; }
+    .fab:active { transform: scale(.92); filter: brightness(.9); }
+    @media (min-width: 480px) { .fab { right: calc((100vw - 480px) / 2 + 16px); } }
 
-  /* toast */
-  .toast{position:fixed;left:50%;bottom:98px;transform:translateX(-50%) translateY(16px);
-        background:#3c3c3c;color:#fff;padding:12px 18px;border-radius:14px;font-weight:800;font-size:14px;
-        box-shadow:0 8px 24px rgba(0,0,0,.28);opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:88%;text-align:center;}
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-  button:focus-visible,input:focus-visible,.starter:focus-visible{outline:3px solid var(--blue);outline-offset:2px;}
-</style>
-<style id="glass">
-  /* ===== Liquid Glass × Duolingo ===== */
-  :root{
-    --glass:rgba(255,255,255,.20);
-    --glass-strong:rgba(255,255,255,.46);
-    --glass-edge:rgba(255,255,255,.55);
-    --glass-line:rgba(255,255,255,.32);
-    --glass-hi:inset 0 1px 0 rgba(255,255,255,.65);
-    --glass-elev:0 10px 28px rgba(20,28,38,.10);
-    --gloss:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,0) 50%);
-    --blur:saturate(180%) blur(26px);
-  }
-  body{background:#e4ebe6;}
-  .app{
-    background:
-      radial-gradient(720px 460px at 10% -8%, rgba(88,204,2,.22), transparent 60%),
-      radial-gradient(660px 460px at 116% 4%, rgba(28,176,246,.16), transparent 58%),
-      radial-gradient(680px 520px at -10% 60%, rgba(0,205,156,.14), transparent 60%),
-      radial-gradient(720px 540px at 60% 118%, rgba(206,130,255,.14), transparent 60%),
-      linear-gradient(180deg,#eef4ef,#e6ede8);
-    background-attachment:fixed;
-  }
-
-  /* clean Apple-style material */
-  header{
-    background:rgba(255,255,255,.16);
-    -webkit-backdrop-filter:saturate(180%) blur(30px);
-    backdrop-filter:saturate(180%) blur(30px);
-    border-bottom:1px solid var(--glass-line);
-    box-shadow:var(--glass-hi);
-  }
-  .tabs{
-    background:rgba(255,255,255,.10);
-    -webkit-backdrop-filter:saturate(180%) blur(30px);
-    backdrop-filter:saturate(180%) blur(30px);
-  }
-  .tab{background:rgba(255,255,255,.28);border:1px solid var(--glass-line);}
-  .tab.active{
-    background:linear-gradient(180deg,rgba(234,250,219,.9),rgba(215,245,184,.68));
-    border-color:rgba(120,200,40,.45);box-shadow:var(--glass-hi);
-  }
-
-  .flamebox{
-    background:linear-gradient(180deg,rgba(255,244,229,.55),rgba(255,236,210,.32));
-    border-color:rgba(255,200,140,.6);box-shadow:var(--glass-hi);
-  }
-
-  .habit, .statcard, .week, .stat, .install, .starter, .insight-card{
-    background:var(--glass);
-    -webkit-backdrop-filter:var(--blur);
-    backdrop-filter:var(--blur);
-    border:1px solid var(--glass-edge);
-    box-shadow:var(--glass-hi),var(--glass-elev);
-    border-radius:22px;
-  }
-  .habit.done{
-    background:rgba(213,243,180,.34);
-    border-color:rgba(120,200,40,.42);
-  }
-  .alldone{
-    background:rgba(213,243,180,.42);
-    border-color:rgba(120,200,40,.45);box-shadow:var(--glass-hi);
-  }
-  .habit .emoji,.statcard .emoji,.starter .emoji{box-shadow:inset 0 1px 0 rgba(255,255,255,.6);}
-
-  /* signature Duolingo buttons */
-  .check.on{background-color:var(--green);background-image:var(--gloss);}
-  .check.timing{background-color:var(--orange);background-image:var(--gloss);}
-  .btn{background-image:var(--gloss);}
-  .fab{
-    background-color:var(--green);background-image:var(--gloss);
-    box-shadow:0 5px 0 var(--green-dark),0 12px 26px rgba(70,163,0,.34),var(--glass-hi);
-  }
-  .check{box-shadow:0 3px 0 var(--line),var(--glass-hi);}
-  .check.on{box-shadow:0 3px 0 var(--green-dark),var(--glass-hi);}
-  .check.timing{box-shadow:0 3px 0 var(--orange-dark),var(--glass-hi);}
-
-  /* clean glass sheet + overlays */
-  .sheet{
-    background:rgba(255,255,255,.42);
-    -webkit-backdrop-filter:saturate(180%) blur(40px);
-    backdrop-filter:saturate(180%) blur(40px);
-    border-top:1px solid var(--glass-line);
-    box-shadow:var(--glass-hi),0 -8px 40px rgba(20,28,38,.14);
-  }
-  .scrim{background:rgba(15,20,28,.30);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);}
-  .name-input{background:rgba(255,255,255,.45);}
-  .emoji-opt,.dur-opt,.color-opt{box-shadow:0 0 0 1px rgba(255,255,255,.4) inset;}
-  .toast{
-    background:rgba(26,30,28,.6);
-    -webkit-backdrop-filter:blur(20px) saturate(1.5);
-    backdrop-filter:blur(20px) saturate(1.5);
-    box-shadow:var(--glass-hi),0 12px 34px rgba(0,0,0,.32);
-  }
-
-  /* graceful fallback where blur/transparency isn't available */
-  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-    header,.tabs{background:rgba(255,255,255,.96);}
-    .habit,.statcard,.week,.stat,.install,.starter{background:rgba(255,255,255,.96);}
-    .sheet{background:rgba(255,255,255,.98);}
-    .toast{background:#2a2e2c;}
-  }
-  @media(prefers-reduced-transparency:reduce){
-    header,.tabs{background:#fff;}
-    .habit,.statcard,.week,.stat,.install,.starter{background:#fff;}
-    .sheet{background:#fff;}
-    .toast{background:#2a2e2c;}
-    .app{background:linear-gradient(180deg,#f4f8f2,#eef4f0);}
-  }
-
-  /* ===== celebration FX ===== */
-  #fx{position:fixed;inset:0;pointer-events:none;z-index:45;}
-  .fx-ring{position:fixed;width:22px;height:22px;border-radius:50%;
-    border:3px solid var(--green);transform:translate(-50%,-50%) scale(.4);
-    opacity:.9;pointer-events:none;z-index:46;animation:fxring .55s ease-out forwards;}
-  @keyframes fxring{to{transform:translate(-50%,-50%) scale(5.2);opacity:0;}}
-
-  .ms-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-    pointer-events:none;z-index:65;opacity:0;transition:opacity .25s;background:rgba(20,30,24,.18);}
-  .ms-overlay.show{opacity:1;}
-  .ms-card{background:rgba(255,255,255,.72);
-    -webkit-backdrop-filter:blur(30px) saturate(1.7);backdrop-filter:blur(30px) saturate(1.7);
-    border:1px solid var(--glass-edge);border-radius:28px;padding:26px 36px;text-align:center;
-    box-shadow:var(--glass-hi),0 22px 60px rgba(33,46,40,.28);transform:scale(.6);opacity:0;}
-  .ms-overlay.show .ms-card{animation:mspop .55s cubic-bezier(.2,1.3,.35,1) forwards;}
-  @keyframes mspop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:scale(1);opacity:1}}
-  .ms-flame{display:flex;align-items:center;justify-content:center;}
-  .ms-num{font-size:48px;font-weight:900;color:var(--fire);line-height:1;margin-top:6px;}
-  .ms-lbl{font-size:14px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--text);margin-top:4px;}
-
-
-</style>
-<style id="themes">
-  /* ===== Theme system ===== */
-  :root{--accent:#58cc02;--accent-d:#46a302;--accent-t:#eafadb;}
-
-  /* accent mapping (applies to every theme) */
-  #ringProg{stroke:var(--accent)!important;}
-  .fab,.check.on{background-color:var(--accent)!important;}
-  .fab{box-shadow:0 5px 0 var(--accent-d),0 14px 28px rgba(0,0,0,.20),var(--glass-hi)!important;}
-  .check.on{box-shadow:0 3px 0 var(--accent-d),var(--glass-hi)!important;}
-  .btn{background-color:var(--accent)!important;box-shadow:0 4px 0 var(--accent-d)!important;}
-  .tab.active{background:var(--accent-t)!important;color:var(--accent-d)!important;border-color:var(--accent)!important;}
-  .name-input:focus{border-color:var(--accent)!important;}
-  .emoji-opt.sel,.dur-opt.sel{border-color:var(--accent)!important;}
-  .starter .add{color:var(--accent-d)!important;}
-
-  /* theme picker */
-  .themes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;}
-  .theme-opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;
-    background:var(--glass);-webkit-backdrop-filter:blur(14px) saturate(1.7);backdrop-filter:blur(14px) saturate(1.7);
-    border:1px solid var(--glass-edge);box-shadow:var(--glass-hi),var(--glass-elev);font-weight:800;font-size:13px;}
-  .theme-opt.sel{outline:3px solid var(--accent);outline-offset:1px;}
-  .theme-opt .sw{display:inline-flex;border-radius:7px;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.08);flex:none;}
-  .theme-opt .sw i{width:13px;height:22px;display:block;}
-  .theme-opt .tn{flex:1;text-align:left;}
-
-  /* shared habits & hug */
-  .shared-head{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:2px 2px 10px;}
-  .habit.shared{border-color:rgba(206,130,255,.45);}
-  .habit.shared.complete{border-color:rgba(206,130,255,.6);}
-  .shared-emoji{background:var(--purple-tint)!important;color:var(--purple)!important;display:flex;align-items:center;justify-content:center;}
-  .check.cpurple{background-color:var(--purple)!important;box-shadow:0 3px 0 var(--purple-dark),var(--glass-hi)!important;}
-  .hug-scene{display:flex;align-items:flex-end;justify-content:center;position:relative;height:108px;}
-  .hug-scene .mascot{width:78px;height:94px;}
-  .hugA{transform:translateX(13px) rotate(7deg);}
-  .hugB{transform:translateX(-13px) rotate(-7deg);}
-  .hug-flame{position:absolute;top:-6px;left:50%;transform:translateX(-50%) scale(0);transition:transform .3s .15s cubic-bezier(.2,1.4,.4,1);z-index:3;}
-  .ms-overlay.show .hug-flame{transform:translateX(-50%) scale(1);}
-  @media(prefers-reduced-motion:no-preference){
-    .ms-overlay.show .hugA{animation:hugA .6s cubic-bezier(.2,1.3,.4,1);}
-    .ms-overlay.show .hugB{animation:hugB .6s cubic-bezier(.2,1.3,.4,1);}
-  }
-  @keyframes hugA{0%{transform:translateX(44px) rotate(-2deg)}100%{transform:translateX(13px) rotate(7deg)}}
-  @keyframes hugB{0%{transform:translateX(-44px) rotate(2deg)}100%{transform:translateX(-13px) rotate(-7deg)}}
-
-  /* toggle switch */
-  .toggle{width:50px;height:30px;border-radius:16px;background:#d6d6d6;position:relative;flex:none;
-    transition:background .18s;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);}
-  .toggle.on{background:var(--accent);}
-  .toggle .knob{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;
-    background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.25);transition:left .18s;}
-  .toggle.on .knob{left:23px;}
-  [data-theme="dark"] .toggle:not(.on){background:rgba(255,255,255,.16);}
-
-  /* AURORA CREME */
-  [data-theme="aurora"]{--accent:#ff7a1a;--accent-d:#e0610a;--accent-t:#ffe6d2;}
-  [data-theme="aurora"] body{background:#e7ddcd;}
-  [data-theme="aurora"] .app{
-    background:
-      radial-gradient(58% 42% at 72% 42%, rgba(255,140,30,.55), rgba(255,170,80,.12) 55%, transparent 72%),
-      linear-gradient(180deg,#f4ece0,#ece1d1);
-    background-attachment:fixed;}
-  [data-theme="aurora"] .flamebox{background:linear-gradient(180deg,rgba(255,240,225,.7),rgba(255,226,198,.45));border-color:rgba(255,170,110,.7);}
-
-  /* BEERE */
-  [data-theme="berry"]{--accent:#c850ff;--accent-d:#a22fd6;--accent-t:#f3e6ff;}
-  [data-theme="berry"] body{background:#e7def0;}
-  [data-theme="berry"] .app{
-    background:
-      radial-gradient(620px 420px at 8% -6%, rgba(200,80,255,.32), transparent 60%),
-      radial-gradient(620px 460px at 116% 8%, rgba(28,176,246,.26), transparent 60%),
-      radial-gradient(680px 520px at 60% 116%, rgba(255,120,180,.24), transparent 60%),
-      linear-gradient(180deg,#f1eaf6,#e9e2f2);
-    background-attachment:fixed;}
-
-  /* MITTERNACHT (deep marine navy) */
-  [data-theme="dark"]{--accent:#f4b740;--accent-d:#d89a1f;--accent-t:rgba(244,183,64,.18);color-scheme:dark;}
-  [data-theme="dark"] body{background:#060a16;color:#e9eef8;}
-  [data-theme="dark"] .app{
-    background:
-      radial-gradient(720px 480px at 12% -8%, rgba(40,86,200,.30), transparent 60%),
-      radial-gradient(660px 480px at 116% 8%, rgba(24,52,150,.32), transparent 60%),
-      radial-gradient(720px 540px at 60% 122%, rgba(244,183,64,.10), transparent 60%),
-      linear-gradient(180deg,#0b1430,#060a16);
-    background-attachment:fixed;}
-  [data-theme="dark"] header,[data-theme="dark"] .tabs{background:rgba(12,20,48,.55);border-color:rgba(255,255,255,.12);}
-  [data-theme="dark"] .habit,[data-theme="dark"] .statcard,[data-theme="dark"] .week,
-  [data-theme="dark"] .stat,[data-theme="dark"] .install,[data-theme="dark"] .starter,
-  [data-theme="dark"] .insight-card,
-  [data-theme="dark"] .theme-opt{background:rgba(22,34,68,.48);border-color:rgba(255,255,255,.13);}
-  [data-theme="dark"] .sheet{background:rgba(12,20,46,.72);border-color:rgba(255,255,255,.13);}
-  [data-theme="dark"] .name-input{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);color:#e9eef8;}
-  [data-theme="dark"] .tab{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);}
-  [data-theme="dark"] .check{border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.06);}
-  [data-theme="dark"] .habit.done{background:rgba(244,183,64,.15);border-color:rgba(244,183,64,.4);}
-  [data-theme="dark"] .alldone{background:rgba(244,183,64,.16);border-color:rgba(244,183,64,.42);}
-  [data-theme="dark"] .flamebox{background:rgba(244,183,64,.14);border-color:rgba(244,183,64,.38);}
-  [data-theme="dark"] .grid30 .cell,[data-theme="dark"] .grid30 .cell.miss{background:rgba(255,255,255,.07);}
-  [data-theme="dark"] .brand h1,[data-theme="dark"] .ring-num,[data-theme="dark"] .num,
-  [data-theme="dark"] .habit .name,[data-theme="dark"] .tab,[data-theme="dark"] .stat .v,
-  [data-theme="dark"] .statcard .hname,[data-theme="dark"] .statcard .nums .b span,
-  [data-theme="dark"] .sheet h2,[data-theme="dark"] .starter .stx,[data-theme="dark"] .alldone,
-  [data-theme="dark"] .install .tx,[data-theme="dark"] .theme-opt,[data-theme="dark"] .ic-body{color:#e9eef8;}
-  [data-theme="dark"] .ring-sub,[data-theme="dark"] .lbl,[data-theme="dark"] .habit .meta,
-  [data-theme="dark"] .section-title,[data-theme="dark"] .field-label,[data-theme="dark"] .stat .k,
-  [data-theme="dark"] .statcard .nums .b,[data-theme="dark"] .week .dlabel,[data-theme="dark"] .week .dval,
-  [data-theme="dark"] .empty{color:#94a3c4;}
-
-  /* ---------- Tablet optimization (~iPad portrait and up) ---------- */
-  @media (min-width:700px){
-    .app{max-width:760px;}
-    main{padding:18px 28px 130px;}
-    .stat-row{gap:14px;}
-    .starters{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-    .starters .starter{margin-bottom:0;}
-    .week{padding:18px 10px;}
-    .themes{grid-template-columns:repeat(4,1fr);}
-    .habit,.statcard,.shared.habit{padding:14px 16px;}
-  }
-  @media (min-width:980px){
-    .app{max-width:900px;}
-    .themes{grid-template-columns:repeat(4,1fr);}
-  }
-
-  /* ---------- Insights ---------- */
-  .insight-card{display:flex;align-items:center;gap:12px;background:var(--card);
-        border:2px solid var(--line);border-radius:14px;padding:11px 14px;margin-bottom:10px;
-        box-shadow:0 3px 0 var(--line);}
-  .ic-emoji{font-size:20px;flex:none;width:26px;text-align:center;line-height:1;}
-  .ic-body{flex:1;font-size:13.5px;font-weight:800;line-height:1.35;}
-  .ic-pct{flex:none;font-weight:900;font-size:12.5px;padding:4px 9px;border-radius:10px;white-space:nowrap;}
-  .ic-pct.good{color:var(--green-dark);background:var(--green-tint);}
-  .ic-pct.warn{color:var(--orange-dark);background:var(--orange-tint);}
-  .ic-pct.friend{color:var(--purple-dark);background:var(--purple-tint);}
-
-  /* ---------- Friend flame (header, Freunde tab) ---------- */
-  .friend-flamebox{display:flex;background:var(--purple-tint);border-color:rgba(206,130,255,.45);}
-  .friend-flamebox .num{color:var(--purple-dark);}
-  .ff-flames{position:relative;width:54px;height:46px;flex:none;display:flex;align-items:center;justify-content:center;}
-  .ff-flame{position:absolute;transition:transform .45s cubic-bezier(.2,1.3,.4,1);transform-origin:50% 90%;}
-  .ff-flame svg{display:block;}
-  .ff-a{transform:translateX(-13px) rotate(-10deg);}
-  .ff-b{transform:translateX(13px) rotate(10deg) scaleX(-1);}
-  .friend-flamebox.complete .ff-a{transform:translateX(-3px) rotate(-16deg);}
-  .friend-flamebox.complete .ff-b{transform:translateX(3px) rotate(16deg) scaleX(-1);}
-  @media(prefers-reduced-motion:no-preference){
-    .friend-flamebox.celebrate .ff-a{animation:ffClapA .55s cubic-bezier(.2,1.4,.4,1);}
-    .friend-flamebox.celebrate .ff-b{animation:ffClapB .55s cubic-bezier(.2,1.4,.4,1);}
-  }
-  @keyframes ffClapA{0%{transform:translateX(-13px) rotate(-10deg)}55%{transform:translateX(-1px) rotate(-20deg) scale(1.22)}100%{transform:translateX(-3px) rotate(-16deg)}}
-  @keyframes ffClapB{0%{transform:translateX(13px) rotate(10deg) scaleX(-1)}55%{transform:translateX(1px) rotate(20deg) scale(1.22) scaleX(-1)}100%{transform:translateX(3px) rotate(16deg) scaleX(-1)}}
-
-  /* Enhanced streak meta colors */
-  .s.s-epic{color:#1cb0f6!important;}
-  .s.s-hot{color:#ff4b4b!important;}
-  .s.s-legend{color:#f4b740!important;}
-</style>
-<style id="upgrade">
-/* ===================================================
-   Design Upgrade v2 — Stronger Hierarchy, Committed Color
-   =================================================== */
-
-/* ---- App background: more presence ---- */
-.app{
-  background:
-    radial-gradient(700px 500px at 8% -10%, rgba(88,204,2,.30), transparent 58%),
-    radial-gradient(640px 460px at 114% 2%,  rgba(28,176,246,.20), transparent 56%),
-    radial-gradient(680px 540px at -8% 62%,  rgba(0,205,156,.18), transparent 58%),
-    radial-gradient(700px 560px at 58% 116%, rgba(206,130,255,.18), transparent 58%),
-    linear-gradient(180deg,#edf5ee,#e4ece6) !important;
-}
-
-/* ---- Header: tighter, stronger top presence ---- */
-header{
-  background:rgba(255,255,255,.20) !important;
-  -webkit-backdrop-filter:saturate(200%) blur(34px) !important;
-  backdrop-filter:saturate(200%) blur(34px) !important;
-  border-bottom:1px solid rgba(255,255,255,.38) !important;
-}
-[data-theme="dark"] header{
-  background:rgba(10,18,46,.60) !important;
-}
-
-/* ---- Ring: bigger, glow at 100% ---- */
-.ring{width:72px!important;height:72px!important;}
-.ring svg{width:72px!important;height:72px!important;}
-.ring .ring-num{font-size:17px!important;font-weight:900!important;}
-.ring.complete .ring-num{color:var(--accent)!important;}
-.ring.complete #ringProg{filter:drop-shadow(0 0 5px var(--accent));}
-
-/* ---- Flamebox: bigger number ---- */
-.flamebox .num{font-size:30px!important;font-weight:900!important;}
-.flamebox .big{font-size:34px!important;}
-
-/* ---- Habit cards: per-habit done state ---- */
-.habit{overflow:hidden;}
-.habit.done{
-  box-shadow:inset 5px 0 0 var(--hc,var(--green)),var(--glass-hi),var(--glass-elev)!important;
-  background:color-mix(in oklch,var(--hc,var(--green)) 10%,rgba(255,255,255,.22))!important;
-  border-color:color-mix(in oklch,var(--hc,var(--green)) 28%,rgba(255,255,255,.5))!important;
-}
-[data-theme="dark"] .habit.done{
-  background:color-mix(in oklch,var(--hc,var(--accent)) 14%,rgba(22,34,68,.5))!important;
-  box-shadow:inset 5px 0 0 var(--hc,var(--accent)),var(--glass-hi),var(--glass-elev)!important;
-  border-color:color-mix(in oklch,var(--hc,var(--accent)) 35%,rgba(255,255,255,.14))!important;
-}
-
-/* ---- Habit emoji: slightly larger ---- */
-.habit .emoji{
-  width:50px!important;height:50px!important;
-  border-radius:15px!important;font-size:26px!important;
-  box-shadow:0 2px 8px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.7)!important;
-}
-
-/* ---- Streak badge: pill style ---- */
-.habit .meta .s{
-  display:inline-flex;align-items:center;
-  background:rgba(255,150,0,.12);
-  border-radius:7px;padding:1px 7px;
-}
-.habit .meta .s.s-epic{background:rgba(28,176,246,.14)!important;}
-.habit .meta .s.s-hot{background:rgba(255,75,75,.12)!important;}
-.habit .meta .s.s-legend{background:rgba(244,183,64,.15)!important;}
-
-/* ---- Check button ---- */
-.check{width:48px!important;height:48px!important;font-size:22px!important;}
-
-/* ---- All-done banner: vibrant ---- */
-.alldone{
-  padding:15px 18px!important;font-size:15px!important;border-radius:18px!important;
-  background:linear-gradient(90deg,
-    color-mix(in oklch,var(--accent) 20%,transparent),
-    color-mix(in oklch,var(--accent) 8%,transparent))!important;
-  border-color:color-mix(in oklch,var(--accent) 48%,transparent)!important;
-  color:var(--accent-d)!important;
-}
-[data-theme="dark"] .alldone{color:var(--accent)!important;}
-
-/* ---- Stats: bigger numbers ---- */
-.stat .v{font-size:26px!important;font-weight:900!important;}
-
-/* ---- Week chart bars: gradient, taller ---- */
-.week .bar-wrap{height:80px!important;}
-.week .bar{
-  background:linear-gradient(to top,var(--accent-d),var(--accent))!important;
-  border-radius:8px 8px 3px 3px!important;
-  min-height:6px!important;
-}
-.week .bar.zero{background:rgba(0,0,0,.08)!important;}
-[data-theme="dark"] .week .bar.zero{background:rgba(255,255,255,.10)!important;}
-.week .day.today-bar .bar{
-  box-shadow:0 0 12px color-mix(in oklch,var(--accent) 48%,transparent)!important;
-}
-.week .day.today-bar .dlabel{color:var(--accent)!important;font-weight:900!important;}
-.week .dval{font-size:12px!important;font-weight:900!important;}
-
-/* ---- Grid30: tighter cells, today indicator ---- */
-.grid30{gap:5px!important;}
-.grid30 .cell{border-radius:7px!important;}
-.grid30 .cell.miss{background:rgba(0,0,0,.07)!important;}
-[data-theme="dark"] .grid30 .cell.miss{background:rgba(255,255,255,.08)!important;}
-.grid30 .cell.today-cell{
-  box-shadow:0 0 0 2.5px var(--accent)!important;
-  position:relative;z-index:1;
-}
-
-/* ---- Section titles ---- */
-.section-title{font-size:11px!important;letter-spacing:1.2px!important;}
-
-/* ---- FAB: stronger, bigger ---- */
-.fab{
-  width:64px!important;height:64px!important;
-  border-radius:20px!important;font-size:36px!important;
-  box-shadow:
-    0 6px 0 var(--accent-d),
-    0 16px 34px color-mix(in oklch,var(--accent) 30%,transparent),
-    var(--glass-hi)!important;
-}
-
-/* ---- Statcard emoji ---- */
-.statcard .emoji{
-  width:44px!important;height:44px!important;border-radius:13px!important;
-  box-shadow:0 2px 6px rgba(0,0,0,.10),inset 0 1px 0 rgba(255,255,255,.6)!important;
-}
-
-/* ---- Milestone card ---- */
-.ms-card{
-  padding:28px 42px!important;
-  box-shadow:var(--glass-hi),0 28px 70px rgba(33,46,40,.32)!important;
-}
-.ms-num{font-size:54px!important;}
-.ms-lbl{font-size:15px!important;letter-spacing:.8px!important;}
-
-/* ---- Toast: richer ---- */
-.toast{
-  padding:13px 20px!important;border-radius:16px!important;
-  box-shadow:var(--glass-hi),0 14px 38px rgba(0,0,0,.34)!important;
-}
-
-/* ---- Dark theme overrides ---- */
-[data-theme="dark"] .app{
-  background:
-    radial-gradient(720px 480px at 12% -8%,  rgba(40,86,200,.35),  transparent 58%),
-    radial-gradient(660px 480px at 116% 8%,  rgba(24,52,150,.36),  transparent 56%),
-    radial-gradient(720px 540px at 60% 122%, rgba(244,183,64,.12), transparent 58%),
-    linear-gradient(180deg,#0b1430,#060a16) !important;
-}
-
-/* ---- Starter cards ---- */
-.starter,.install{border-radius:20px!important;}
-
-/* ---- Aurora theme adjustments ---- */
-[data-theme="aurora"] .habit.done{
-  background:color-mix(in oklch,var(--hc,var(--orange)) 10%,rgba(255,255,255,.22))!important;
-}
-
-/* ---- Berry theme adjustments ---- */
-[data-theme="berry"] .alldone{
-  background:linear-gradient(90deg,rgba(200,80,255,.16),rgba(200,80,255,.06))!important;
-}
-</style>
-<style id="heatmap">
-/* ---- Heatmap ---- */
-.heatmap-wrap{
-  background:rgba(255,255,255,.22);
-  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
-  border:1px solid var(--glass-edge);box-shadow:var(--glass-hi),var(--glass-elev);
-  border-radius:22px;padding:16px;margin-bottom:14px;
-  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
-}
-.heatmap-wrap::-webkit-scrollbar{display:none;}
-.hm-wrap-inner{min-width:max-content;}
-.hm-months{display:flex;gap:0;height:16px;margin-bottom:3px;padding-left:20px;}
-.hm-month-lbl{font-size:10px;font-weight:800;color:var(--muted);}
-.hm-body{display:flex;gap:4px;}
-.hm-days{display:flex;flex-direction:column;gap:3px;justify-content:space-between;padding-top:1px;width:16px;}
-.hm-days span{font-size:9px;font-weight:800;color:var(--muted);height:13px;display:flex;align-items:center;line-height:1;}
-.hm-cells{display:flex;gap:3px;}
-.hm-col{display:flex;flex-direction:column;gap:3px;}
-.hm-cell{width:13px;height:13px;border-radius:3px;}
-.hm-future{background:transparent!important;}
-.hm-l0{background:rgba(0,0,0,.07);}
-.hm-l1{background:color-mix(in srgb,var(--accent) 30%,rgba(0,0,0,.07));}
-.hm-l2{background:color-mix(in srgb,var(--accent) 55%,rgba(0,0,0,.05));}
-.hm-l3{background:color-mix(in srgb,var(--accent) 80%,rgba(0,0,0,.02));}
-.hm-l4{background:var(--accent);}
-.hm-today{outline:2px solid var(--accent-d);outline-offset:1px;border-radius:4px;}
-[data-theme="dark"] .hm-l0{background:rgba(255,255,255,.10);}
-
-/* ---- Streak hero (replaces flamebox in header) ---- */
-.streak-hero{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.28);
-  -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
-  border:1px solid var(--glass-edge);box-shadow:var(--glass-hi),var(--glass-elev);
-  border-radius:16px;padding:10px 18px;flex:1;min-width:0;
-}
-.streak-num{font-size:32px;font-weight:900;color:var(--fire);line-height:1;}
-.streak-lbl{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
-[data-theme="aurora"] .streak-hero{background:rgba(255,220,185,.36);}
-[data-theme="dark"] .streak-hero{background:rgba(255,150,0,.10);}
-[data-theme="dark"] .streak-num{color:var(--accent);}
-</style>
+    .views > div { display: none; }
+    .views > div.active { display: block; }
+    .section-label { font-size: 12px; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: .06em; margin: 16px 0 8px; }
+    .chip-row { display: flex; gap: 8px; }
+    .chip-row input { flex: 1; }
+  </style>
 </head>
 <body>
-<div class="app">
-  <header>
-    <div class="brand"><span class="logo">🔥</span><h1>Streak</h1></div>
-    <div class="summary">
-      <div class="streak-hero" id="mainFlamebox">
-        <div class="streak-num" id="topStreak">0</div>
-        <div class="streak-lbl">🔥 Tage Serie</div>
-      </div>
-      <div class="ring">
-        <svg width="64" height="64"><circle cx="32" cy="32" r="27" fill="none" stroke="#eee" stroke-width="7"/><circle id="ringProg" cx="32" cy="32" r="27" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="169.6"/></svg>
-        <div class="ring-label"><span class="ring-num" id="ringNum">0/0</span><span class="ring-sub">heute</span></div>
-      </div>
-      <div class="streak-hero friend-flamebox" id="friendFlamebox" style="display:none">
-        <div class="streak-num" id="ffNum">0</div>
-        <div class="streak-lbl" id="ffLbl">💜 Gemeinsam</div>
-      </div>
+<div id="app">
+  <div id="content">
+    <div class="views" id="views">
+      <div id="v-reise" class="active"></div>
+      <div id="v-pack"></div>
+      <div id="v-kosten"></div>
+      <div id="v-diary"></div>
     </div>
-  </header>
-
-  <div class="tabs">
-    <button class="tab active" data-tab="today" onclick="setTab('today')">Heute</button>
-    <button class="tab" data-tab="stats" onclick="setTab('stats')">Statistik</button>
-    <button class="tab" data-tab="friends" onclick="setTab('friends')">Freunde</button>
-    <button class="tab tab-gear" data-tab="settings" onclick="setTab('settings')" aria-label="Einstellungen">⚙</button>
   </div>
-
-  <main>
-    <div id="installHost"></div>
-    <div id="todayView"></div>
-    <div id="statsView" style="display:none"></div>
-    <div id="friendsView" style="display:none"></div>
-    <div id="settingsView" style="display:none"></div>
-  </main>
-
-  <button class="fab" onclick="openSheet()" aria-label="Habit hinzufügen">+</button>
+  <nav>
+    <button class="active" data-tab="reise" onclick="go('reise')"><span class="ni">🏝️</span>Reise</button>
+    <button data-tab="pack" onclick="go('pack')"><span class="ni">🧳</span>Packliste</button>
+    <button data-tab="kosten" onclick="go('kosten')"><span class="ni">💰</span>Kosten</button>
+    <button data-tab="diary" onclick="go('diary')"><span class="ni">📔</span>Tagebuch</button>
+  </nav>
 </div>
 
-<div class="scrim" id="scrim" onclick="closeSheet()"></div>
-<canvas id="fx"></canvas>
-<div class="ms-overlay" id="milestone">
-  <div class="ms-card">
-    <div class="ms-num">7</div>
-    <div class="ms-lbl">Tage Serie!</div>
+<button class="fab" id="fab" onclick="fabAction()" style="display:none">+</button>
+
+<!-- Trip Sheet -->
+<div class="overlay" id="tripSheet" onclick="bgClose(event,'tripSheet')">
+  <div class="sheet">
+    <div class="sheet-inner">
+      <div class="sheet-hd">
+        <span class="sheet-title">Reise planen ✈️</span>
+        <button class="close-btn" onclick="closeSheet('tripSheet')">✕</button>
+      </div>
+      <div class="frow">
+        <label class="label">Reisename</label>
+        <input id="ts-name" type="text" placeholder="z.B. Sommerurlaub 2025" />
+      </div>
+      <div class="frow">
+        <label class="label">Reiseziel 📍</label>
+        <input id="ts-dest" type="text" placeholder="z.B. Mallorca" />
+      </div>
+      <div class="fgrid">
+        <div class="frow">
+          <label class="label">Abreise</label>
+          <input id="ts-start" type="date" />
+        </div>
+        <div class="frow">
+          <label class="label">Rückkehr</label>
+          <input id="ts-end" type="date" />
+        </div>
+      </div>
+      <div class="frow">
+        <label class="label">Mitreisende 👥</label>
+        <div class="chip-row">
+          <input id="ts-person" type="text" placeholder="Name eingeben" onkeydown="if(event.key==='Enter'){addP();event.preventDefault()}" />
+          <button class="btn btn-primary btn-sm" onclick="addP()">+</button>
+        </div>
+        <div class="chips" id="ts-chips"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveTrip()">Reise speichern</button>
+    </div>
   </div>
-</div>
-<div class="ms-overlay" id="hug">
-  <div class="ms-card">
-    <div class="ms-num" id="hugNum" style="color:var(--purple)">2</div>
-    <div class="ms-lbl" id="hugLbl">💜 Tage gemeinsam</div>
-  </div>
-</div>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-<div class="sheet" id="sheet" onclick="event.stopPropagation()">
-  <div class="grab"></div>
-  <h2 id="sheetTitle">Neuer Habit</h2>
-  <p class="field-label">Name</p>
-  <input class="name-input" id="nameInput" placeholder="z.B. Wasser trinken" maxlength="28" oninput="validate()">
-  <p class="field-label" style="margin-top:16px">Symbol</p>
-  <div class="picker" id="emojiPicker"></div>
-  <p class="field-label">Farbe</p>
-  <div class="picker" id="colorPicker"></div>
-  <p class="field-label">Dauer (optional)</p>
-  <div class="picker" id="durPicker"></div>
-  <div id="shareWrap" style="display:none">
-    <p class="field-label">Gemeinsam mit (optional)</p>
-    <div class="picker" id="sharePicker"></div>
-  </div>
-  <button class="btn" id="saveBtn" onclick="saveHabit()" disabled>Speichern</button>
-  <button class="btn-del" id="delBtn" style="display:none" onclick="deleteHabit()">Löschen</button>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Pack Sheet -->
+<div class="overlay" id="packSheet" onclick="bgClose(event,'packSheet')">
+  <div class="sheet">
+    <div class="sheet-inner">
+      <div class="sheet-hd">
+        <span class="sheet-title">Artikel hinzufügen 🧳</span>
+        <button class="close-btn" onclick="closeSheet('packSheet')">✕</button>
+      </div>
+      <div class="frow">
+        <label class="label">Artikel</label>
+        <input id="pi-name" type="text" placeholder="z.B. Sonnencreme" />
+      </div>
+      <div class="fgrid">
+        <div class="frow">
+          <label class="label">Anzahl</label>
+          <input id="pi-qty" type="number" min="1" value="1" />
+        </div>
+        <div class="frow">
+          <label class="label">Kategorie</label>
+          <select id="pi-cat">
+            <option>Kleidung</option>
+            <option>Hygiene</option>
+            <option>Dokumente</option>
+            <option>Technik</option>
+            <option>Medizin</option>
+            <option>Unterhaltung</option>
+            <option>Sonstiges</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="savePack()">Hinzufügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Expense Sheet -->
+<div class="overlay" id="expSheet" onclick="bgClose(event,'expSheet')">
+  <div class="sheet">
+    <div class="sheet-inner">
+      <div class="sheet-hd">
+        <span class="sheet-title">Ausgabe eintragen 💶</span>
+        <button class="close-btn" onclick="closeSheet('expSheet')">✕</button>
+      </div>
+      <div class="frow">
+        <label class="label">Beschreibung</label>
+        <input id="ex-desc" type="text" placeholder="z.B. Tankfüllung, Dinner, ..." />
+      </div>
+      <div class="fgrid">
+        <div class="frow">
+          <label class="label">Betrag</label>
+          <div class="amount-row">
+            <span class="prefix">€</span>
+            <input id="ex-amt" type="number" step="0.01" min="0" placeholder="0.00" />
+          </div>
+        </div>
+        <div class="frow">
+          <label class="label">Datum</label>
+          <input id="ex-date" type="date" />
+        </div>
+      </div>
+      <div class="frow">
+        <label class="label">Bezahlt von</label>
+        <select id="ex-paid"></select>
+      </div>
+      <div class="frow">
+        <label class="label">Aufteilen mit</label>
+        <div id="ex-split"></div>
+      </div>
+      <div class="frow">
+        <label class="label">Kategorie</label>
+        <select id="ex-cat">
+          <option>Essen &amp; Trinken</option>
+          <option>Transport</option>
+          <option>Unterkunft</option>
+          <option>Aktivitäten</option>
+          <option>Einkaufen</option>
+          <option>Sonstiges</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveExp()">Speichern</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const KEY='habitTracker_v1';
-function aKey(){return sbUser?KEY+'_'+sbUser.id:KEY;}
-const EMOJIS=['💧','🏃','📚','🧘','🍎','😴','💪','🚴','🎸','✍️','🧹','💊','🎯','🌱','☕','🦷','🧠','🥗','🧴','🎨'];
-const COLORS=['green','blue','purple','orange','red','yellow','teal','pink'];
-const DURATIONS=[0,1,5,10,15,20,30];
-const STARTERS=[
-  {name:'Wasser trinken',emoji:'💧',color:'blue',duration:0},
-  {name:'Bewegung',emoji:'🏃',color:'green',duration:0},
-  {name:'10 Min dehnen',emoji:'🧘',color:'purple',duration:10},
-  {name:'Lesen',emoji:'📚',color:'orange',duration:15},
-];
+// ── State ──
+const SKEY = 'urlaub-v1';
+let S = { trip: null, packing: [], expenses: [], diary: {} };
 
-
-
-let state={habits:[]};
-let tab='today';
-let editId=null, selEmoji=EMOJIS[0], selColor=COLORS[0], selDuration=0, delArmed=false;
-let ticker=null;
-
-/* ---- storage ---- */
-function load(){
-  try{state=JSON.parse(localStorage.getItem(aKey()))||{habits:[]};}
-  catch(e){state={habits:[]};}
-  if(!state.habits)state.habits=[];
+function load() {
+  try { const d = localStorage.getItem(SKEY); if (d) S = JSON.parse(d); } catch {}
 }
-function save(){localStorage.setItem(aKey(),JSON.stringify(state));scheduleSync();}
-
-/* ---- dates ---- */
-function pad(n){return String(n).padStart(2,'0')}
-function ymd(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
-function parseKey(k){const[y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d)}
-function addDays(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
-let TODAY=ymd(new Date());
-
-/* ---- streak logic ---- */
-function currentStreak(h){
-  let s=0,d=new Date();
-  if(!h.history[ymd(d)])d=addDays(d,-1);
-  while(h.history[ymd(d)]){s++;d=addDays(d,-1);}
-  return s;
-}
-function bestStreak(h){
-  const days=Object.keys(h.history).filter(k=>h.history[k]).sort();
-  let best=0,run=0,prev=null;
-  for(const k of days){
-    if(prev&&ymd(addDays(parseKey(prev),1))===k)run++;else run=1;
-    if(run>best)best=run;prev=k;
-  }
-  return best;
-}
-function completionRate(h){
-  const start=parseKey(h.createdAt);
-  const total=Math.max(1,Math.round((parseKey(TODAY)-start)/86400000)+1);
-  const done=Object.values(h.history).filter(Boolean).length;
-  return Math.round(done/total*100);
+function save() {
+  try { localStorage.setItem(SKEY, JSON.stringify(S)); }
+  catch { alert('Speicher voll! Bitte lösche einige Fotos im Tagebuch.'); }
 }
 
-/* ---- insights ---- */
-function habitRecentRate(h,days){
-  let done=0,poss=0;
-  for(let i=0;i<days;i++){
-    const k=ymd(addDays(parseKey(TODAY),-i));
-    if(h.createdAt<=k){poss++;if(h.history[k])done++;}
-  }
-  return poss?Math.round(done/poss*100):null;
-}
-function periodRate(startAgo,endAgo){ // days-ago range, inclusive, across all habits
-  let done=0,poss=0;
-  for(let i=startAgo;i>=endAgo;i--){
-    const k=ymd(addDays(parseKey(TODAY),-i));
-    state.habits.forEach(h=>{if(h.createdAt<=k){poss++;if(h.history[k])done++;}});
-  }
-  return poss?done/poss:null;
-}
-function weekdayStats(){
-  const names=['Sonntags','Montags','Dienstags','Mittwochs','Donnerstags','Freitags','Samstags'];
-  const done=[0,0,0,0,0,0,0],poss=[0,0,0,0,0,0,0];
-  const earliest=state.habits.reduce((m,h)=>h.createdAt<m?h.createdAt:m,state.habits[0].createdAt);
-  let d=parseKey(earliest);const end=parseKey(TODAY);
-  while(d<=end){
-    const k=ymd(d),wd=d.getDay();
-    state.habits.forEach(h=>{if(h.createdAt<=k){poss[wd]++;if(h.history[k])done[wd]++;}});
-    d=addDays(d,1);
-  }
-  let best=-1,bestRate=-1;
-  for(let i=0;i<7;i++){if(poss[i]>=2){const r=done[i]/poss[i];if(r>bestRate){bestRate=r;best=i;}}}
-  if(best<0)return null;
-  return {day:names[best],pct:Math.round(bestRate*100)};
-}
-function anyHabitStreak(){
-  const earliest=state.habits.reduce((m,h)=>h.createdAt<m?h.createdAt:m,state.habits[0].createdAt);
-  let d=parseKey(earliest);const end=parseKey(TODAY);
-  let run=0,best=0;
-  while(d<=end){
-    const k=ymd(d);
-    const any=state.habits.some(h=>h.createdAt<=k&&h.history[k]);
-    if(any){run++;if(run>best)best=run;}else run=0;
-    d=addDays(d,1);
-  }
-  return {current:run,best};
-}
-function sharedWeekRate(){
-  if(!sbShared||!sbShared.length)return null;
-  let done=0,poss=0;
-  for(let i=0;i<7;i++){
-    const k=ymd(addDays(parseKey(TODAY),-i));
-    sbShared.forEach(h=>{poss++;if(sharedDayComplete(h,k))done++;});
-  }
-  return poss?Math.round(done/poss*100):null;
-}
-function renderInsights(){
-  if(!state.habits.length)return'';
-  const cards=[];
-  const thisW=periodRate(6,0),lastW=periodRate(13,7);
-  if(thisW!==null&&lastW!==null){
-    const diff=Math.round((thisW-lastW)*100);
-    if(diff>4)cards.push({e:'📈',t:`Diese Woche läuft's besser als letzte Woche`,pct:'+'+diff+'%',tone:'good'});
-    else if(diff<-4)cards.push({e:'📉',t:`Diese Woche etwas ruhiger als letzte Woche`,pct:diff+'%',tone:'warn'});
-  }
-  const wd=weekdayStats();
-  if(wd&&wd.pct>=60)cards.push({e:'📅',t:`${wd.day} bist du am konsequentesten`,pct:wd.pct+'%',tone:'good'});
-  if(state.habits.length>=2){
-    const recents=state.habits.map(h=>({h,r:habitRecentRate(h,14)})).filter(x=>x.r!==null);
-    if(recents.length>=2){
-      const top=recents.reduce((a,b)=>b.r>a.r?b:a);
-      const low=recents.reduce((a,b)=>b.r<a.r?b:a);
-      if(top.h.id!==low.h.id&&top.r-low.r>=20){
-        cards.push({e:top.h.emoji,t:`${esc(top.h.name)} läuft richtig gut`,pct:top.r+'%',tone:'good'});
-        cards.push({e:'💪',t:`${esc(low.h.name)} könnte mehr Aufmerksamkeit gebrauchen`,pct:low.r+'%',tone:'warn'});
-      }
-    }
-  }
-  const any=anyHabitStreak();
-  if(any.best>=3)cards.push({e:'🔥',t:`Längste Serie mit mind. 1 Habit pro Tag`,pct:any.best+(any.best===1?' Tag':' Tage'),tone:'good'});
-  if(sbUser&&sbShared.length){
-    const sw=sharedWeekRate();
-    if(sw!==null)cards.push({e:'💜',t:`Eure gemeinsame Erfolgsquote diese Woche`,pct:sw+'%',tone:'friend'});
-  }
-  if(!cards.length)return'';
-  return '<div class="section-title">Einblicke</div>'+
-    cards.map(c=>`<div class="insight-card">
-      <span class="ic-emoji">${c.e}</span>
-      <div class="ic-body">${c.t}</div>
-      <span class="ic-pct ${c.tone}">${c.pct}</span>
-    </div>`).join('');
-}
-
-/* ---- render ---- */
-function render(){
-  const done=state.habits.filter(h=>h.history[TODAY]).length;
-  const tot=state.habits.length;
-  document.getElementById('ringNum').textContent=done+'/'+tot;
-  const pct=tot?done/tot:0;
-  document.getElementById('ringProg').style.strokeDashoffset=169.6*(1-pct);
-  const ringEl=document.querySelector('.ring');
-  if(ringEl)ringEl.classList.toggle('complete',pct===1&&tot>0);
-  const top=state.habits.reduce((m,h)=>Math.max(m,currentStreak(h)),0);
-  document.getElementById('topStreak').textContent=top;
-  renderToday(done,tot);
-  renderStats();
-  renderFriends();
-  renderSettings();
-  updateFriendFlame(false);
-}
-
-function streakMeta(h){
-  const st=currentStreak(h);
-  if(!st)return'noch keine Serie';
-  let cls='s',em='🔥';
-  if(st>=100){cls='s s-legend';em='👑';}
-  else if(st>=30){cls='s s-epic';em='💙';}
-  else if(st>=14){cls='s s-hot';em='🔥';}
-  return`<span class="${cls}">${em} ${st} ${st===1?'Tag':'Tage'} Serie</span>`;
-}
-function mmss(ms){const s=Math.max(0,Math.round(ms/1000));return Math.floor(s/60)+':'+pad(s%60);}
-
-function renderToday(done,tot){
-  const v=document.getElementById('todayView');
-  let html='';
-  const hasShared=sbUser&&sbShared.length;
-  if(!tot&&!hasShared){
-    html+=`<div class="empty" style="padding:34px 12px 14px"><div class="e">🌱</div>
-      <p>Leg los mit deinem ersten Habit.<br>Tippe unten auf <b>+</b> oder wähle einen Vorschlag:</p></div>
-      <div class="starters">${STARTERS.map((s,i)=>`
-        <button class="starter" onclick="addStarter(${i})">
-          <span class="emoji" style="background:var(--${s.color}-tint);color:var(--${s.color})">${s.emoji}</span>
-          <span class="stx">${s.name}${s.duration?` · ⏱ ${s.duration} Min`:''}</span>
-          <span class="add">＋</span>
-        </button>`).join('')}</div>`;
-    v.innerHTML=html;return;
-  }
-  if(done===tot&&tot>0)html+='<div class="alldone">🎉 Alles erledigt für heute. Stark!</div>';
-  state.habits.forEach(h=>{
-    const on=!!h.history[TODAY];
-    const timed=h.duration>0;
-    const running=h.timer&&h.timer.endsAt;
-    const paused=h.timer&&h.timer.remaining!=null;
-    let btn,meta;
-    const cancel=`<span class="metalink" onclick="event.stopPropagation();cancelTimer('${h.id}')">Abbrechen</span>`;
-    if(on){
-      btn=`<button class="check on" data-h="${h.id}" onclick="toggle('${h.id}',this)">✓</button>`;
-      meta=streakMeta(h)+(timed?` · ⏱ ${h.duration} Min`:'');
-    }else if(running){
-      const rem=h.timer.endsAt-Date.now();
-      btn=`<button id="cb-${h.id}" class="check timing" onclick="pauseTimer('${h.id}')">⏸</button>`;
-      meta=`<span class="cd" id="cd-${h.id}">⏱ ${mmss(rem)}</span> läuft · ${cancel}`;
-    }else if(paused){
-      btn=`<button id="cb-${h.id}" class="check paused" onclick="resumeTimer('${h.id}')">▶</button>`;
-      meta=`<span class="cd" id="cd-${h.id}">⏱ ${mmss(h.timer.remaining)}</span> pausiert · ${cancel}`;
-    }else if(timed){
-      btn=`<button class="check play" onclick="startTimer('${h.id}')">▶</button>`;
-      meta=streakMeta(h)+` · ⏱ ${h.duration} Min`;
-    }else{
-      btn=`<button class="check" data-h="${h.id}" onclick="toggle('${h.id}',this)">✓</button>`;
-      meta=streakMeta(h);
-    }
-    html+=`<div class="habit ${on?'done':''}" style="--hc:var(--${h.color});--hc-t:var(--${h.color}-tint)">
-      <div class="emoji" style="background:var(--${h.color}-tint,#eee);color:var(--${h.color})"
-           onclick="openSheet('${h.id}')">${h.emoji}</div>
-      <div class="body" onclick="openSheet('${h.id}')">
-        <div class="name">${esc(h.name)}</div>
-        <div class="meta">${meta}</div>
-      </div>
-      ${btn}
-    </div>`;
-  });
-  if(hasShared){
-    html+='<div class="shared-head" style="margin-top:18px">Gemeinsame Habits</div>';
-    sbShared.forEach(h=>html+=sharedCard(h));
-  }
-  v.innerHTML=html;
-}
-
-function renderHeatmap(weeks){
-  weeks=weeks||16;
-  const today=new Date(),todayKey=ymd(today);
-  const total=state.habits.length;
-  // Align start to Monday, 'weeks' weeks back
-  let start=addDays(today,-(weeks*7-1));
-  const dow=start.getDay();
-  start=addDays(start,-(dow===0?6:dow-1));
-  // Month labels: track where each month begins
-  const monthMap=[];let prevMo=-1;
-  for(let col=0;col<weeks;col++){
-    const d=addDays(start,col*7);
-    const mo=d.getMonth();
-    if(mo!==prevMo){monthMap[col]=d.toLocaleDateString('de-DE',{month:'short'});prevMo=mo;}
-  }
-  // Build month label row (positioned by flex-basis)
-  let mHtml='';
-  let prevLabelCol=-1;
-  for(let col=0;col<weeks;col++){
-    const cellW=13+3; // cell + gap
-    const lbl=monthMap[col];
-    if(lbl){
-      const left=(col*(cellW))+'px';
-      mHtml+=`<span class="hm-month-lbl" style="position:absolute;left:${left}">${lbl}</span>`;
-    }
-  }
-  // Build cell grid
-  let cells='<div class="hm-cells">';
-  for(let col=0;col<weeks;col++){
-    cells+='<div class="hm-col">';
-    for(let row=0;row<7;row++){
-      const d=addDays(start,col*7+row),k=ymd(d);
-      if(k>todayKey){cells+='<div class="hm-cell hm-future"></div>';continue;}
-      const poss=state.habits.filter(h=>h.createdAt<=k).length;
-      if(!poss){cells+='<div class="hm-cell hm-l0"></div>';continue;}
-      const done=state.habits.filter(h=>h.createdAt<=k&&h.history[k]).length;
-      const rate=done/poss;
-      const lvl=rate===0?0:rate<=0.25?1:rate<=0.5?2:rate<=0.75?3:4;
-      const tc=k===todayKey?' hm-today':'';
-      cells+=`<div class="hm-cell hm-l${lvl}${tc}"></div>`;
-    }
-    cells+='</div>';
-  }
-  cells+='</div>';
-  const dayLabels='<div class="hm-days"><span></span><span>Mo</span><span></span><span>Mi</span><span></span><span>Fr</span><span></span></div>';
-  const totalW=weeks*(13+3)-3;
-  return`<div class="heatmap-wrap">
-  <div class="section-title" style="margin-top:0;margin-bottom:8px">Aktivität</div>
-  <div class="hm-wrap-inner">
-    <div style="position:relative;height:16px;width:${totalW}px;margin-bottom:3px;padding-left:20px">${mHtml}</div>
-    <div class="hm-body">${dayLabels}${cells}</div>
-  </div>
-</div>`;
-}
-
-function renderStats(){
-  const v=document.getElementById('statsView');
-  if(!state.habits.length){v.innerHTML='<div class="empty"><div class="e">📊</div><p>Statistiken erscheinen,<br>sobald du Habits hast.</p></div>';return;}
-  const done=state.habits.filter(h=>h.history[TODAY]).length;
-  const best=state.habits.reduce((m,h)=>Math.max(m,bestStreak(h)),0);
-  const topCur=state.habits.reduce((m,h)=>Math.max(m,currentStreak(h)),0);
-  const totalDone=state.habits.reduce((s,h)=>s+Object.values(h.history).filter(Boolean).length,0);
-  let html=`<div class="stat-row">
-    <div class="stat"><div class="v" style="color:var(--fire)">${topCur}</div><div class="k">Aktuelle Serie</div></div>
-    <div class="stat"><div class="v" style="color:var(--fire)">${best}</div><div class="k">Rekord</div></div>
-    <div class="stat"><div class="v">${totalDone}</div><div class="k">Gesamt</div></div>
-  </div>`;
-  html+=renderHeatmap(16);
-  html+=renderInsights();
-  // last 7 days bar
-  const dayNames=['So','Mo','Di','Mi','Do','Fr','Sa'];
-  let counts=[],maxc=1;
-  for(let i=6;i>=0;i--){
-    const d=addDays(new Date(),-i),k=ymd(d);
-    const c=state.habits.filter(h=>h.history[k]).length;
-    counts.push({k,c,d});if(c>maxc)maxc=c;
-  }
-  html+='<div class="section-title">Letzte 7 Tage</div><div class="week">';
-  counts.forEach(o=>{
-    const hpx=Math.round(o.c/maxc*80);
-    const isToday=o.k===TODAY;
-    html+=`<div class="day ${isToday?'today-bar':''}">
-      <div class="dval">${o.c||''}</div>
-      <div class="bar-wrap"><div class="bar ${o.c?'':'zero'}" style="height:${o.c?Math.max(hpx,6):4}px"></div></div>
-      <div class="dlabel">${dayNames[o.d.getDay()]}</div></div>`;
-  });
-  html+='</div>';
-  html+='<div class="section-title">Pro Habit</div>';
-  state.habits.forEach(h=>{
-    const cs=currentStreak(h);
-    html+=`<div class="statcard">
-      <div class="head">
-        <div class="emoji" style="background:var(--${h.color}-tint,#eee);color:var(--${h.color})">${h.emoji}</div>
-        <div class="hname">${esc(h.name)}</div>
-      </div>
-      <div class="nums">
-        <div class="b">Aktuelle Serie<span class="fire ${cs===0?'out':''}"><span class="flm">🔥</span> ${cs}</span></div>
-        <div class="b">Rekord<span>${bestStreak(h)}</span></div>
-        <div class="b">Erfüllt<span>${completionRate(h)}%</span></div>
-      </div>
-      <div class="grid30">${grid30(h)}</div>
-    </div>`;
-  });
-  v.innerHTML=html;
-  requestAnimationFrame(()=>{
-    const wrap=v.querySelector('.heatmap-wrap');
-    if(wrap)wrap.scrollLeft=wrap.scrollWidth;
-  });
-}
-function renderFriends(){
-  const v=document.getElementById('friendsView');if(!v)return;
-  if(!sbUser){
-    v.innerHTML=`<div class="empty" style="padding:50px 16px"><div class="e">🤝</div><p>Melde dich unter <b>⚙ Einstellungen</b> an,<br>um Freunde hinzuzufügen und gemeinsame Streaks zu sammeln.</p></div>`;
-    return;
-  }
-  let html='<div class="section-title" style="margin-top:0">Gemeinsame Habits</div>';
-  if(sbShared.length){
-    sbShared.forEach(h=>html+=sharedCard(h));
-  }else{
-    html+=`<div class="statcard"><p style="font-size:13px;font-weight:700;color:var(--muted);margin:0;line-height:1.5">Noch keine gemeinsamen Habits. Tippe auf <b>+</b> und wähle unten „Gemeinsam mit" einen Freund.</p></div>`;
-  }
-  const code=sbProfile?esc(sbProfile.friend_code||'…'):'…';
-  const myname=sbProfile?esc(sbProfile.display_name||''):'';
-  html+=`<div class="section-title">Dein Profil</div>
-    <div class="statcard">
-      <p class="field-label" style="margin:0 0 8px">Dein Anzeigename</p>
-      <input class="name-input" id="profileName" maxlength="24" placeholder="Name" value="${myname}" style="margin-bottom:10px">
-      <button class="btn-del" style="margin-top:0" onclick="sbSaveName()">Namen speichern</button>
-      <div style="margin-top:14px;padding:12px;border-radius:12px;background:var(--accent-t);text-align:center">
-        <div style="font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Dein Freundescode</div>
-        <div style="font-size:26px;font-weight:900;letter-spacing:4px;margin:4px 0;color:var(--accent-d)">${code}</div>
-        <button class="btn-del" style="margin-top:6px" onclick="sbCopyCode()">Code kopieren</button>
-      </div>
-      <p class="field-label" style="margin:16px 0 8px">Freund per Code hinzufügen</p>
-      <input class="name-input" id="friendCode" maxlength="6" placeholder="z.B. 4F9A2C" style="margin-bottom:10px;text-transform:uppercase;letter-spacing:2px;font-weight:800">
-      <button class="btn" onclick="sbAddFriend()">Hinzufügen</button>
-    </div>`;
-  if(sbFriends.length){
-    html+=`<div class="statcard"><p class="field-label" style="margin:0 0 10px">Deine Freunde (${sbFriends.length})</p>`+
-      sbFriends.map(f=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;font-weight:800;font-size:14px"><span style="font-size:18px">🔥</span>${esc(f.display_name||'Freund')}</div>`).join('')+`</div>`;
-  }
-  v.innerHTML=html;
-}
-
-function renderSettings(){
-  const v=document.getElementById('settingsView');if(!v)return;
-  let html=`<div class="section-title">Sound</div>
-    <div class="statcard">
-      <div style="display:flex;align-items:center;gap:12px">
-        <span style="font-size:22px">${soundOn?'🔊':'🔇'}</span>
-        <span style="flex:1;font-weight:800;font-size:14px">Soundeffekte</span>
-        <button class="toggle ${soundOn?'on':''}" onclick="setSound(${!soundOn})" aria-label="Sound umschalten"><span class="knob"></span></button>
-      </div>
-      <button class="btn-del" style="margin-top:12px" onclick="testSound()">Sound testen</button>
-    </div>`;
-  html+=`<div class="section-title">Design</div><div class="themes">`+
-    THEMES.map(t=>`<button class="theme-opt ${currentTheme()===t.id?'sel':''}" data-t="${t.id}" onclick="setTheme('${t.id}')"><span class="sw">${t.sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><span class="tn">${t.name}</span></button>`).join('')+`</div>`;
-  html+=`<div class="section-title">Daten</div>
-    <div class="statcard">
-      <p style="font-size:13px;font-weight:700;color:var(--muted);margin:0 0 14px;line-height:1.5">Deine Daten liegen lokal in diesem Browser. Sichere sie als Backup, um sie zu behalten oder auf ein anderes Gerät zu übertragen.</p>
-      <button class="btn" style="background:var(--blue);box-shadow:0 4px 0 var(--blue-dark)" onclick="exportData()">Backup speichern</button>
-      <button class="btn-del" id="importBtn" onclick="importArm()">Backup laden</button>
-      <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importData(event)">
-    </div>`;
-  html+=`<div class="section-title">Konto &amp; Sync</div>`;
-  if(sbUser){
-    html+=`<div class="statcard">
-      <p style="font-size:13px;font-weight:700;margin:0 0 10px;line-height:1.5">Angemeldet als <b>${esc(sbUser.email||'')}</b><br><span style="color:var(--muted)">Deine Habits werden zwischen deinen Geräten synchronisiert.</span></p>
-      <button class="btn-del" onclick="authSignOut()">Abmelden</button>
-    </div>`;
-    if(localHasHabits()){
-      html+=`<div class="statcard"><p style="font-size:13px;font-weight:700;color:var(--muted);margin:0 0 12px;line-height:1.5">Es gibt lokale Habits (vor der Anmeldung). Möchtest du sie in dieses Konto übernehmen?</p>
-        <button class="btn-del" onclick="importLocalToAccount()">Lokale Daten übernehmen</button></div>`;
-    }
-  }else if(window.supabase){
-    html+=`<div class="statcard">
-      <p style="font-size:13px;font-weight:700;color:var(--muted);margin:0 0 12px;line-height:1.5">Melde dich an, um deine Habits über mehrere Geräte zu synchronisieren. Ein neues Konto startet leer.</p>
-      <input class="name-input" id="authEmail" type="email" placeholder="E-Mail" autocomplete="email" style="margin-bottom:10px">
-      <input class="name-input" id="authPass" type="password" placeholder="Passwort" autocomplete="current-password" style="margin-bottom:12px">
-      <button class="btn" onclick="authSignIn()">Anmelden</button>
-      <button class="btn-del" onclick="authSignUp()">Neues Konto erstellen</button>
-    </div>`;
-  }else{
-    html+=`<div class="statcard"><p style="font-size:13px;font-weight:700;color:var(--muted);margin:0;line-height:1.5">Sync ist offline nicht verfügbar. Verbinde dich mit dem Internet und öffne die App neu.</p></div>`;
-  }
-  v.innerHTML=html;
-}
-
-function grid30(h){
-  let cells='';
-  for(let i=29;i>=0;i--){
-    const k=ymd(addDays(new Date(),-i));
-    const on=!!h.history[k];
-    const created=k>=h.createdAt;
-    const isToday=i===0;
-    const todayCls=isToday?' today-cell':'';
-    if(!created){cells+=`<div class="cell miss${todayCls}"></div>`;}
-    else if(on){cells+=`<div class="cell${todayCls}" style="background:var(--${h.color})"></div>`;}
-    else{cells+=`<div class="cell miss${todayCls}"></div>`;}
-  }
-  return cells;
-}
-
-function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
-
-/* ---- actions ---- */
-function toggle(id,btn){
-  const h=state.habits.find(x=>x.id===id);if(!h)return;
-  const marking=!h.history[TODAY];
-  if(h.history[TODAY])delete h.history[TODAY];else h.history[TODAY]=true;
-  h.timer=null;
-  save();render();
-  if(marking){
-    const s=currentStreak(h);
-    const nb=document.querySelector('.check[data-h="'+id+'"]')||btn;
-    const big=MILESTONES.includes(s);
-    ensureAudio();
-    sndCheck();
-    celebrateAt(nb,big);
-    if(big){milestoneBanner(s);emberRain();sndMilestone();}
-    else{toast(s>0?('🔥 '+s+' '+(s===1?'Tag':'Tage')+' Serie'):'Erledigt');if(s>0)sndStreak(s);}
-  }
-}
-
-function startTimer(id){
-  const h=state.habits.find(x=>x.id===id);if(!h)return;
-  ensureAudio();
-  h.timer={endsAt:Date.now()+h.duration*60000};
-  save();render();ensureTicker();
-  toast('Timer läuft · '+h.duration+' Min');
-}
-function pauseTimer(id){
-  const h=state.habits.find(x=>x.id===id);if(!h||!h.timer||!h.timer.endsAt)return;
-  h.timer={remaining:Math.max(0,h.timer.endsAt-Date.now())};
-  save();render();ensureTicker();
-}
-function resumeTimer(id){
-  const h=state.habits.find(x=>x.id===id);if(!h||!h.timer||h.timer.remaining==null)return;
-  h.timer={endsAt:Date.now()+h.timer.remaining};
-  save();render();ensureTicker();
-}
-function cancelTimer(id){
-  const h=state.habits.find(x=>x.id===id);if(!h)return;
-  h.timer=null;save();render();ensureTicker();
-}
-function ensureTicker(){
-  const anyRunning=state.habits.some(h=>h.timer&&h.timer.endsAt);
-  if(anyRunning&&!ticker)ticker=setInterval(tick,1000);
-  else if(!anyRunning&&ticker){clearInterval(ticker);ticker=null;}
-}
-function tick(){
-  let doneId=null,doneName=null;
-  state.habits.forEach(h=>{
-    if(h.timer&&h.timer.endsAt){
-      const rem=h.timer.endsAt-Date.now();
-      if(rem<=0){h.history[TODAY]=true;h.timer=null;doneId=h.id;doneName=h.name;}
-      else{const el=document.getElementById('cd-'+h.id);if(el)el.textContent='⏱ '+mmss(rem);}
-    }
-  });
-  if(doneId){
-    save();render();ensureTicker();
-    const h=state.habits.find(x=>x.id===doneId);
-    const s=h?currentStreak(h):0;
-    const nb=document.querySelector('.check[data-h="'+doneId+'"]');
-    const big=MILESTONES.includes(s);
-    toast('🔥 '+doneName+' geschafft!');
-    sndCheck();
-    celebrateAt(nb,big);
-    if(big){milestoneBanner(s);emberRain();sndMilestone();}
-    else if(s>0)sndStreak(s);
-  }
-}
-function reconcileTimers(){
-  let changed=false;
-  state.habits.forEach(h=>{
-    if(h.timer&&h.timer.endsAt&&Date.now()>=h.timer.endsAt){
-      if(!h.history[TODAY])h.history[TODAY]=true;
-      h.timer=null;changed=true;
-    }
-  });
-  if(changed)save();
-}
-
-function setTab(t){
-  tab=t;
-  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
-  ['today','stats','friends','settings'].forEach(name=>{
-    const v=document.getElementById(name+'View');if(v)v.style.display=(t===name?'':'none');
-  });
-  const mainFB=document.getElementById('mainFlamebox'),friendFB=document.getElementById('friendFlamebox');
-  if(t==='friends'){
-    if(mainFB)mainFB.style.display='none';
-    if(friendFB){friendFB.style.display='flex';updateFriendFlame(false);}
-  }else{
-    if(mainFB)mainFB.style.display='';
-    if(friendFB)friendFB.style.display='none';
-  }
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function updateFriendFlame(animate){
-  const fb=document.getElementById('friendFlamebox');if(!fb)return;
-  const numEl=document.getElementById('ffNum'),lblEl=document.getElementById('ffLbl');
-  if(!sbUser||!sbShared.length){
-    fb.classList.remove('complete');
-    if(numEl)numEl.textContent='0';
-    if(lblEl)lblEl.textContent='noch kein Freund-Habit';
-    return;
-  }
-  const allDone=sbShared.every(h=>sharedDayComplete(h,TODAY));
-  const best=sbShared.reduce((m,h)=>Math.max(m,sharedStreak(h)),0);
-  if(numEl)numEl.textContent=best;
-  if(lblEl)lblEl.textContent=best===1?'gemeinsamer Tag':'gemeinsame Tage';
-  const was=fb.classList.contains('complete');
-  fb.classList.toggle('complete',allDone);
-  if(animate&&allDone&&!was){
-    fb.classList.remove('celebrate');void fb.offsetWidth;fb.classList.add('celebrate');
-    setTimeout(()=>fb.classList.remove('celebrate'),650);
-  }
-}
-
-/* ---- sheet ---- */
-function buildPickers(){
-  const ep=document.getElementById('emojiPicker');
-  ep.innerHTML=EMOJIS.map(e=>`<button class="emoji-opt ${e===selEmoji?'sel':''}" onclick="pickEmoji('${e}',this)">${e}</button>`).join('');
-  const cp=document.getElementById('colorPicker');
-  cp.innerHTML=COLORS.map(c=>`<button class="color-opt ${c===selColor?'sel':''}" style="background:var(--${c})" onclick="pickColor('${c}',this)"></button>`).join('');
-  const dp=document.getElementById('durPicker');
-  dp.innerHTML=DURATIONS.map(d=>`<button class="dur-opt ${d===selDuration?'sel':''}" onclick="pickDur(${d},this)">${d===0?'Aus':d+' Min'}</button>`).join('');
-  buildSharePicker();
-}
-function buildSharePicker(){
-  const wrap=document.getElementById('shareWrap'),p=document.getElementById('sharePicker');
-  if(!wrap||!p)return;
-  if(editId||!sbUser||!sbFriends.length){wrap.style.display='none';return;}
-  wrap.style.display='block';
-  p.innerHTML=`<button class="dur-opt ${selShareFriend===null?'sel':''}" onclick="pickShare(null,this)">Nur ich</button>`+
-    sbFriends.map(f=>`<button class="dur-opt ${selShareFriend===f.user_id?'sel':''}" onclick="pickShare('${f.user_id}',this)">${esc(f.display_name||'Freund')}</button>`).join('');
-}
-function pickShare(id,el){selShareFriend=id;document.querySelectorAll('#sharePicker .dur-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
-function pickEmoji(e,el){selEmoji=e;document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
-function pickColor(c,el){selColor=c;document.querySelectorAll('.color-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
-function pickDur(d,el){selDuration=d;document.querySelectorAll('.dur-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
-
-function openSheet(id){
-  delArmed=false;selShareFriend=null;
-  const del=document.getElementById('delBtn');
-  del.classList.remove('arm');del.textContent='Löschen';
-  if(id){
-    const h=state.habits.find(x=>x.id===id);
-    editId=id;selEmoji=h.emoji;selColor=h.color;selDuration=h.duration||0;
-    document.getElementById('sheetTitle').textContent='Habit bearbeiten';
-    document.getElementById('nameInput').value=h.name;
-    del.style.display='block';
-  }else{
-    editId=null;selEmoji=EMOJIS[0];selColor=COLORS[0];selDuration=0;
-    document.getElementById('sheetTitle').textContent='Neuer Habit';
-    document.getElementById('nameInput').value='';
-    del.style.display='none';
-  }
-  buildPickers();validate();
-  document.getElementById('scrim').classList.add('show');
-  document.getElementById('sheet').classList.add('show');
-}
-function closeSheet(){
-  document.getElementById('scrim').classList.remove('show');
-  document.getElementById('sheet').classList.remove('show');
-  document.getElementById('nameInput').blur();
-}
-function validate(){
-  const ok=document.getElementById('nameInput').value.trim().length>0;
-  document.getElementById('saveBtn').disabled=!ok;
-}
-function saveHabit(){
-  const name=document.getElementById('nameInput').value.trim();
-  if(!name)return;
-  if(!editId&&selShareFriend){
-    sbCreateShared(name,selEmoji,selColor,selShareFriend).then(ok=>{if(ok){toast('Gemeinsamer Habit erstellt 💜');render();}});
-    closeSheet();return;
-  }
-  if(editId){
-    const h=state.habits.find(x=>x.id===editId);
-    h.name=name;h.emoji=selEmoji;h.color=selColor;h.duration=selDuration;
-    if(selDuration===0)h.timer=null;
-  }else{
-    state.habits.push({id:'h'+Date.now(),name,emoji:selEmoji,color:selColor,duration:selDuration,createdAt:TODAY,history:{},timer:null});
-  }
-  save();render();ensureTicker();closeSheet();
-}
-function deleteHabit(){
-  const del=document.getElementById('delBtn');
-  if(!delArmed){delArmed=true;del.classList.add('arm');del.textContent='Wirklich löschen?';return;}
-  state.habits=state.habits.filter(x=>x.id!==editId);
-  save();render();closeSheet();
-}
-
-/* ---- backup ---- */
-let importArmed=false;
-function exportData(){
-  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;a.download='streak-backup-'+TODAY+'.json';
-  document.body.appendChild(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
-  toast('Backup gespeichert');
-}
-function importArm(){
-  const b=document.getElementById('importBtn');
-  if(!importArmed){importArmed=true;b.classList.add('arm');b.textContent='Aktuelle Daten ersetzen?';return;}
-  document.getElementById('importFile').click();
-}
-function importData(e){
-  const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=()=>{
-    try{
-      const data=JSON.parse(r.result);
-      if(!data||!Array.isArray(data.habits))throw 0;
-      data.habits.forEach(h=>{if(!h.history)h.history={};if(h.duration==null)h.duration=0;if(!('timer'in h))h.timer=null;});
-      state=data;save();render();ensureTicker();toast('Backup geladen');
-    }catch(err){toast('Datei konnte nicht gelesen werden');}
-    importArmed=false;e.target.value='';
-  };
-  r.readAsText(f);
-}
-
-/* ---- feedback: toast, sound, haptics ---- */
-let toastT=null;
-function toast(msg){
-  const t=document.getElementById('toast');if(!t)return;
-  t.textContent=msg;t.classList.add('show');
-  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);
-}
-let audioCtx=null,master=null,comp=null,reverb=null,revGain=null,soundOn=true;
-function loadSound(){try{soundOn=localStorage.getItem('streak_sound')!=='off'}catch(e){soundOn=true}}
-function setSound(on){
-  soundOn=on;try{localStorage.setItem('streak_sound',on?'on':'off')}catch(e){}
-  render();
-  if(on){ensureAudio();sndStreak(2);}
-}
-function testSound(){
-  ensureAudio();
-  const prev=soundOn;soundOn=true;
-  sndCheck();sndStreak(3);
-  soundOn=prev;
-}
-function unlockAudio(){
-  ensureAudio();
-  try{
-    if(audioCtx){
-      const b=audioCtx.createBuffer(1,1,22050);
-      const s=audioCtx.createBufferSource();s.buffer=b;s.connect(master||audioCtx.destination);s.start(0);
-    }
-  }catch(e){}
-}
-window.addEventListener('pointerdown',unlockAudio,{once:true});
-window.addEventListener('touchend',unlockAudio,{once:true});
-function ensureAudio(){
-  try{if(navigator.audioSession){navigator.audioSession.type='playback';}}catch(e){}
-  try{
-    if(!audioCtx){
-      audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-      comp=audioCtx.createDynamicsCompressor();
-      comp.threshold.value=-16;comp.knee.value=26;comp.ratio.value=3;comp.attack.value=0.003;comp.release.value=0.2;
-      master=audioCtx.createGain();master.gain.value=0.85;
-      master.connect(comp);comp.connect(audioCtx.destination);
-      reverb=audioCtx.createConvolver();reverb.buffer=makeIR(1.5,2.4);
-      revGain=audioCtx.createGain();revGain.gain.value=0.85;
-      revGain.connect(reverb);reverb.connect(master);
-    }
-    if(audioCtx.state==='suspended')audioCtx.resume();
-  }catch(e){}
-}
-function makeIR(dur,decay){
-  const rate=audioCtx.sampleRate,len=Math.floor(rate*dur);
-  const buf=audioCtx.createBuffer(2,len,rate);
-  for(let ch=0;ch<2;ch++){const d=buf.getChannelData(ch);
-    for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);}
-  return buf;
-}
-const PARTIALS={
-  marimba:[[1,1],[2,0.4],[3,0.18],[4,0.06]],
-  bell:[[1,1],[2,0.5],[3.01,0.32],[4.7,0.18],[6.2,0.1]]
-};
-function voice(freq,start,dur,o){
-  if(!audioCtx)return;o=o||{};
-  const t=audioCtx.currentTime+start;
-  const peak=o.gain||0.3,send=o.send==null?0.3:o.send,bright=o.bright||3200;
-  const parts=PARTIALS[o.tone||'marimba'];
-  const env=audioCtx.createGain();
-  env.gain.setValueAtTime(0.0001,t);
-  env.gain.exponentialRampToValueAtTime(peak,t+0.004);
-  env.gain.exponentialRampToValueAtTime(0.0001,t+dur);
-  const lp=audioCtx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=bright;
-  parts.forEach(([mult,amp])=>{
-    const osc=audioCtx.createOscillator();osc.type='sine';osc.frequency.value=freq*mult;
-    const g=audioCtx.createGain();g.gain.value=amp;
-    osc.connect(g);g.connect(env);osc.start(t);osc.stop(t+dur+0.06);
-  });
-  env.connect(lp);lp.connect(master);
-  const s=audioCtx.createGain();s.gain.value=send;lp.connect(s);s.connect(revGain);
-}
-function padTone(freq,start,dur,gain){
-  if(!audioCtx)return;
-  const t=audioCtx.currentTime+start;
-  const o=audioCtx.createOscillator(),o2=audioCtx.createOscillator(),g=audioCtx.createGain();
-  o.type='sine';o2.type='sine';o.frequency.value=freq;o2.frequency.value=freq*2.002;
-  g.gain.setValueAtTime(0.0001,t);
-  g.gain.exponentialRampToValueAtTime(gain,t+0.06);
-  g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
-  o.connect(g);o2.connect(g);g.connect(master);g.connect(revGain);
-  o.start(t);o2.start(t);o.stop(t+dur+0.05);o2.stop(t+dur+0.05);
-}
-function pop(){
-  if(!audioCtx)return;
-  const t=audioCtx.currentTime;
-  const o=audioCtx.createOscillator(),g=audioCtx.createGain();
-  o.type='sine';o.frequency.setValueAtTime(430,t);o.frequency.exponentialRampToValueAtTime(120,t+0.07);
-  g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.5,t+0.005);g.gain.exponentialRampToValueAtTime(0.0001,t+0.13);
-  o.connect(g);g.connect(master);o.start(t);o.stop(t+0.15);
-  const n=Math.floor(audioCtx.sampleRate*0.025);
-  const buf=audioCtx.createBuffer(1,n,audioCtx.sampleRate);
-  const d=buf.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
-  const src=audioCtx.createBufferSource();src.buffer=buf;
-  const bp=audioCtx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1900;bp.Q.value=0.8;
-  const ng=audioCtx.createGain();ng.gain.setValueAtTime(0.18,t);ng.gain.exponentialRampToValueAtTime(0.0001,t+0.04);
-  src.connect(bp);bp.connect(ng);ng.connect(master);src.start(t);src.stop(t+0.05);
-}
-function sndCheck(){
-  if(!soundOn)return;ensureAudio();if(!audioCtx)return;
-  pop();
-}
-function sndStreak(level){
-  if(!soundOn)return;ensureAudio();if(!audioCtx)return;
-  const seq=[523.25,659.25,783.99];                 // C E G (major)
-  const lift=Math.pow(2,Math.min(Math.max((level||1)-1,0),4)/12); // climbs by semitones
-  seq.forEach((f,i)=>voice(f*lift,i*0.08,0.55,{gain:0.32,send:0.35}));
-  voice(1046.5*lift,0.24,0.8,{gain:0.16,send:0.5,tone:'bell'}); // sparkle top
-}
-function sndMilestone(){
-  if(!soundOn)return;ensureAudio();if(!audioCtx)return;
-  [523.25,659.25,783.99,1046.5].forEach((f,i)=>voice(f,i*0.1,0.6,{gain:0.3,send:0.35})); // C E G C run
-  voice(1318.5,0.46,1.2,{gain:0.2,send:0.55,tone:'bell'});      // triumphant bell
-  voice(1567.98,0.6,0.9,{gain:0.12,send:0.55,tone:'bell'});     // sparkle
-  [261.63,329.63,392].forEach(f=>padTone(f,0.46,1.0,0.05));         // warm chord
-}
-/* ---- celebration effects ---- */
-const MILESTONES=[3,7,14,30,50,75,100,150,200,365];
-const FX_COLORS=['#58cc02','#ff9600','#ffc800','#7ee03c','#ffffff'];
-let fxCanvas,fxCtx,fxParticles=[],fxRAF=null;
-function reduceMotion(){return window.matchMedia('(prefers-reduced-motion:reduce)').matches;}
-function fxInit(){
-  fxCanvas=document.getElementById('fx');if(!fxCanvas)return;
-  fxCtx=fxCanvas.getContext('2d');fxResize();
-  window.addEventListener('resize',fxResize);
-}
-function fxResize(){
-  if(!fxCanvas)return;
-  const dpr=Math.min(window.devicePixelRatio||1,2);
-  fxCanvas.width=innerWidth*dpr;fxCanvas.height=innerHeight*dpr;
-  fxCanvas.style.width=innerWidth+'px';fxCanvas.style.height=innerHeight+'px';
-  fxCtx.setTransform(dpr,0,0,dpr,0,0);
-}
-function fxStart(){if(!fxRAF)fxRAF=requestAnimationFrame(fxTick);}
-function fxTick(){
-  fxCtx.clearRect(0,0,innerWidth,innerHeight);
-  fxCtx.globalCompositeOperation='lighter';
-  for(let i=fxParticles.length-1;i>=0;i--){
-    const p=fxParticles[i];
-    p.vy+=p.g;p.vx*=0.99;p.x+=p.vx;p.y+=p.vy;p.life-=p.decay;
-    if(p.life<=0||p.y>innerHeight+20){fxParticles.splice(i,1);continue;}
-    fxCtx.globalAlpha=Math.max(p.life,0);
-    fxCtx.beginPath();
-    fxCtx.arc(p.x,p.y,p.r*(0.5+p.life*0.5),0,6.283);
-    fxCtx.fillStyle=p.color;fxCtx.fill();
-  }
-  fxCtx.globalAlpha=1;fxCtx.globalCompositeOperation='source-over';
-  if(fxParticles.length)fxRAF=requestAnimationFrame(fxTick);
-  else{fxRAF=null;fxCtx.clearRect(0,0,innerWidth,innerHeight);}
-}
-function spawnBurst(x,y,n,power){
-  for(let i=0;i<n;i++){
-    const a=Math.random()*6.283,sp=(Math.random()*0.6+0.4)*power;
-    fxParticles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-power*0.35,
-      r:Math.random()*3+2,life:1,decay:Math.random()*0.012+0.013,
-      color:FX_COLORS[(Math.random()*FX_COLORS.length)|0],g:0.07});
-  }
-  fxStart();
-}
-function emberRain(){
-  if(reduceMotion()||!fxCtx)return;
-  for(let i=0;i<46;i++){
-    setTimeout(()=>{
-      fxParticles.push({x:Math.random()*innerWidth,y:-10,
-        vx:(Math.random()-0.5)*1.2,vy:Math.random()*1.6+1.1,
-        r:Math.random()*3+2,life:1,decay:0.005+Math.random()*0.004,
-        color:FX_COLORS[(Math.random()*FX_COLORS.length)|0],g:0.03});
-      fxStart();
-    },Math.random()*380);
-  }
-}
-function spawnRing(x,y){
-  const r=document.createElement('div');r.className='fx-ring';
-  r.style.left=x+'px';r.style.top=y+'px';
-  document.body.appendChild(r);setTimeout(()=>r.remove(),600);
-}
-function celebrateAt(el,big){
-  if(navigator.vibrate)navigator.vibrate(big?[28,38,28,38,60]:10);
-  if(reduceMotion()||!el||!fxCtx)return;
-  const r=el.getBoundingClientRect();
-  const x=r.left+r.width/2,y=r.top+r.height/2;
-  spawnRing(x,y);
-  spawnBurst(x,y,big?48:24,big?9:6);
-  el.classList.add('pop');setTimeout(()=>el.classList.remove('pop'),320);
-}
-function milestoneBanner(streak){
-  const o=document.getElementById('milestone');if(!o)return;
-  o.querySelector('.ms-num').textContent=streak;
-  o.classList.add('show');
-  clearTimeout(o._t);o._t=setTimeout(()=>o.classList.remove('show'),1800);
-}
-
-/* ---- (mascot removed) ---- */
-/* ---- starter habits ---- */
-function addStarter(i){
-  const s=STARTERS[i];
-  state.habits.push({id:'h'+Date.now(),name:s.name,emoji:s.emoji,color:s.color,duration:s.duration,createdAt:TODAY,history:{},timer:null});
-  save();render();ensureTicker();toast('Hinzugefügt: '+s.name);
-}
-
-/* ---- day rollover ---- */
-function refreshDay(){
-  const t=ymd(new Date());
-  if(t!==TODAY){TODAY=t;reconcileTimers();render();ensureTicker();}
-}
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshDay();});
-window.addEventListener('focus',refreshDay);
-setInterval(refreshDay,30000);
-
-/* ---- install banner ---- */
-let deferredPrompt=null, installDismissed=false;
-function isStandalone(){
-  return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
-}
-function renderInstall(){
-  const host=document.getElementById('installHost');if(!host)return;
-  if(isStandalone()||installDismissed){host.innerHTML='';return;}
-  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream;
-  const action=deferredPrompt?`<button class="go" onclick="doInstall()">Installieren</button>`:'';
-  const tx=ios
-    ? `<div class="tx"><b>Als App installieren:</b> Teilen-Symbol antippen ➜ „Zum Home-Bildschirm".</div>`
-    : `<div class="tx"><b>Als App installieren</b> – Vollbild und offline nutzbar.</div>`;
-  host.innerHTML=`<div class="install"><span class="ic">📲</span>${tx}${action}
-    <button class="x" aria-label="Hinweis schließen" onclick="dismissInstall()">×</button></div>`;
-}
-function doInstall(){
-  if(!deferredPrompt)return;
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.finally(()=>{deferredPrompt=null;renderInstall();});
-}
-function dismissInstall(){installDismissed=true;renderInstall();}
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;renderInstall();});
-window.addEventListener('appinstalled',()=>{installDismissed=true;renderInstall();toast('Installiert 🎉');});
-
-/* ---- service worker (offline) ---- */
-if('serviceWorker'in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-}
-
-/* ---- themes ---- */
-const THEMES=[
-  {id:'glass',name:'Frischgrün',sw:['#58cc02','#eafadb','#ffffff']},
-  {id:'aurora',name:'Aurora Creme',sw:['#ff7a1a','#f0e3d2','#2a2a2a']},
-  {id:'berry',name:'Beere',sw:['#c850ff','#f1e6fb','#1cb0f6']},
-  {id:'dark',name:'Mitternacht',sw:['#f4b740','#0b1430','#16224a']},
-];
-function currentTheme(){return document.documentElement.getAttribute('data-theme')||'glass';}
-function setTheme(id,persist){
-  document.documentElement.setAttribute('data-theme',id);
-  if(persist!==false){try{localStorage.setItem('streak_theme',id)}catch(e){}}
-  document.querySelectorAll('.theme-opt').forEach(b=>b.classList.toggle('sel',b.dataset.t===id));
-  const m=document.querySelector('meta[name="theme-color"]');
-  const tc={glass:'#e4ebe6',aurora:'#e7ddcd',berry:'#e7def0',dark:'#060a16'};
-  if(m)m.setAttribute('content', tc[id]||'#eafadb');
-}
-function loadTheme(){
-  let t='glass';try{t=localStorage.getItem('streak_theme')||'glass'}catch(e){}
-  setTheme(t,false);
-}
-
-/* ---- account & cloud sync (Supabase) ---- */
-const SB_URL='https://hraemwpbuqzaiwdemlyq.supabase.co';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyYWVtd3BidXF6YWl3ZGVtbHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NTUwMTksImV4cCI6MjA5NzQzMTAxOX0.04fDNU3GbyZBdS9ymFh2_XgOMtU5ARelL_B4V2N_xE8';
-let sb=null,sbUser=null,syncT=null,syncing=false,sbProfile=null,sbFriends=[],sbShared=[],selShareFriend=null,leaveArmId=null,sbHugSeen={},sbSharedLoading=false;
-
-function initAuth(){
-  if(!window.supabase)return;
-  try{sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});}catch(e){return;}
-  sb.auth.getSession().then(({data})=>{
-    if(data&&data.session){sbUser=data.session.user;onLogin();}
-    render();
-  });
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&sbUser){pullCloud(true);sbLoadShared(true).then(render);}});
-  window.addEventListener('focus',()=>{if(sbUser){pullCloud(true);sbLoadShared(true).then(render);}});
-  setInterval(()=>{
-    if(!sbUser||document.hidden)return;
-    const sheetOpen=document.getElementById('sheet').classList.contains('show');
-    sbLoadShared(true).then(()=>{if(!sheetOpen)render();else updateFriendFlame(true);});
-  },20000);
-}
-function authVals(){
-  const ee=document.getElementById('authEmail'),pp=document.getElementById('authPass');
-  return {e:ee?ee.value.trim():'',p:pp?pp.value:''};
-}
-async function authSignUp(){
-  if(!sb)return;const {e,p}=authVals();
-  if(!e||p.length<6){toast('E-Mail + Passwort (min. 6 Zeichen)');return;}
-  toast('Konto wird erstellt…');
-  const {data,error}=await sb.auth.signUp({email:e,password:p});
-  if(error){toast(error.message);return;}
-  if(data.session){sbUser=data.session.user;await onLogin();}
-  else toast('Bitte E-Mail bestätigen, dann anmelden');
+// ── Navigation ──
+let tab = 'reise';
+function go(t) {
+  tab = t;
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
+  document.querySelectorAll('.views > div').forEach(v => v.classList.remove('active'));
+  document.getElementById('v-' + t).classList.add('active');
+  document.getElementById('fab').style.display = (t === 'pack' || t === 'kosten') ? 'flex' : 'none';
   render();
 }
-async function authSignIn(){
-  if(!sb)return;const {e,p}=authVals();
-  if(!e||!p){toast('E-Mail + Passwort eingeben');return;}
-  toast('Anmelden…');
-  const {data,error}=await sb.auth.signInWithPassword({email:e,password:p});
-  if(error){toast(error.message);return;}
-  sbUser=data.user;await onLogin();render();
-}
-async function authSignOut(){
-  if(!sb)return;await sb.auth.signOut();
-  sbUser=null;sbProfile=null;sbFriends=[];sbShared=[];
-  load();reconcileTimers();render();
-  toast('Abgemeldet');
-}
-async function onLogin(){
-  load();              // switch to this account's own local cache (empty for a brand-new account)
-  await pullCloud(true);
-  await sbEnsureProfile();
-  await sbLoadFriends();
-  await sbLoadShared();
-  reconcileTimers();render();
-  toast('Synchronisiert ✓');
-}
-function localHasHabits(){
-  try{const raw=JSON.parse(localStorage.getItem(KEY));return !!(raw&&Array.isArray(raw.habits)&&raw.habits.length);}
-  catch(e){return false;}
-}
-function importLocalToAccount(){
-  if(!sbUser)return;
-  let anon;try{anon=JSON.parse(localStorage.getItem(KEY));}catch(e){anon=null;}
-  if(!anon||!Array.isArray(anon.habits)||!anon.habits.length){toast('Keine lokalen Daten gefunden');return;}
-  state=mergeStates(state,anon);
-  save();render();
-  toast('Lokale Daten übernommen 🎉');
-}
-async function sbEnsureProfile(name){
-  if(!sb||!sbUser)return;
-  try{
-    const {data,error}=await sb.rpc('ensure_profile',name?{p_name:name}:{});
-    if(!error&&data)sbProfile=data;
-  }catch(e){}
-}
-async function sbLoadFriends(){
-  if(!sb||!sbUser)return;
-  try{
-    const {data,error}=await sb.rpc('list_friends');
-    if(!error&&Array.isArray(data))sbFriends=data;
-  }catch(e){}
-}
-async function sbSaveName(){
-  const inp=document.getElementById('profileName');if(!inp)return;
-  const n=inp.value.trim();if(!n){toast('Namen eingeben');return;}
-  await sbEnsureProfile(n);toast('Name gespeichert');render();
-}
-async function sbCopyCode(){
-  if(!sbProfile)return;
-  try{await navigator.clipboard.writeText(sbProfile.friend_code);toast('Code kopiert: '+sbProfile.friend_code);}
-  catch(e){toast('Dein Code: '+sbProfile.friend_code);}
-}
-async function sbAddFriend(){
-  const inp=document.getElementById('friendCode');if(!inp||!sb)return;
-  const code=inp.value.trim();if(!code){toast('Code eingeben');return;}
-  try{
-    const {data,error}=await sb.rpc('redeem_friend_code',{p_code:code});
-    if(error){toast(error.message);return;}
-    if(data==='not_found')toast('Code nicht gefunden');
-    else if(data==='self')toast('Das ist dein eigener Code 🙂');
-    else{toast('Freund hinzugefügt! 🎉');await sbLoadFriends();render();}
-  }catch(e){toast('Fehler beim Hinzufügen');}
+function fabAction() {
+  if (tab === 'pack') { resetPackForm(); openSheet('packSheet'); }
+  else if (tab === 'kosten') {
+    if (!S.trip?.persons?.length) { alert('Bitte füge zuerst Mitreisende im Reise-Tab hinzu.'); return; }
+    resetExpForm(); openSheet('expSheet');
+  }
 }
 
-/* shared habits */
-async function sbLoadShared(notify){
-  if(!sb||!sbUser||sbSharedLoading)return;
-  sbSharedLoading=true;
-  const prevComplete={};
-  sbShared.forEach(h=>prevComplete[h.id]=sharedDayComplete(h,TODAY));
-  try{
-    const {data,error}=await sb.rpc('get_shared');
-    if(!error&&Array.isArray(data)){
-      sbShared=data;
-      if(notify){
-        sbShared.forEach(h=>{
-          if(sharedDayComplete(h,TODAY)&&!prevComplete[h.id])triggerHug(h);
-        });
-      }
-    }
-  }catch(e){}
-  sbSharedLoading=false;
+// ── Sheets ──
+function openSheet(id) { document.getElementById(id).classList.add('open'); }
+function closeSheet(id) { document.getElementById(id).classList.remove('open'); }
+function bgClose(e, id) { if (e.target === document.getElementById(id)) closeSheet(id); }
+
+// ── Utils ──
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function today() { return new Date().toISOString().slice(0, 10); }
+function fmtDate(d) { return new Date(d + 'T12:00:00').toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
+function fmtLong(d) { return new Date(d + 'T12:00:00').toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' }); }
+function fmtEur(n) { return n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'; }
+function daysBetween(a, b) { return Math.round((new Date(b + 'T12:00:00') - new Date(a + 'T12:00:00')) / 86400000); }
+
+// ── Render ──
+function render() {
+  if (tab === 'reise') renderReise();
+  else if (tab === 'pack') renderPack();
+  else if (tab === 'kosten') renderKosten();
+  else renderDiary();
 }
-function triggerHug(h){
-  const key=h.id+'|'+TODAY;
-  if(sbHugSeen[key])return;
-  sbHugSeen[key]=true;
-  const fr=(h.members||[]).find(m=>m.user_id!==sbUser.id);
-  showHug(sharedStreak(h),fr?(fr.name||'Freund'):'Freund');
-  updateFriendFlame(true);
-}
-async function sbCreateShared(name,emoji,color,friendId){
-  if(!sb)return false;
-  try{
-    const {error}=await sb.rpc('create_shared_habit',{p_friend:friendId,p_name:name,p_emoji:emoji,p_color:color});
-    if(error){toast(error.message);return false;}
-    await sbLoadShared();return true;
-  }catch(e){toast('Fehler');return false;}
-}
-function sharedDayComplete(h,day){
-  const set={};(h.checkins||[]).forEach(c=>set[c.user_id+'|'+c.day]=true);
-  const mem=h.members||[];
-  return mem.length>0 && mem.every(m=>set[m.user_id+'|'+day]);
-}
-function sharedStreak(h){
-  let s=0,d=new Date();
-  if(!sharedDayComplete(h,ymd(d)))d=addDays(d,-1);
-  while(sharedDayComplete(h,ymd(d))){s++;d=addDays(d,-1);}
-  return s;
-}
-function myShared(h){return (h.checkins||[]).some(c=>c.user_id===sbUser.id&&c.day===TODAY);}
-async function toggleShared(id){
-  const h=sbShared.find(x=>x.id===id);if(!h||!sbUser)return;
-  const mine=myShared(h);
-  if(mine)h.checkins=h.checkins.filter(c=>!(c.user_id===sbUser.id&&c.day===TODAY));
-  else h.checkins.push({user_id:sbUser.id,day:TODAY});
-  const complete=sharedDayComplete(h,TODAY);
-  ensureAudio();render();
-  if(!mine){
-    sndCheck();
-    const fr=(h.members||[]).find(m=>m.user_id!==sbUser.id);
-    if(complete)triggerHug(h);
-    else toast('Erledigt – warten auf '+(fr?(fr.name||'Freund'):'Freund')+' 💜');
+
+// ── TAB 1: REISE ──
+function renderReise() {
+  const el = document.getElementById('v-reise');
+  if (!S.trip) {
+    el.innerHTML = `<div class="empty">
+      <div class="ei">🏖️</div>
+      <div class="et">Noch kein Urlaub geplant</div>
+      <p>Lege deine Reise an und<br>zähle die Tage!</p>
+      <button class="btn btn-primary" style="margin-top:20px" onclick="openTripSheet()">Reise anlegen ✈️</button>
+    </div>`;
+    return;
   }
-  try{await sb.rpc('set_shared_checkin',{p_habit:id,p_day:TODAY,p_done:!mine});}catch(e){toast('Sync-Fehler');}
-  await sbLoadShared(true);render();
-}
-function leaveShared(id){
-  if(leaveArmId!==id){leaveArmId=id;toast('Nochmal tippen, um zu verlassen');
-    setTimeout(()=>{if(leaveArmId===id)leaveArmId=null;},3000);return;}
-  leaveArmId=null;
-  if(sb)sb.rpc('leave_shared',{p_habit:id}).then(()=>{toast('Verlassen');sbLoadShared().then(render);});
-}
-function purpleFlame(size){
-  size=size||34;
-  return `<svg viewBox="0 0 100 120" width="${size}" height="${Math.round(size*1.18)}" style="overflow:visible"><defs><linearGradient id="pf${size}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6c2ff"/><stop offset=".55" stop-color="#c264ff"/><stop offset="1" stop-color="#9a36e0"/></linearGradient></defs><path d="M50 8 C66 32 82 46 82 76 a32 32 0 0 1 -64 0 C18 54 30 46 39 60 C42 40 40 24 50 8 Z" fill="url(#pf${size})"/></svg>`;
-}
-function purpleBurst(x,y){
-  if(reduceMotion()||!fxCtx)return;
-  const cs=['#ce82ff','#a855f7','#e2b3ff','#ff86d0','#ffffff'];
-  for(let i=0;i<42;i++){const a=Math.random()*6.283,sp=(Math.random()*0.6+0.4)*8.5;
-    fxParticles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-3,r:Math.random()*3+2,life:1,
-      decay:Math.random()*0.012+0.013,color:cs[(Math.random()*cs.length)|0],g:0.07});}
-  fxStart();
-}
-function showHug(streak,friendName){
-  const o=document.getElementById('hug');if(!o)return;
-  document.getElementById('hugNum').textContent=streak;
-  document.getElementById('hugLbl').textContent='💜 Tage gemeinsam mit '+friendName;
-  o.classList.remove('show');void o.offsetWidth;o.classList.add('show');
-  toast('💜 Gemeinsamer Streak mit '+friendName+'!');
-  if(navigator.vibrate)navigator.vibrate([30,40,30,40,70]);
-  sndMilestone();
-  purpleBurst(innerWidth/2,innerHeight*0.42);
-  clearTimeout(o._t);o._t=setTimeout(()=>o.classList.remove('show'),2400);
-}
-function sharedCard(h){
-  const mine=myShared(h);
-  const fr=(h.members||[]).find(m=>m.user_id!==sbUser.id);
-  const fname=fr?(fr.name||'Freund'):'Freund';
-  const fdone=fr?(h.checkins||[]).some(c=>c.user_id===fr.user_id&&c.day===TODAY):false;
-  const complete=sharedDayComplete(h,TODAY);
-  const s=sharedStreak(h);
-  let meta;
-  if(complete)meta=`<span style="color:var(--purple);font-weight:800">💜 ${s} ${s===1?'Tag':'Tage'} gemeinsam</span>`;
-  else meta=`du ${mine?'✓':'○'} · ${esc(fname)} ${fdone?'✓':'○'}`;
-  meta+=` · <span class="metalink" style="color:var(--muted);font-weight:700" onclick="event.stopPropagation();leaveShared('${h.id}')">verlassen</span>`;
-  return `<div class="habit shared ${complete?'complete':''}">
-    <div class="emoji shared-emoji">${complete?purpleFlame(28):esc(h.emoji||'🔥')}</div>
-    <div class="body">
-      <div class="name">${esc(h.name)}</div>
-      <div class="meta">${meta}</div>
+  const t = S.trip;
+  const now = today();
+  const toStart = daysBetween(now, t.startDate);
+  const totalDays = daysBetween(t.startDate, t.endDate);
+  const started = toStart <= 0;
+  const ended = daysBetween(now, t.endDate) < 0;
+
+  let cdNum = '', cdLabel = '', cdSub = '', showProgress = false, progress = 0;
+  if (ended) {
+    cdNum = '✅'; cdLabel = 'Urlaub beendet'; cdSub = t.destination + ' war wunderschön! 🌟';
+  } else if (started) {
+    const dayOn = -toStart + 1;
+    const toEnd = daysBetween(now, t.endDate);
+    cdNum = dayOn; cdLabel = 'Tag ' + dayOn + ' von ' + totalDays;
+    cdSub = toEnd <= 1 ? 'Letzter Urlaubstag 😢' : 'Noch ' + toEnd + ' Tage bis zur Rückkehr';
+    showProgress = true;
+    progress = Math.min(100, Math.round((dayOn / totalDays) * 100));
+  } else {
+    cdNum = toStart;
+    cdLabel = toStart === 1 ? 'Noch 1 Tag!' : 'Tage noch';
+    cdSub = 'bis zum Urlaub in ' + t.destination;
+  }
+
+  const personsHtml = (t.persons || []).map(p => `<span class="chip">${p}</span>`).join('');
+
+  el.innerHTML = `
+    <div class="cd-box">
+      <div class="cd-num">${cdNum}</div>
+      <div class="cd-label">${cdLabel}</div>
+      <div class="cd-sub">${cdSub}</div>
+      ${showProgress ? `<div class="pbar-wrap" style="margin-top:16px"><div class="pbar" style="width:${progress}%;background:var(--sky)"></div></div>` : ''}
     </div>
-    <button class="check ${mine?'on cpurple':''}" onclick="toggleShared('${h.id}')">✓</button>
-  </div>`;
-}
-function mergeStates(a,b){
-  const map={};
-  const add=h=>{
-    if(!h||!h.id)return;
-    if(!map[h.id]){map[h.id]={...h,history:{...(h.history||{})}};}
-    else{
-      const c=map[h.id];const hist=h.history||{};
-      for(const k in hist)if(hist[k])c.history[k]=true;
-      if(h.createdAt&&(!c.createdAt||h.createdAt<c.createdAt))c.createdAt=h.createdAt;
-    }
-  };
-  (a&&a.habits||[]).forEach(add);
-  (b&&b.habits||[]).forEach(add);
-  return {habits:Object.values(map)};
-}
-async function pullCloud(merge){
-  if(!sb||!sbUser||syncing)return;
-  syncing=true;
-  try{
-    const {data,error}=await sb.from('app_state').select('state').eq('user_id',sbUser.id).maybeSingle();
-    if(!error&&data&&data.state&&Array.isArray(data.state.habits)){
-      state=merge?mergeStates(state,data.state):data.state;
-      localStorage.setItem(aKey(),JSON.stringify(state));
-      reconcileTimers();render();ensureTicker();
-    }
-  }catch(e){}
-  syncing=false;
-  pushCloud();
-}
-function scheduleSync(){
-  if(!sb||!sbUser)return;
-  clearTimeout(syncT);syncT=setTimeout(pushCloud,1500);
-}
-async function pushCloud(){
-  if(!sb||!sbUser)return;
-  try{await sb.from('app_state').upsert({user_id:sbUser.id,state:state,updated_at:new Date().toISOString()});}catch(e){}
+    <div class="card">
+      <div class="trip-row">
+        <span class="ri">✈️</span>
+        <div><div class="rv">${t.name}</div><div class="rl">Reisename</div></div>
+      </div>
+      <div class="trip-row">
+        <span class="ri">📍</span>
+        <div><div class="rv">${t.destination}</div><div class="rl">Reiseziel</div></div>
+      </div>
+      <div class="trip-row">
+        <span class="ri">🗓️</span>
+        <div><div class="rv">${fmtDate(t.startDate)} – ${fmtDate(t.endDate)}</div><div class="rl">${totalDays} Nächte</div></div>
+      </div>
+      ${t.persons?.length ? `<div class="trip-row">
+        <span class="ri">👥</span>
+        <div><div class="chips" style="margin-top:4px">${personsHtml}</div><div class="rl" style="margin-top:4px">Mitreisende</div></div>
+      </div>` : ''}
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="openTripSheet()">✏️ Reise bearbeiten</button>
+  `;
 }
 
-/* ---- init ---- */
+let tempPersons = [];
+function openTripSheet() {
+  const t = S.trip || {};
+  document.getElementById('ts-name').value = t.name || '';
+  document.getElementById('ts-dest').value = t.destination || '';
+  document.getElementById('ts-start').value = t.startDate || '';
+  document.getElementById('ts-end').value = t.endDate || '';
+  tempPersons = [...(t.persons || [])];
+  renderTempChips();
+  openSheet('tripSheet');
+}
+function renderTempChips() {
+  document.getElementById('ts-chips').innerHTML = tempPersons.map((p, i) =>
+    `<span class="chip">${p}<span class="x" onclick="removeP(${i})">✕</span></span>`).join('');
+}
+function addP() {
+  const inp = document.getElementById('ts-person');
+  const v = inp.value.trim();
+  if (!v) return;
+  tempPersons.push(v); inp.value = '';
+  renderTempChips(); inp.focus();
+}
+function removeP(i) { tempPersons.splice(i, 1); renderTempChips(); }
+function saveTrip() {
+  const name = document.getElementById('ts-name').value.trim();
+  const dest = document.getElementById('ts-dest').value.trim();
+  const start = document.getElementById('ts-start').value;
+  const end = document.getElementById('ts-end').value;
+  if (!dest || !start || !end) { alert('Bitte Reiseziel und Daten eingeben.'); return; }
+  if (end < start) { alert('Rückkehr darf nicht vor Abreise liegen.'); return; }
+  S.trip = { name: name || dest, destination: dest, startDate: start, endDate: end, persons: [...tempPersons] };
+  save(); closeSheet('tripSheet'); renderReise();
+}
+
+// ── TAB 2: PACKLISTE ──
+const CAT_ICONS = { Kleidung: '👕', Hygiene: '🧴', Dokumente: '📄', Technik: '💻', Medizin: '💊', Unterhaltung: '🎮', Sonstiges: '📦' };
+
+function renderPack() {
+  const el = document.getElementById('v-pack');
+  const items = S.packing;
+  if (!items.length) {
+    el.innerHTML = `<div class="empty"><div class="ei">🧳</div><div class="et">Packliste ist leer</div><p>Tippe auf <b>+</b>, um Artikel<br>hinzuzufügen.</p></div>`;
+    return;
+  }
+  const packed = items.filter(i => i.packed).length;
+  const pct = Math.round((packed / items.length) * 100);
+  const byCat = {};
+  items.forEach(i => { (byCat[i.category] = byCat[i.category] || []).push(i); });
+
+  let html = `<div class="pack-stat">
+    <div class="pbar-wrap" style="flex:1"><div class="pbar" style="width:${pct}%;background:var(--green)"></div></div>
+    <span class="nums">${packed}/${items.length} eingepackt</span>
+  </div>`;
+  for (const [cat, list] of Object.entries(byCat)) {
+    const done = list.filter(i => i.packed).length;
+    html += `<div>
+      <div class="cat-hd">${CAT_ICONS[cat] || '📦'} ${cat} <span style="color:var(--text-3);font-weight:400">(${done}/${list.length})</span></div>
+      ${list.map(i => `
+        <div class="pack-item${i.packed ? ' done' : ''}" onclick="togglePack('${i.id}')">
+          <div class="pi-check">${i.packed ? '✓' : ''}</div>
+          <span class="pi-name">${i.name}</span>
+          ${i.qty > 1 ? `<span class="pi-qty">×${i.qty}</span>` : ''}
+          <span class="pi-del" onclick="event.stopPropagation();deletePack('${i.id}')">🗑</span>
+        </div>`).join('')}
+    </div>`;
+  }
+  el.innerHTML = html;
+}
+
+function togglePack(id) {
+  const item = S.packing.find(i => i.id === id);
+  if (item) { item.packed = !item.packed; save(); renderPack(); }
+}
+function deletePack(id) { S.packing = S.packing.filter(i => i.id !== id); save(); renderPack(); }
+function resetPackForm() { document.getElementById('pi-name').value = ''; document.getElementById('pi-qty').value = '1'; }
+function savePack() {
+  const name = document.getElementById('pi-name').value.trim();
+  if (!name) { alert('Bitte Artikelname eingeben.'); return; }
+  S.packing.push({ id: uid(), name, qty: parseInt(document.getElementById('pi-qty').value) || 1, category: document.getElementById('pi-cat').value, packed: false });
+  save(); closeSheet('packSheet'); renderPack();
+}
+
+// ── TAB 3: KOSTEN ──
+const EXP_ICONS = { 'Essen & Trinken': '🍽️', Transport: '🚗', Unterkunft: '🏨', Aktivitäten: '🎡', Einkaufen: '🛍️', Sonstiges: '📦' };
+
+function renderKosten() {
+  const el = document.getElementById('v-kosten');
+  const exps = S.expenses;
+  const persons = S.trip?.persons || [];
+  const total = exps.reduce((s, e) => s + +e.amount, 0);
+  const perPerson = persons.length ? total / persons.length : 0;
+  const settlements = calcSettlements();
+
+  let html = `<div class="cost-stats">
+    <div class="cs-box"><div class="cs-num">${fmtEur(total)}</div><div class="cs-lbl">Gesamt</div></div>
+    <div class="cs-box"><div class="cs-num">${exps.length}</div><div class="cs-lbl">Ausgaben</div></div>
+    <div class="cs-box"><div class="cs-num">${persons.length ? fmtEur(perPerson) : '–'}</div><div class="cs-lbl">Pro Person</div></div>
+  </div>`;
+
+  if (settlements.length) {
+    html += `<div class="card" style="padding:14px;margin-bottom:12px">
+      <div class="card-hd"><span class="card-title">💸 Ausgleich</span></div>
+      ${settlements.map(s => `<div class="settle-card">
+        <span>${s.from}</span><span class="settle-arrow">→</span><span>${s.to}</span>
+        <span class="settle-amt">${fmtEur(s.amount)}</span>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  if (!exps.length) {
+    html += `<div class="empty" style="padding-top:20px"><div class="ei">💰</div><p>Noch keine Ausgaben.<br>Tippe auf <b>+</b> zum Eintragen.</p></div>`;
+  } else {
+    html += `<div class="section-label">Alle Ausgaben</div>`;
+    html += exps.slice().reverse().map(e => {
+      const ds = e.date ? new Date(e.date + 'T12:00:00').toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) : '';
+      const split = (e.splitWith || []).join(', ') || 'alle';
+      return `<div class="exp-item">
+        <div class="exp-ava">${EXP_ICONS[e.category] || '💶'}</div>
+        <div class="exp-info">
+          <div class="exp-desc">${e.desc}</div>
+          <div class="exp-meta">${e.paidBy}${ds ? ' · ' + ds : ''} · ${e.category}</div>
+          <div class="exp-meta">Aufgeteilt: ${split}</div>
+        </div>
+        <div class="exp-right">
+          <span class="exp-amt">${fmtEur(+e.amount)}</span>
+          <span class="exp-del" onclick="deleteExp('${e.id}')">🗑</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  el.innerHTML = html;
+}
+
+function calcSettlements() {
+  const persons = S.trip?.persons || [];
+  if (persons.length < 2) return [];
+  const bal = {};
+  persons.forEach(p => (bal[p] = 0));
+  S.expenses.forEach(e => {
+    const split = e.splitWith?.length ? e.splitWith : persons;
+    const share = +e.amount / split.length;
+    if (e.paidBy in bal) bal[e.paidBy] += +e.amount;
+    split.forEach(p => { if (p in bal) bal[p] -= share; });
+  });
+  const cred = [], debt = [];
+  Object.entries(bal).forEach(([p, b]) => {
+    if (b > 0.005) cred.push([p, b]);
+    else if (b < -0.005) debt.push([p, -b]);
+  });
+  const txns = [];
+  let ci = 0, di = 0;
+  while (ci < cred.length && di < debt.length) {
+    const amt = Math.min(cred[ci][1], debt[di][1]);
+    txns.push({ from: debt[di][0], to: cred[ci][0], amount: Math.round(amt * 100) / 100 });
+    cred[ci][1] -= amt; debt[di][1] -= amt;
+    if (cred[ci][1] < 0.005) ci++;
+    if (debt[di][1] < 0.005) di++;
+  }
+  return txns;
+}
+
+function resetExpForm() {
+  const persons = S.trip?.persons || [];
+  document.getElementById('ex-desc').value = '';
+  document.getElementById('ex-amt').value = '';
+  document.getElementById('ex-date').value = today();
+  document.getElementById('ex-paid').innerHTML = persons.map(p => `<option>${p}</option>`).join('');
+  document.getElementById('ex-split').innerHTML = persons.map(p =>
+    `<label class="split-check"><input type="checkbox" value="${p}" checked />${p}</label>`).join('');
+  document.getElementById('ex-cat').value = 'Essen & Trinken';
+}
+function saveExp() {
+  const desc = document.getElementById('ex-desc').value.trim();
+  const amount = parseFloat(document.getElementById('ex-amt').value);
+  if (!desc || isNaN(amount) || amount <= 0) { alert('Beschreibung und Betrag eingeben.'); return; }
+  const splitWith = [...document.querySelectorAll('#ex-split input:checked')].map(i => i.value);
+  S.expenses.push({ id: uid(), desc, amount, date: document.getElementById('ex-date').value, paidBy: document.getElementById('ex-paid').value, splitWith, category: document.getElementById('ex-cat').value });
+  save(); closeSheet('expSheet'); renderKosten();
+}
+function deleteExp(id) {
+  if (!confirm('Ausgabe löschen?')) return;
+  S.expenses = S.expenses.filter(e => e.id !== id);
+  save(); renderKosten();
+}
+
+// ── TAB 4: TAGEBUCH ──
+const WEATHERS = ['☀️', '⛅', '🌤️', '🌧️', '⛈️', '❄️'];
+const MOODS = ['🥳', '😃', '😊', '😐', '😔', '😴'];
+
+function renderDiary() {
+  const el = document.getElementById('v-diary');
+  if (!S.trip) {
+    el.innerHTML = `<div class="empty"><div class="ei">📔</div><div class="et">Kein Urlaub geplant</div><p>Lege zuerst eine Reise<br>im Reise-Tab an.</p></div>`;
+    return;
+  }
+  const days = tripDays();
+  if (!days.length) {
+    el.innerHTML = `<div class="empty"><div class="ei">📔</div><p>Keine Urlaubstage gefunden.</p></div>`;
+    return;
+  }
+  const now = today();
+  el.innerHTML = days.map((d, idx) => {
+    const entry = S.diary[d] || {};
+    const isToday = d === now;
+    const preview = [entry.weather, entry.activities ? entry.activities.slice(0, 35) : ''].filter(Boolean).join(' ');
+
+    return `<div class="diary-card">
+      <div class="diary-hd" onclick="toggleDay('${d}')">
+        <div class="dh-left">
+          <div class="dh-date">Tag ${idx + 1}${isToday ? ' <span class="today-badge">Heute</span>' : ''}</div>
+          <div class="dh-sub">${fmtLong(d)}</div>
+          <div class="dh-preview">${preview || 'Noch nichts eingetragen'}</div>
+        </div>
+        <span class="dh-mood">${entry.mood || '📔'}</span>
+        <span class="dh-caret" id="dc-${d}">▼</span>
+      </div>
+      <div class="diary-body" id="db-${d}" style="display:none">
+        <div class="df">
+          <label class="label">🌤 Wetter</label>
+          <div class="weather-grid">${WEATHERS.map(w =>
+      `<button class="wopt${entry.weather === w ? ' sel' : ''}" onclick="setDF('${d}','weather','${w}')">${w}</button>`).join('')}
+          </div>
+        </div>
+        <div class="df">
+          <label class="label">😊 Stimmung</label>
+          <div class="mood-grid">${MOODS.map(m =>
+      `<button class="mopt${entry.mood === m ? ' sel' : ''}" onclick="setDF('${d}','mood','${m}')">${m}</button>`).join('')}
+          </div>
+        </div>
+        <div class="df">
+          <label class="label">🎯 Was haben wir gemacht?</label>
+          <textarea placeholder="Aktivitäten des Tages..." oninput="setDF('${d}','activities',this.value)">${entry.activities || ''}</textarea>
+        </div>
+        <div class="df">
+          <label class="label">🍽️ Was haben wir gegessen?</label>
+          <textarea placeholder="Leckeres Essen & Restaurants..." oninput="setDF('${d}','food',this.value)">${entry.food || ''}</textarea>
+        </div>
+        <div class="df">
+          <label class="label">✨ Highlight des Tages</label>
+          <input type="text" placeholder="Das Schönste heute war..." value="${(entry.highlight || '').replace(/"/g, '&quot;')}" oninput="setDF('${d}','highlight',this.value)" />
+        </div>
+        <div class="df">
+          <label class="label">📷 Foto des Tages</label>
+          <div id="dph-${d}">${entry.photo ? `<img src="${entry.photo}" class="diary-photo" />` : ''}</div>
+          <label class="file-btn">📷 Foto auswählen<input type="file" accept="image/*" style="display:none" onchange="setPhoto('${d}',this)" /></label>
+          ${entry.photo ? `<button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="removePhoto('${d}')">Löschen</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Auto-expand today
+  if (days.includes(now)) toggleDay(now);
+}
+
+function tripDays() {
+  if (!S.trip) return [];
+  const days = [];
+  const cur = new Date(S.trip.startDate + 'T12:00:00');
+  const end = new Date(S.trip.endDate + 'T12:00:00');
+  while (cur <= end) {
+    days.push(cur.toISOString().slice(0, 10));
+    cur.setDate(cur.getDate() + 1);
+  }
+  return days;
+}
+
+function toggleDay(d) {
+  const body = document.getElementById('db-' + d);
+  const caret = document.getElementById('dc-' + d);
+  if (!body) return;
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  if (caret) caret.textContent = open ? '▼' : '▲';
+}
+
+function setDF(d, field, val) {
+  if (!S.diary[d]) S.diary[d] = {};
+  S.diary[d][field] = val;
+  save();
+  const entry = S.diary[d];
+  // Update preview text in header
+  const card = document.getElementById('db-' + d)?.closest('.diary-card');
+  if (card) {
+    const prev = card.querySelector('.dh-preview');
+    if (prev) {
+      const p = [entry.weather, entry.activities ? entry.activities.slice(0, 35) : ''].filter(Boolean).join(' ');
+      prev.textContent = p || 'Noch nichts eingetragen';
+    }
+    const moodEl = card.querySelector('.dh-mood');
+    if (moodEl) moodEl.textContent = entry.mood || '📔';
+  }
+  // Toggle selection state
+  const body = document.getElementById('db-' + d);
+  if (field === 'weather' && body) body.querySelectorAll('.wopt').forEach(b => b.classList.toggle('sel', b.textContent.trim() === val));
+  if (field === 'mood' && body) body.querySelectorAll('.mopt').forEach(b => b.classList.toggle('sel', b.textContent.trim() === val));
+}
+
+function setPhoto(d, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const imgEl = new Image();
+  const objUrl = URL.createObjectURL(file);
+  imgEl.onload = () => {
+    const MAX = 900;
+    let w = imgEl.width, h = imgEl.height;
+    if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    c.getContext('2d').drawImage(imgEl, 0, 0, w, h);
+    URL.revokeObjectURL(objUrl);
+    const data = c.toDataURL('image/jpeg', 0.72);
+    if (!S.diary[d]) S.diary[d] = {};
+    S.diary[d].photo = data;
+    save();
+    const wrap = document.getElementById('dph-' + d);
+    if (wrap) wrap.innerHTML = `<img src="${data}" class="diary-photo" />`;
+  };
+  imgEl.src = objUrl;
+}
+
+function removePhoto(d) {
+  if (S.diary[d]) { delete S.diary[d].photo; save(); }
+  const wrap = document.getElementById('dph-' + d);
+  if (wrap) wrap.innerHTML = '';
+}
+
+// ── Init ──
 load();
-loadTheme();
-loadSound();
-reconcileTimers();
-fxInit();
 render();
-renderInstall();
-ensureTicker();
-initAuth();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
 </script>
 </body>
 </html>
