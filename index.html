@@ -13,7 +13,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --sky: #0ea5e9;
-      --sky-d: #0284c7;
+      --sky-d: #0369a1;
       --sky-l: #e0f2fe;
       --amber: #f59e0b;
       --amber-l: #fef3c7;
@@ -21,149 +21,229 @@
       --green-l: #d1fae5;
       --rose: #f43f5e;
       --rose-l: #ffe4e6;
-      --bg: #f8fafc;
+      --bg: #f4f8fb;
       --surface: #ffffff;
-      --border: #e5e7eb;
-      --text: #111827;
-      --text-2: #6b7280;
-      --text-3: #9ca3af;
-      --radius: 16px;
-      --radius-sm: 10px;
-      --shadow: 0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
-      --tab-h: 62px;
+      --border: #e5eaf0;
+      --text: #0f172a;
+      --text-2: #64748b;
+      --text-3: #94a3b8;
+      --radius: 18px;
+      --radius-sm: 12px;
+      --shadow: 0 1px 3px rgba(15,23,42,.07), 0 1px 2px rgba(15,23,42,.04);
+      --shadow-md: 0 8px 24px rgba(2,132,199,.12);
+      --tab-h: 64px;
       --safe: env(safe-area-inset-bottom, 0px);
     }
     html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.5; -webkit-tap-highlight-color: transparent; }
 
     #app { display: flex; flex-direction: column; min-height: 100%; max-width: 480px; margin: 0 auto; }
-    #content { flex: 1; padding: 16px 16px calc(var(--tab-h) + var(--safe) + 20px); overflow-x: hidden; }
+    #content { flex: 1; padding: 14px 16px calc(var(--tab-h) + var(--safe) + 24px); overflow-x: hidden; }
 
-    nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: calc(var(--tab-h) + var(--safe)); background: rgba(255,255,255,.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; z-index: 100; padding-bottom: var(--safe); }
-    nav button { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border: none; background: none; cursor: pointer; padding: 8px 4px; font-size: 10.5px; color: var(--text-3); font-weight: 500; transition: color .2s; }
-    nav button .ni { font-size: 23px; line-height: 1; }
-    nav button.active { color: var(--sky); }
+    /* Tab bar */
+    nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: calc(var(--tab-h) + var(--safe)); background: rgba(255,255,255,.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; z-index: 100; padding-bottom: var(--safe); }
+    nav button { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border: none; background: none; cursor: pointer; padding: 7px 4px; font-size: 10.5px; color: var(--text-3); font-weight: 600; transition: color .2s; font-family: inherit; }
+    nav button .ni { font-size: 21px; line-height: 1; padding: 3px 14px; border-radius: 14px; transition: background .25s, transform .25s; }
+    nav button.active { color: var(--sky-d); }
+    nav button.active .ni { background: var(--sky-l); transform: translateY(-1px); }
 
-    .card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; margin-bottom: 12px; }
+    /* Page title */
+    .page-title { font-size: 22px; font-weight: 800; letter-spacing: -.02em; margin: 4px 2px 14px; display: flex; align-items: center; justify-content: space-between; }
+    .page-title .pt-sub { font-size: 12px; font-weight: 600; color: var(--text-2); }
+
+    /* Cards */
+    .card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; margin-bottom: 12px; animation: rise .35s ease both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
     .card-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-    .card-title { font-size: 12px; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: .06em; }
+    .card-title { font-size: 12px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: .07em; }
 
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 14px; font-weight: 600; padding: 11px 18px; transition: filter .15s; font-family: inherit; }
-    .btn:active { filter: brightness(.9); }
-    .btn-primary { background: var(--sky); color: #fff; }
-    .btn-ghost { background: transparent; color: var(--sky); border: 1.5px solid var(--sky); }
-    .btn-sm { padding: 7px 13px; font-size: 13px; border-radius: 8px; }
-    .btn-danger { background: var(--rose-l); color: var(--rose); border: none; }
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 14px; font-weight: 700; padding: 12px 18px; transition: filter .15s, transform .1s; font-family: inherit; }
+    .btn:active { filter: brightness(.92); transform: scale(.98); }
+    .btn-primary { background: var(--sky); color: #fff; box-shadow: 0 3px 10px rgba(14,165,233,.35); }
+    .btn-ghost { background: transparent; color: var(--sky-d); border: 1.5px solid rgba(14,165,233,.4); }
+    .btn-sm { padding: 8px 13px; font-size: 13px; border-radius: 10px; }
+    .btn-danger { background: var(--rose-l); color: var(--rose); }
     .btn-full { width: 100%; margin-top: 8px; }
 
+    /* Inputs */
     input[type=text], input[type=number], input[type=date], select, textarea {
-      width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 14px; color: var(--text); background: var(--surface); outline: none; transition: border-color .15s; font-family: inherit; appearance: none; -webkit-appearance: none;
+      width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 11px 12px; font-size: 15px; color: var(--text); background: var(--surface); outline: none; transition: border-color .15s, box-shadow .15s; font-family: inherit; appearance: none; -webkit-appearance: none;
     }
-    input:focus, select:focus, textarea:focus { border-color: var(--sky); }
+    input:focus, select:focus, textarea:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(14,165,233,.12); }
     textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
-    .label { display: block; font-size: 12px; font-weight: 600; color: var(--text-2); margin-bottom: 5px; }
-    .frow { margin-bottom: 12px; }
+    .label { display: block; font-size: 12px; font-weight: 700; color: var(--text-2); margin-bottom: 5px; }
+    .frow { margin-bottom: 13px; }
     .fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-    .pbar-wrap { background: var(--border); border-radius: 8px; height: 7px; overflow: hidden; }
-    .pbar { height: 100%; border-radius: 8px; transition: width .6s ease; }
+    /* Progress bars */
+    .pbar-wrap { background: rgba(15,23,42,.08); border-radius: 8px; height: 8px; overflow: hidden; }
+    .pbar { height: 100%; border-radius: 8px; transition: width .6s cubic-bezier(.3,.8,.3,1); }
 
+    /* Chips */
     .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-    .chip { display: inline-flex; align-items: center; gap: 3px; background: var(--sky-l); border-radius: 20px; padding: 4px 10px; font-size: 13px; font-weight: 500; color: var(--sky-d); }
-    .chip .x { cursor: pointer; color: var(--text-3); margin-left: 1px; line-height: 1; }
+    .chip { display: inline-flex; align-items: center; gap: 3px; background: var(--sky-l); border-radius: 20px; padding: 4px 11px; font-size: 13px; font-weight: 600; color: var(--sky-d); }
+    .chip .x { cursor: pointer; color: var(--text-3); margin-left: 2px; line-height: 1; }
 
-    .empty { text-align: center; padding: 44px 20px; color: var(--text-2); }
-    .empty .ei { font-size: 52px; margin-bottom: 14px; }
-    .empty .et { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    /* Empty state */
+    .empty { text-align: center; padding: 46px 20px; color: var(--text-2); animation: rise .35s ease both; }
+    .empty .ei { font-size: 56px; margin-bottom: 14px; display: block; }
+    .empty .et { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
     .empty p { font-size: 14px; }
 
-    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); z-index: 200; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .22s; }
+    /* Sheets */
+    .overlay { position: fixed; inset: 0; background: rgba(15,23,42,.45); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); z-index: 200; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .22s; }
     .overlay.open { opacity: 1; pointer-events: all; }
-    .sheet { background: var(--surface); border-radius: 24px 24px 0 0; width: 100%; max-width: 480px; max-height: 92vh; overflow-y: auto; transform: translateY(100%); transition: transform .3s cubic-bezier(.32,.72,0,1); }
+    .sheet { background: var(--surface); border-radius: 26px 26px 0 0; width: 100%; max-width: 480px; max-height: 92vh; overflow-y: auto; transform: translateY(100%); transition: transform .32s cubic-bezier(.32,.72,0,1); }
     .overlay.open .sheet { transform: translateY(0); }
-    .sheet-inner { padding: 20px 20px calc(20px + var(--safe)); }
+    .sheet-inner { padding: 22px 20px calc(22px + var(--safe)); }
     .sheet-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
-    .sheet-title { font-size: 17px; font-weight: 700; }
-    .close-btn { width: 30px; height: 30px; border-radius: 50%; background: var(--bg); border: none; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-2); }
+    .sheet-title { font-size: 18px; font-weight: 800; }
+    .close-btn { width: 30px; height: 30px; border-radius: 50%; background: var(--bg); border: none; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-2); }
 
-    /* ── REISE ── */
-    .cd-box { background: linear-gradient(145deg, #e0f2fe 0%, #f0f9ff 60%, #fef3c7 100%); border-radius: var(--radius); padding: 32px 20px 28px; text-align: center; margin-bottom: 12px; position: relative; overflow: hidden; }
-    .cd-box::before { content: ''; position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; background: rgba(14,165,233,.08); border-radius: 50%; }
-    .cd-num { font-size: 88px; font-weight: 900; color: var(--sky); line-height: 1; letter-spacing: -3px; }
-    .cd-label { font-size: 17px; font-weight: 700; color: var(--sky-d); margin-top: 4px; }
-    .cd-sub { font-size: 13px; color: var(--text-2); margin-top: 6px; }
-    .trip-row { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); }
-    .trip-row:last-child { border-bottom: none; }
-    .trip-row .ri { font-size: 20px; width: 26px; text-align: center; flex-shrink: 0; }
-    .trip-row .rv { font-weight: 600; font-size: 14px; }
-    .trip-row .rl { font-size: 12px; color: var(--text-2); margin-top: 1px; }
+    /* ═══ REISE: Hero ═══ */
+    .hero { position: relative; border-radius: 22px; padding: 26px 20px 24px; margin-bottom: 14px; overflow: hidden; color: #fff; background: linear-gradient(160deg, #0284c7 0%, #0ea5e9 42%, #38bdf8 75%, #7dd3fc 100%); box-shadow: var(--shadow-md); animation: rise .35s ease both; }
+    .hero::before { content: ''; position: absolute; top: -46px; right: -40px; width: 160px; height: 160px; background: rgba(255,255,255,.12); border-radius: 50%; }
+    .hero::after { content: ''; position: absolute; bottom: -60px; left: -30px; width: 140px; height: 140px; background: rgba(255,255,255,.08); border-radius: 50%; }
+    .hero-deco { position: absolute; top: 18px; right: 18px; font-size: 30px; opacity: .9; animation: floaty 4s ease-in-out infinite; }
+    @keyframes floaty { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-7px) rotate(5deg); } }
+    .hero-kicker { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; opacity: .85; position: relative; }
+    .hero-dest { font-size: 30px; font-weight: 900; letter-spacing: -.02em; margin-top: 2px; position: relative; text-shadow: 0 2px 8px rgba(2,132,199,.3); }
+    .cd-units { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 20px; position: relative; }
+    .cd-unit { background: rgba(255,255,255,.17); border: 1px solid rgba(255,255,255,.25); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-radius: 14px; padding: 12px 4px 9px; text-align: center; }
+    .cd-val { font-size: 27px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+    .cd-key { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; opacity: .85; margin-top: 4px; }
+    .hero-big { font-size: 76px; font-weight: 900; line-height: 1; text-align: center; margin-top: 18px; position: relative; text-shadow: 0 3px 12px rgba(2,132,199,.35); }
+    .hero-sub { text-align: center; font-size: 14px; font-weight: 600; opacity: .92; margin-top: 8px; position: relative; }
+    .hero .pbar-wrap { background: rgba(255,255,255,.25); margin-top: 16px; position: relative; }
+    .hero .pbar { background: #fff; }
 
-    /* ── PACKLISTE ── */
-    .pack-stat { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-    .pack-stat .nums { font-size: 13px; color: var(--text-2); white-space: nowrap; font-weight: 500; }
-    .cat-hd { font-size: 12px; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: .06em; padding: 10px 0 6px; display: flex; align-items: center; gap: 6px; }
-    .pack-item { display: flex; align-items: center; gap: 10px; background: var(--surface); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 6px; box-shadow: var(--shadow); cursor: pointer; transition: background .15s; }
+    /* Boarding pass */
+    .bpass { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 12px; overflow: hidden; animation: rise .35s ease both; }
+    .bpass-top { padding: 16px 18px 14px; }
+    .bpass-route { display: flex; align-items: center; gap: 10px; }
+    .bpass-pt { flex-shrink: 0; }
+    .bpass-city { font-size: 17px; font-weight: 800; letter-spacing: -.01em; }
+    .bpass-lbl { font-size: 11px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: .06em; }
+    .bpass-line { flex: 1; display: flex; align-items: center; gap: 4px; color: var(--sky); min-width: 40px; }
+    .bpass-line::before, .bpass-line::after { content: ''; flex: 1; border-top: 2px dashed rgba(14,165,233,.4); }
+    .bpass-mid { border-top: 2px dashed var(--border); position: relative; }
+    .bpass-mid::before, .bpass-mid::after { content: ''; position: absolute; top: -9px; width: 18px; height: 18px; background: var(--bg); border-radius: 50%; }
+    .bpass-mid::before { left: -9px; }
+    .bpass-mid::after { right: -9px; }
+    .bpass-bottom { padding: 13px 18px 15px; display: flex; gap: 18px; flex-wrap: wrap; }
+    .bpass-cell .bc-v { font-size: 14px; font-weight: 700; }
+    .bpass-cell .bc-l { font-size: 10.5px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: .05em; }
+
+    .tool-row { display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+
+    /* ═══ PACKLISTE ═══ */
+    .pack-stat { display: flex; align-items: center; gap: 12px; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 13px 16px; margin-bottom: 12px; animation: rise .35s ease both; }
+    .pack-stat .nums { font-size: 13px; color: var(--text-2); white-space: nowrap; font-weight: 700; }
+    .tpl-row { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 10px; scrollbar-width: none; }
+    .tpl-row::-webkit-scrollbar { display: none; }
+    .tpl-btn { flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 20px; padding: 8px 14px; font-size: 13px; font-weight: 700; color: var(--text); cursor: pointer; font-family: inherit; transition: border-color .15s, background .15s; }
+    .tpl-btn:active { border-color: var(--sky); background: var(--sky-l); }
+    .cat-hd { font-size: 12px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: .07em; padding: 12px 2px 7px; display: flex; align-items: center; gap: 6px; }
+    .pack-item { display: flex; align-items: center; gap: 10px; background: var(--surface); border-radius: var(--radius-sm); padding: 11px 12px; margin-bottom: 6px; box-shadow: var(--shadow); cursor: pointer; transition: background .2s, opacity .2s; }
     .pack-item.done { background: var(--green-l); }
-    .pi-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; transition: all .2s; }
+    .pi-check { width: 23px; height: 23px; border-radius: 50%; border: 2px solid var(--text-3); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; color: transparent; transition: all .2s; }
     .pack-item.done .pi-check { background: var(--green); border-color: var(--green); color: #fff; }
-    .pi-name { flex: 1; font-size: 14px; }
+    .pi-name { flex: 1; font-size: 14.5px; font-weight: 500; }
     .pack-item.done .pi-name { text-decoration: line-through; color: var(--text-2); }
-    .pi-qty { font-size: 12px; color: var(--text-3); background: var(--border); padding: 2px 7px; border-radius: 10px; }
+    .pi-qty { font-size: 12px; font-weight: 700; color: var(--sky-d); background: var(--sky-l); padding: 2px 8px; border-radius: 10px; }
     .pi-del { color: var(--text-3); font-size: 15px; padding: 3px 4px; cursor: pointer; }
 
-    /* ── KOSTEN ── */
+    /* Confetti */
+    .confetti { position: fixed; top: -30px; z-index: 500; font-size: 22px; pointer-events: none; animation: cfall linear forwards; }
+    @keyframes cfall { to { transform: translateY(110vh) rotate(720deg); } }
+
+    /* ═══ KOSTEN ═══ */
+    .budget-card { background: linear-gradient(145deg, #fef3c7, #fff7ed); border-radius: var(--radius); padding: 15px 16px; margin-bottom: 12px; box-shadow: var(--shadow); animation: rise .35s ease both; }
+    .budget-top { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+    .budget-title { font-size: 12px; font-weight: 800; color: #92400e; text-transform: uppercase; letter-spacing: .07em; }
+    .budget-nums { font-size: 14px; font-weight: 800; color: #92400e; }
+    .budget-edit { background: none; border: none; font-size: 14px; cursor: pointer; padding: 2px 4px; }
     .cost-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
-    .cs-box { background: var(--surface); border-radius: var(--radius-sm); padding: 12px 8px; text-align: center; box-shadow: var(--shadow); }
-    .cs-num { font-size: 17px; font-weight: 800; color: var(--sky); line-height: 1.2; }
-    .cs-lbl { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+    .cs-box { background: var(--surface); border-radius: var(--radius-sm); padding: 13px 8px; text-align: center; box-shadow: var(--shadow); animation: rise .35s ease both; }
+    .cs-num { font-size: 17px; font-weight: 900; color: var(--sky-d); line-height: 1.2; }
+    .cs-lbl { font-size: 11px; font-weight: 600; color: var(--text-2); margin-top: 2px; }
+    .catbar-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+    .catbar-ico { font-size: 17px; width: 24px; text-align: center; flex-shrink: 0; }
+    .catbar-mid { flex: 1; min-width: 0; }
+    .catbar-name { font-size: 12.5px; font-weight: 700; display: flex; justify-content: space-between; margin-bottom: 3px; }
+    .catbar-name span:last-child { color: var(--text-2); font-weight: 600; }
+    .person-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+    .person-row:last-child { border-bottom: none; }
+    .pr-ava { width: 34px; height: 34px; border-radius: 50%; background: var(--sky-l); color: var(--sky-d); font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .pr-info { flex: 1; }
+    .pr-name { font-size: 14px; font-weight: 700; }
+    .pr-sub { font-size: 12px; color: var(--text-2); }
+    .pr-bal { font-weight: 800; font-size: 14px; white-space: nowrap; }
+    .pr-bal.pos { color: var(--green); }
+    .pr-bal.neg { color: var(--rose); }
+    .pr-bal.zero { color: var(--text-3); }
     .exp-item { display: flex; align-items: flex-start; gap: 10px; background: var(--surface); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 8px; box-shadow: var(--shadow); }
-    .exp-ava { width: 38px; height: 38px; border-radius: 50%; background: var(--sky-l); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+    .exp-ava { width: 38px; height: 38px; border-radius: 12px; background: var(--sky-l); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
     .exp-info { flex: 1; min-width: 0; }
-    .exp-desc { font-weight: 600; font-size: 14px; }
+    .exp-desc { font-weight: 700; font-size: 14px; }
     .exp-meta { font-size: 12px; color: var(--text-2); margin-top: 2px; }
     .exp-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
-    .exp-amt { font-weight: 700; font-size: 15px; }
+    .exp-amt { font-weight: 800; font-size: 15px; }
     .exp-del { font-size: 14px; cursor: pointer; color: var(--text-3); }
-    .settle-card { border-radius: var(--radius-sm); padding: 10px 12px; background: var(--surface); box-shadow: var(--shadow); margin-bottom: 7px; display: flex; align-items: center; gap: 8px; font-size: 13px; }
+    .settle-card { border-radius: var(--radius-sm); padding: 11px 13px; background: var(--surface); box-shadow: var(--shadow); margin-bottom: 7px; display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; }
     .settle-arrow { color: var(--rose); font-size: 16px; flex-shrink: 0; }
-    .settle-amt { font-weight: 700; color: var(--rose); margin-left: auto; white-space: nowrap; }
-    .split-check { display: flex; align-items: center; gap: 8px; padding: 7px 0; font-size: 14px; border-bottom: 1px solid var(--border); }
+    .settle-amt { font-weight: 800; color: var(--rose); margin-left: auto; white-space: nowrap; }
+    .split-check { display: flex; align-items: center; gap: 8px; padding: 8px 0; font-size: 14px; border-bottom: 1px solid var(--border); }
     .split-check:last-child { border-bottom: none; }
     .split-check input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--sky); flex-shrink: 0; }
     .amount-row { position: relative; }
-    .amount-row .prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-2); font-weight: 600; pointer-events: none; }
-    .amount-row input { padding-left: 24px; }
+    .amount-row .prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-2); font-weight: 700; pointer-events: none; }
+    .amount-row input { padding-left: 25px; }
 
-    /* ── TAGEBUCH ── */
-    .diary-card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 10px; }
+    /* ═══ TAGEBUCH ═══ */
+    .diary-card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 10px; animation: rise .35s ease both; }
     .diary-hd { padding: 13px 16px; display: flex; align-items: center; cursor: pointer; gap: 10px; }
     .diary-hd:active { background: var(--bg); }
+    .dh-num { width: 40px; height: 40px; border-radius: 13px; background: var(--sky-l); color: var(--sky-d); display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1; }
+    .dh-num b { font-size: 16px; font-weight: 900; }
+    .dh-num span { font-size: 8.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; margin-top: 1px; }
+    .diary-card.today .dh-num { background: var(--sky); color: #fff; }
     .dh-left { flex: 1; min-width: 0; }
-    .dh-date { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 6px; }
-    .today-badge { background: var(--sky); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; }
-    .dh-sub { font-size: 12px; color: var(--text-2); margin-top: 2px; }
-    .dh-preview { font-size: 12px; color: var(--text-3); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dh-date { font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+    .today-badge { background: var(--sky); color: #fff; font-size: 10px; font-weight: 800; padding: 1.5px 7px; border-radius: 10px; }
+    .dh-preview { font-size: 12px; color: var(--text-2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .dh-mood { font-size: 24px; flex-shrink: 0; }
-    .dh-caret { font-size: 11px; color: var(--text-3); flex-shrink: 0; }
-    .diary-body { padding: 14px 16px 16px; border-top: 1px solid var(--border); }
-    .df { margin-bottom: 14px; }
+    .dh-caret { font-size: 11px; color: var(--text-3); flex-shrink: 0; transition: transform .25s; }
+    .diary-card.open .dh-caret { transform: rotate(180deg); }
+    .diary-body { padding: 14px 16px 16px; border-top: 1px solid var(--border); display: none; }
+    .diary-card.open .diary-body { display: block; }
+    .df { margin-bottom: 15px; }
     .df:last-child { margin-bottom: 0; }
     .weather-grid { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 6px; }
-    .wopt { width: 40px; height: 40px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg); font-size: 19px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color .15s, background .15s; }
+    .wopt { width: 42px; height: 42px; border-radius: 12px; border: 2px solid var(--border); background: var(--bg); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color .15s, background .15s, transform .1s; }
+    .wopt:active { transform: scale(.9); }
     .wopt.sel { border-color: var(--sky); background: var(--sky-l); }
     .mood-grid { display: flex; gap: 7px; margin-top: 6px; }
-    .mopt { flex: 1; height: 42px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color .15s, background .15s; }
+    .mopt { flex: 1; height: 44px; border-radius: 12px; border: 2px solid var(--border); background: var(--bg); font-size: 21px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color .15s, background .15s, transform .1s; }
+    .mopt:active { transform: scale(.9); }
     .mopt.sel { border-color: var(--amber); background: var(--amber-l); }
-    .diary-photo { width: 100%; max-height: 220px; object-fit: cover; border-radius: 10px; margin: 8px 0 4px; display: block; }
-    .file-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--sky-l); color: var(--sky-d); border: none; border-radius: 8px; padding: 7px 12px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 6px; font-family: inherit; }
+    .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 8px; }
+    .photo-cell { position: relative; aspect-ratio: 1; border-radius: 11px; overflow: hidden; }
+    .photo-cell img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer; }
+    .photo-x { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; background: rgba(15,23,42,.6); color: #fff; border: none; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .file-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--sky-l); color: var(--sky-d); border: none; border-radius: 10px; padding: 8px 13px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 8px; font-family: inherit; }
+    .lightbox { position: fixed; inset: 0; background: rgba(15,23,42,.92); z-index: 400; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 100%; max-height: 90vh; border-radius: 12px; }
 
     /* FAB */
-    .fab { position: fixed; right: 16px; bottom: calc(var(--tab-h) + var(--safe) + 14px); width: 52px; height: 52px; border-radius: 50%; background: var(--sky); color: #fff; border: none; box-shadow: 0 4px 14px rgba(14,165,233,.45); cursor: pointer; font-size: 28px; display: flex; align-items: center; justify-content: center; z-index: 90; transition: transform .15s, filter .15s; }
-    .fab:active { transform: scale(.92); filter: brightness(.9); }
+    .fab { position: fixed; right: 16px; bottom: calc(var(--tab-h) + var(--safe) + 14px); width: 54px; height: 54px; border-radius: 50%; background: var(--sky); color: #fff; border: none; box-shadow: 0 5px 16px rgba(14,165,233,.5); cursor: pointer; font-size: 28px; display: flex; align-items: center; justify-content: center; z-index: 90; transition: transform .15s, filter .15s; }
+    .fab:active { transform: scale(.9); filter: brightness(.9); }
     @media (min-width: 480px) { .fab { right: calc((100vw - 480px) / 2 + 16px); } }
 
     .views > div { display: none; }
     .views > div.active { display: block; }
-    .section-label { font-size: 12px; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: .06em; margin: 16px 0 8px; }
+    .section-label { font-size: 12px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: .07em; margin: 16px 2px 8px; }
     .chip-row { display: flex; gap: 8px; }
     .chip-row input { flex: 1; }
   </style>
@@ -188,6 +268,9 @@
 
 <button class="fab" id="fab" onclick="fabAction()" style="display:none">+</button>
 
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('open')"><img id="lightboxImg" alt=""></div>
+
 <!-- Trip Sheet -->
 <div class="overlay" id="tripSheet" onclick="bgClose(event,'tripSheet')">
   <div class="sheet">
@@ -198,7 +281,7 @@
       </div>
       <div class="frow">
         <label class="label">Reisename</label>
-        <input id="ts-name" type="text" placeholder="z.B. Sommerurlaub 2025" />
+        <input id="ts-name" type="text" placeholder="z.B. Sommerurlaub 2026" />
       </div>
       <div class="frow">
         <label class="label">Reiseziel 📍</label>
@@ -237,7 +320,7 @@
       </div>
       <div class="frow">
         <label class="label">Artikel</label>
-        <input id="pi-name" type="text" placeholder="z.B. Sonnencreme" />
+        <input id="pi-name" type="text" placeholder="z.B. Sonnencreme" onkeydown="if(event.key==='Enter'){savePack();event.preventDefault()}" />
       </div>
       <div class="fgrid">
         <div class="frow">
@@ -311,20 +394,44 @@
   </div>
 </div>
 
+<!-- Budget Sheet -->
+<div class="overlay" id="budgetSheet" onclick="bgClose(event,'budgetSheet')">
+  <div class="sheet">
+    <div class="sheet-inner">
+      <div class="sheet-hd">
+        <span class="sheet-title">Reisebudget 🎯</span>
+        <button class="close-btn" onclick="closeSheet('budgetSheet')">✕</button>
+      </div>
+      <div class="frow">
+        <label class="label">Budget für die gesamte Reise</label>
+        <div class="amount-row">
+          <span class="prefix">€</span>
+          <input id="bu-amt" type="number" step="1" min="0" placeholder="z.B. 1500" />
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveBudget()">Speichern</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// ── State ──
+// ═══ State ═══
 const SKEY = 'urlaub-v1';
-let S = { trip: null, packing: [], expenses: [], diary: {} };
+let S = { trip: null, budget: 0, packing: [], expenses: [], diary: {} };
 
 function load() {
-  try { const d = localStorage.getItem(SKEY); if (d) S = JSON.parse(d); } catch {}
+  try { const d = localStorage.getItem(SKEY); if (d) S = Object.assign({ trip: null, budget: 0, packing: [], expenses: [], diary: {} }, JSON.parse(d)); } catch {}
+  // Migration: single photo → photos array
+  Object.values(S.diary || {}).forEach(e => {
+    if (e.photo) { e.photos = e.photos || []; e.photos.push(e.photo); delete e.photo; }
+  });
 }
 function save() {
   try { localStorage.setItem(SKEY, JSON.stringify(S)); }
   catch { alert('Speicher voll! Bitte lösche einige Fotos im Tagebuch.'); }
 }
 
-// ── Navigation ──
+// ═══ Navigation ═══
 let tab = 'reise';
 function go(t) {
   tab = t;
@@ -335,27 +442,28 @@ function go(t) {
   render();
 }
 function fabAction() {
-  if (tab === 'pack') { resetPackForm(); openSheet('packSheet'); }
+  if (tab === 'pack') { resetPackForm(); openSheet('packSheet'); setTimeout(() => document.getElementById('pi-name').focus(), 350); }
   else if (tab === 'kosten') {
     if (!S.trip?.persons?.length) { alert('Bitte füge zuerst Mitreisende im Reise-Tab hinzu.'); return; }
     resetExpForm(); openSheet('expSheet');
   }
 }
 
-// ── Sheets ──
+// ═══ Sheets ═══
 function openSheet(id) { document.getElementById(id).classList.add('open'); }
 function closeSheet(id) { document.getElementById(id).classList.remove('open'); }
 function bgClose(e, id) { if (e.target === document.getElementById(id)) closeSheet(id); }
 
-// ── Utils ──
+// ═══ Utils ═══
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 function today() { return new Date().toISOString().slice(0, 10); }
 function fmtDate(d) { return new Date(d + 'T12:00:00').toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
 function fmtLong(d) { return new Date(d + 'T12:00:00').toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' }); }
-function fmtEur(n) { return n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'; }
+function fmtEur(n) { return n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'; }
 function daysBetween(a, b) { return Math.round((new Date(b + 'T12:00:00') - new Date(a + 'T12:00:00')) / 86400000); }
+function esc(s) { return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
-// ── Render ──
+// ═══ Render ═══
 function render() {
   if (tab === 'reise') renderReise();
   else if (tab === 'pack') renderPack();
@@ -363,12 +471,15 @@ function render() {
   else renderDiary();
 }
 
-// ── TAB 1: REISE ──
+// ═══ TAB 1: REISE ═══
+let cdTimer = null;
+
 function renderReise() {
+  clearInterval(cdTimer);
   const el = document.getElementById('v-reise');
   if (!S.trip) {
     el.innerHTML = `<div class="empty">
-      <div class="ei">🏖️</div>
+      <span class="ei">🏖️</span>
       <div class="et">Noch kein Urlaub geplant</div>
       <p>Lege deine Reise an und<br>zähle die Tage!</p>
       <button class="btn btn-primary" style="margin-top:20px" onclick="openTripSheet()">Reise anlegen ✈️</button>
@@ -382,51 +493,98 @@ function renderReise() {
   const started = toStart <= 0;
   const ended = daysBetween(now, t.endDate) < 0;
 
-  let cdNum = '', cdLabel = '', cdSub = '', showProgress = false, progress = 0;
+  let heroInner = '';
   if (ended) {
-    cdNum = '✅'; cdLabel = 'Urlaub beendet'; cdSub = t.destination + ' war wunderschön! 🌟';
+    heroInner = `
+      <div class="hero-kicker">Willkommen zurück</div>
+      <div class="hero-dest">${esc(t.destination)}</div>
+      <div class="hero-big">🏠</div>
+      <div class="hero-sub">Der Urlaub ist vorbei – schau ins Tagebuch für die Erinnerungen! 🌟</div>`;
   } else if (started) {
     const dayOn = -toStart + 1;
     const toEnd = daysBetween(now, t.endDate);
-    cdNum = dayOn; cdLabel = 'Tag ' + dayOn + ' von ' + totalDays;
-    cdSub = toEnd <= 1 ? 'Letzter Urlaubstag 😢' : 'Noch ' + toEnd + ' Tage bis zur Rückkehr';
-    showProgress = true;
-    progress = Math.min(100, Math.round((dayOn / totalDays) * 100));
+    const progress = Math.min(100, Math.round((dayOn / Math.max(1, totalDays)) * 100));
+    heroInner = `
+      <div class="hero-kicker">Mitten im Urlaub</div>
+      <div class="hero-dest">${esc(t.destination)}</div>
+      <div class="hero-big">Tag ${dayOn}</div>
+      <div class="hero-sub">${toEnd <= 1 ? 'Letzter Urlaubstag – genieß ihn! 😢' : `Noch ${toEnd} Tage bis zur Rückkehr`}</div>
+      <div class="pbar-wrap"><div class="pbar" style="width:${progress}%"></div></div>`;
   } else {
-    cdNum = toStart;
-    cdLabel = toStart === 1 ? 'Noch 1 Tag!' : 'Tage noch';
-    cdSub = 'bis zum Urlaub in ' + t.destination;
+    heroInner = `
+      <div class="hero-kicker">Countdown läuft</div>
+      <div class="hero-dest">${esc(t.destination)}</div>
+      <div class="cd-units">
+        <div class="cd-unit"><div class="cd-val" id="cd-d">–</div><div class="cd-key">Tage</div></div>
+        <div class="cd-unit"><div class="cd-val" id="cd-h">–</div><div class="cd-key">Std</div></div>
+        <div class="cd-unit"><div class="cd-val" id="cd-m">–</div><div class="cd-key">Min</div></div>
+        <div class="cd-unit"><div class="cd-val" id="cd-s">–</div><div class="cd-key">Sek</div></div>
+      </div>
+      <div class="hero-sub" id="cd-sub"></div>`;
   }
 
-  const personsHtml = (t.persons || []).map(p => `<span class="chip">${p}</span>`).join('');
+  const packTotal = S.packing.length;
+  const packDone = S.packing.filter(i => i.packed).length;
+  const spent = S.expenses.reduce((s, e) => s + +e.amount, 0);
+  const diaryFilled = tripDays().filter(d => hasEntry(S.diary[d])).length;
 
   el.innerHTML = `
-    <div class="cd-box">
-      <div class="cd-num">${cdNum}</div>
-      <div class="cd-label">${cdLabel}</div>
-      <div class="cd-sub">${cdSub}</div>
-      ${showProgress ? `<div class="pbar-wrap" style="margin-top:16px"><div class="pbar" style="width:${progress}%;background:var(--sky)"></div></div>` : ''}
+    <div class="hero">
+      <span class="hero-deco">${started && !ended ? '🌊' : ended ? '📸' : '✈️'}</span>
+      ${heroInner}
     </div>
+
+    <div class="bpass">
+      <div class="bpass-top">
+        <div class="bpass-route">
+          <div class="bpass-pt"><div class="bpass-lbl">Von</div><div class="bpass-city">Zuhause</div></div>
+          <div class="bpass-line">✈️</div>
+          <div class="bpass-pt" style="text-align:right"><div class="bpass-lbl">Nach</div><div class="bpass-city">${esc(t.destination)}</div></div>
+        </div>
+      </div>
+      <div class="bpass-mid"></div>
+      <div class="bpass-bottom">
+        <div class="bpass-cell"><div class="bc-v">${fmtDate(t.startDate)}</div><div class="bc-l">Abreise</div></div>
+        <div class="bpass-cell"><div class="bc-v">${fmtDate(t.endDate)}</div><div class="bc-l">Rückkehr</div></div>
+        <div class="bpass-cell"><div class="bc-v">${totalDays} Nächte</div><div class="bc-l">Dauer</div></div>
+        ${t.persons?.length ? `<div class="bpass-cell"><div class="bc-v">${t.persons.length} 👥</div><div class="bc-l">Reisende</div></div>` : ''}
+      </div>
+    </div>
+
     <div class="card">
-      <div class="trip-row">
-        <span class="ri">✈️</span>
-        <div><div class="rv">${t.name}</div><div class="rl">Reisename</div></div>
+      <div class="card-hd"><span class="card-title">Auf einen Blick</span></div>
+      <div class="cost-stats" style="margin-bottom:0">
+        <div class="cs-box" style="box-shadow:none;background:var(--bg);cursor:pointer" onclick="go('pack')"><div class="cs-num">${packDone}/${packTotal}</div><div class="cs-lbl">🧳 Gepackt</div></div>
+        <div class="cs-box" style="box-shadow:none;background:var(--bg);cursor:pointer" onclick="go('kosten')"><div class="cs-num">${fmtEur(spent)}</div><div class="cs-lbl">💰 Ausgaben</div></div>
+        <div class="cs-box" style="box-shadow:none;background:var(--bg);cursor:pointer" onclick="go('diary')"><div class="cs-num">${diaryFilled}/${totalDays + 1}</div><div class="cs-lbl">📔 Tagebuch</div></div>
       </div>
-      <div class="trip-row">
-        <span class="ri">📍</span>
-        <div><div class="rv">${t.destination}</div><div class="rl">Reiseziel</div></div>
-      </div>
-      <div class="trip-row">
-        <span class="ri">🗓️</span>
-        <div><div class="rv">${fmtDate(t.startDate)} – ${fmtDate(t.endDate)}</div><div class="rl">${totalDays} Nächte</div></div>
-      </div>
-      ${t.persons?.length ? `<div class="trip-row">
-        <span class="ri">👥</span>
-        <div><div class="chips" style="margin-top:4px">${personsHtml}</div><div class="rl" style="margin-top:4px">Mitreisende</div></div>
-      </div>` : ''}
     </div>
-    <button class="btn btn-ghost btn-sm" onclick="openTripSheet()">✏️ Reise bearbeiten</button>
+
+    <div class="tool-row">
+      <button class="btn btn-ghost btn-sm" onclick="openTripSheet()">✏️ Bearbeiten</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportData()">💾 Backup</button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()">📥 Import</button>
+      <input type="file" id="importFile" accept=".json,application/json" style="display:none" onchange="importData(this)" />
+    </div>
   `;
+
+  if (!started && !ended) {
+    const target = new Date(t.startDate + 'T00:00:00');
+    const tick = () => {
+      const diff = target - new Date();
+      if (diff <= 0) { clearInterval(cdTimer); renderReise(); return; }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor(diff / 3600000) % 24;
+      const m = Math.floor(diff / 60000) % 60;
+      const s = Math.floor(diff / 1000) % 60;
+      const set = (id, v) => { const n = document.getElementById(id); if (n) n.textContent = v; };
+      set('cd-d', d); set('cd-h', String(h).padStart(2, '0')); set('cd-m', String(m).padStart(2, '0')); set('cd-s', String(s).padStart(2, '0'));
+      const sub = document.getElementById('cd-sub');
+      if (sub) sub.textContent = d === 0 ? 'Morgen geht es los! 🎉' : `bis zum Urlaub in ${t.destination}`;
+    };
+    tick();
+    cdTimer = setInterval(tick, 1000);
+  }
 }
 
 let tempPersons = [];
@@ -442,7 +600,7 @@ function openTripSheet() {
 }
 function renderTempChips() {
   document.getElementById('ts-chips').innerHTML = tempPersons.map((p, i) =>
-    `<span class="chip">${p}<span class="x" onclick="removeP(${i})">✕</span></span>`).join('');
+    `<span class="chip">${esc(p)}<span class="x" onclick="removeP(${i})">✕</span></span>`).join('');
 }
 function addP() {
   const inp = document.getElementById('ts-person');
@@ -463,14 +621,74 @@ function saveTrip() {
   save(); closeSheet('tripSheet'); renderReise();
 }
 
-// ── TAB 2: PACKLISTE ──
+// ═══ Backup / Restore ═══
+function exportData() {
+  const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'urlaubsplaner-backup-' + today() + '.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function importData(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const d = JSON.parse(r.result);
+      if (typeof d !== 'object' || d === null || !('trip' in d)) throw 0;
+      if (!confirm('Backup importieren? Aktuelle Daten werden ersetzt.')) return;
+      S = Object.assign({ trip: null, budget: 0, packing: [], expenses: [], diary: {} }, d);
+      save(); render();
+    } catch { alert('Ungültige Backup-Datei.'); }
+  };
+  r.readAsText(file);
+  input.value = '';
+}
+
+// ═══ TAB 2: PACKLISTE ═══
 const CAT_ICONS = { Kleidung: '👕', Hygiene: '🧴', Dokumente: '📄', Technik: '💻', Medizin: '💊', Unterhaltung: '🎮', Sonstiges: '📦' };
+const PACK_TEMPLATES = {
+  '🏖️ Strand': [
+    ['Badehose / Bikini', 2, 'Kleidung'], ['Strandtuch', 1, 'Kleidung'], ['Flip-Flops', 1, 'Kleidung'],
+    ['Sonnencreme', 1, 'Hygiene'], ['After-Sun', 1, 'Hygiene'], ['Sonnenbrille', 1, 'Sonstiges'],
+    ['Sonnenhut', 1, 'Kleidung'], ['Strandtasche', 1, 'Sonstiges'], ['Buch / E-Reader', 1, 'Unterhaltung']
+  ],
+  '🏙️ Städtetrip': [
+    ['Bequeme Schuhe', 1, 'Kleidung'], ['Tagesrucksack', 1, 'Sonstiges'], ['Powerbank', 1, 'Technik'],
+    ['Stadtplan / Offline-Karten', 1, 'Technik'], ['Regenjacke', 1, 'Kleidung'], ['Kamera', 1, 'Technik'],
+    ['Trinkflasche', 1, 'Sonstiges']
+  ],
+  '🚗 Roadtrip': [
+    ['Führerschein', 1, 'Dokumente'], ['Fahrzeugschein', 1, 'Dokumente'], ['Handyhalterung', 1, 'Technik'],
+    ['Ladekabel fürs Auto', 1, 'Technik'], ['Snacks', 1, 'Sonstiges'], ['Kühlbox', 1, 'Sonstiges'],
+    ['Playlist / Hörbücher', 1, 'Unterhaltung'], ['Warnweste', 1, 'Sonstiges']
+  ],
+  '⛷️ Winter': [
+    ['Skijacke', 1, 'Kleidung'], ['Skihose', 1, 'Kleidung'], ['Thermounterwäsche', 3, 'Kleidung'],
+    ['Handschuhe', 1, 'Kleidung'], ['Mütze', 1, 'Kleidung'], ['Skibrille', 1, 'Sonstiges'],
+    ['Skisocken', 3, 'Kleidung'], ['Lippenbalsam', 1, 'Hygiene'], ['Sonnencreme', 1, 'Hygiene']
+  ],
+  '📋 Basics': [
+    ['Reisepass / Ausweis', 1, 'Dokumente'], ['Buchungsunterlagen', 1, 'Dokumente'], ['Krankenkassenkarte', 1, 'Dokumente'],
+    ['Ladekabel', 1, 'Technik'], ['Kopfhörer', 1, 'Technik'], ['Zahnbürste & Zahnpasta', 1, 'Hygiene'],
+    ['Deo', 1, 'Hygiene'], ['Duschgel & Shampoo', 1, 'Hygiene'], ['Reiseapotheke', 1, 'Medizin'],
+    ['Unterwäsche', 5, 'Kleidung'], ['Socken', 5, 'Kleidung'], ['T-Shirts', 5, 'Kleidung']
+  ]
+};
 
 function renderPack() {
   const el = document.getElementById('v-pack');
   const items = S.packing;
+
+  const tplHtml = `<div class="tpl-row">${Object.keys(PACK_TEMPLATES).map(k =>
+    `<button class="tpl-btn" onclick="applyTemplate('${k.replace(/'/g, "\\'")}')">${k} +</button>`).join('')}</div>`;
+
   if (!items.length) {
-    el.innerHTML = `<div class="empty"><div class="ei">🧳</div><div class="et">Packliste ist leer</div><p>Tippe auf <b>+</b>, um Artikel<br>hinzuzufügen.</p></div>`;
+    el.innerHTML = `<div class="page-title">Packliste 🧳</div>
+      ${tplHtml}
+      <div class="empty"><span class="ei">🧳</span><div class="et">Packliste ist leer</div><p>Nutze eine Vorlage oben oder<br>tippe auf <b>+</b> für eigene Artikel.</p></div>`;
     return;
   }
   const packed = items.filter(i => i.packed).length;
@@ -478,18 +696,20 @@ function renderPack() {
   const byCat = {};
   items.forEach(i => { (byCat[i.category] = byCat[i.category] || []).push(i); });
 
-  let html = `<div class="pack-stat">
-    <div class="pbar-wrap" style="flex:1"><div class="pbar" style="width:${pct}%;background:var(--green)"></div></div>
-    <span class="nums">${packed}/${items.length} eingepackt</span>
-  </div>`;
+  let html = `<div class="page-title">Packliste 🧳<span class="pt-sub">${pct} %</span></div>
+    ${tplHtml}
+    <div class="pack-stat">
+      <div class="pbar-wrap" style="flex:1"><div class="pbar" style="width:${pct}%;background:${pct === 100 ? 'var(--green)' : 'var(--sky)'}"></div></div>
+      <span class="nums">${packed}/${items.length} ${pct === 100 ? '🎉' : 'gepackt'}</span>
+    </div>`;
   for (const [cat, list] of Object.entries(byCat)) {
     const done = list.filter(i => i.packed).length;
     html += `<div>
-      <div class="cat-hd">${CAT_ICONS[cat] || '📦'} ${cat} <span style="color:var(--text-3);font-weight:400">(${done}/${list.length})</span></div>
+      <div class="cat-hd">${CAT_ICONS[cat] || '📦'} ${esc(cat)} <span style="color:var(--text-3);font-weight:600">(${done}/${list.length})</span></div>
       ${list.map(i => `
         <div class="pack-item${i.packed ? ' done' : ''}" onclick="togglePack('${i.id}')">
-          <div class="pi-check">${i.packed ? '✓' : ''}</div>
-          <span class="pi-name">${i.name}</span>
+          <div class="pi-check">✓</div>
+          <span class="pi-name">${esc(i.name)}</span>
           ${i.qty > 1 ? `<span class="pi-qty">×${i.qty}</span>` : ''}
           <span class="pi-del" onclick="event.stopPropagation();deletePack('${i.id}')">🗑</span>
         </div>`).join('')}
@@ -498,9 +718,27 @@ function renderPack() {
   el.innerHTML = html;
 }
 
+function applyTemplate(key) {
+  const tpl = PACK_TEMPLATES[key];
+  if (!tpl) return;
+  const existing = new Set(S.packing.map(i => i.name.toLowerCase()));
+  let added = 0;
+  tpl.forEach(([name, qty, cat]) => {
+    if (existing.has(name.toLowerCase())) return;
+    S.packing.push({ id: uid(), name, qty, category: cat, packed: false });
+    added++;
+  });
+  save(); renderPack();
+  if (!added) alert('Alle Artikel dieser Vorlage sind schon auf der Liste.');
+}
+
 function togglePack(id) {
   const item = S.packing.find(i => i.id === id);
-  if (item) { item.packed = !item.packed; save(); renderPack(); }
+  if (!item) return;
+  const wasComplete = S.packing.every(i => i.packed);
+  item.packed = !item.packed;
+  save(); renderPack();
+  if (!wasComplete && item.packed && S.packing.every(i => i.packed)) confetti();
 }
 function deletePack(id) { S.packing = S.packing.filter(i => i.id !== id); save(); renderPack(); }
 function resetPackForm() { document.getElementById('pi-name').value = ''; document.getElementById('pi-qty').value = '1'; }
@@ -511,7 +749,21 @@ function savePack() {
   save(); closeSheet('packSheet'); renderPack();
 }
 
-// ── TAB 3: KOSTEN ──
+function confetti() {
+  const emo = ['🎉', '🎊', '🧳', '☀️', '🏖️', '✨'];
+  for (let i = 0; i < 36; i++) {
+    const s = document.createElement('span');
+    s.className = 'confetti';
+    s.textContent = emo[Math.floor(Math.random() * emo.length)];
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.animationDuration = (2.2 + Math.random() * 1.6) + 's';
+    s.style.animationDelay = (Math.random() * .5) + 's';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 4600);
+  }
+}
+
+// ═══ TAB 3: KOSTEN ═══
 const EXP_ICONS = { 'Essen & Trinken': '🍽️', Transport: '🚗', Unterkunft: '🏨', Aktivitäten: '🎡', Einkaufen: '🛍️', Sonstiges: '📦' };
 
 function renderKosten() {
@@ -522,24 +774,80 @@ function renderKosten() {
   const perPerson = persons.length ? total / persons.length : 0;
   const settlements = calcSettlements();
 
-  let html = `<div class="cost-stats">
+  let html = `<div class="page-title">Kosten 💰</div>`;
+
+  // Budget
+  if (S.budget > 0) {
+    const pct = Math.min(100, Math.round((total / S.budget) * 100));
+    const over = total > S.budget;
+    const barColor = over ? 'var(--rose)' : pct > 80 ? 'var(--amber)' : 'var(--green)';
+    html += `<div class="budget-card">
+      <div class="budget-top">
+        <span class="budget-title">🎯 Budget</span>
+        <span class="budget-nums">${fmtEur(total)} / ${fmtEur(S.budget)} <button class="budget-edit" onclick="openBudgetSheet()">✏️</button></span>
+      </div>
+      <div class="pbar-wrap"><div class="pbar" style="width:${pct}%;background:${barColor}"></div></div>
+      <div style="font-size:12px;font-weight:700;color:#92400e;margin-top:6px">${over ? '⚠️ ' + fmtEur(total - S.budget) + ' über Budget' : 'Noch ' + fmtEur(S.budget - total) + ' übrig'}</div>
+    </div>`;
+  } else {
+    html += `<button class="btn btn-ghost btn-sm" style="margin-bottom:12px" onclick="openBudgetSheet()">🎯 Budget festlegen</button>`;
+  }
+
+  html += `<div class="cost-stats">
     <div class="cs-box"><div class="cs-num">${fmtEur(total)}</div><div class="cs-lbl">Gesamt</div></div>
     <div class="cs-box"><div class="cs-num">${exps.length}</div><div class="cs-lbl">Ausgaben</div></div>
     <div class="cs-box"><div class="cs-num">${persons.length ? fmtEur(perPerson) : '–'}</div><div class="cs-lbl">Pro Person</div></div>
   </div>`;
 
   if (settlements.length) {
-    html += `<div class="card" style="padding:14px;margin-bottom:12px">
-      <div class="card-hd"><span class="card-title">💸 Ausgleich</span></div>
-      ${settlements.map(s => `<div class="settle-card">
-        <span>${s.from}</span><span class="settle-arrow">→</span><span>${s.to}</span>
+    html += `<div class="card" style="padding:14px">
+      <div class="card-hd" style="margin-bottom:8px"><span class="card-title">💸 Wer schuldet wem?</span></div>
+      ${settlements.map(s => `<div class="settle-card" style="box-shadow:none;background:var(--bg)">
+        <span>${esc(s.from)}</span><span class="settle-arrow">→</span><span>${esc(s.to)}</span>
         <span class="settle-amt">${fmtEur(s.amount)}</span>
       </div>`).join('')}
     </div>`;
   }
 
+  // Per-person balances
+  if (persons.length >= 2 && exps.length) {
+    const bal = calcBalances();
+    html += `<div class="card" style="padding:14px 16px">
+      <div class="card-hd" style="margin-bottom:4px"><span class="card-title">👥 Pro Person</span></div>
+      ${persons.map(p => {
+      const b = bal[p] || { paid: 0, share: 0 };
+      const diff = b.paid - b.share;
+      const cls = diff > 0.005 ? 'pos' : diff < -0.005 ? 'neg' : 'zero';
+      const sign = diff > 0.005 ? '+' : '';
+      return `<div class="person-row">
+        <div class="pr-ava">${esc(p.slice(0, 2).toUpperCase())}</div>
+        <div class="pr-info"><div class="pr-name">${esc(p)}</div><div class="pr-sub">${fmtEur(b.paid)} gezahlt · Anteil ${fmtEur(b.share)}</div></div>
+        <div class="pr-bal ${cls}">${sign}${fmtEur(diff)}</div>
+      </div>`;
+    }).join('')}
+    </div>`;
+  }
+
+  // Category breakdown
+  if (exps.length) {
+    const byCat = {};
+    exps.forEach(e => { byCat[e.category] = (byCat[e.category] || 0) + +e.amount; });
+    const sorted = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
+    const max = sorted[0][1];
+    html += `<div class="card" style="padding:14px 16px">
+      <div class="card-hd" style="margin-bottom:6px"><span class="card-title">📊 Nach Kategorie</span></div>
+      ${sorted.map(([cat, sum]) => `<div class="catbar-row">
+        <span class="catbar-ico">${EXP_ICONS[cat] || '💶'}</span>
+        <div class="catbar-mid">
+          <div class="catbar-name"><span>${esc(cat)}</span><span>${fmtEur(sum)}</span></div>
+          <div class="pbar-wrap" style="height:6px"><div class="pbar" style="width:${Math.round((sum / max) * 100)}%;background:var(--sky)"></div></div>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }
+
   if (!exps.length) {
-    html += `<div class="empty" style="padding-top:20px"><div class="ei">💰</div><p>Noch keine Ausgaben.<br>Tippe auf <b>+</b> zum Eintragen.</p></div>`;
+    html += `<div class="empty" style="padding-top:20px"><span class="ei">💰</span><p>Noch keine Ausgaben.<br>Tippe auf <b>+</b> zum Eintragen.</p></div>`;
   } else {
     html += `<div class="section-label">Alle Ausgaben</div>`;
     html += exps.slice().reverse().map(e => {
@@ -548,9 +856,9 @@ function renderKosten() {
       return `<div class="exp-item">
         <div class="exp-ava">${EXP_ICONS[e.category] || '💶'}</div>
         <div class="exp-info">
-          <div class="exp-desc">${e.desc}</div>
-          <div class="exp-meta">${e.paidBy}${ds ? ' · ' + ds : ''} · ${e.category}</div>
-          <div class="exp-meta">Aufgeteilt: ${split}</div>
+          <div class="exp-desc">${esc(e.desc)}</div>
+          <div class="exp-meta">${esc(e.paidBy)}${ds ? ' · ' + ds : ''} · ${esc(e.category)}</div>
+          <div class="exp-meta">Aufgeteilt: ${esc(split)}</div>
         </div>
         <div class="exp-right">
           <span class="exp-amt">${fmtEur(+e.amount)}</span>
@@ -562,19 +870,26 @@ function renderKosten() {
   el.innerHTML = html;
 }
 
-function calcSettlements() {
+function calcBalances() {
   const persons = S.trip?.persons || [];
-  if (persons.length < 2) return [];
   const bal = {};
-  persons.forEach(p => (bal[p] = 0));
+  persons.forEach(p => (bal[p] = { paid: 0, share: 0 }));
   S.expenses.forEach(e => {
     const split = e.splitWith?.length ? e.splitWith : persons;
     const share = +e.amount / split.length;
-    if (e.paidBy in bal) bal[e.paidBy] += +e.amount;
-    split.forEach(p => { if (p in bal) bal[p] -= share; });
+    if (bal[e.paidBy]) bal[e.paidBy].paid += +e.amount;
+    split.forEach(p => { if (bal[p]) bal[p].share += share; });
   });
+  return bal;
+}
+
+function calcSettlements() {
+  const persons = S.trip?.persons || [];
+  if (persons.length < 2) return [];
+  const bals = calcBalances();
   const cred = [], debt = [];
-  Object.entries(bal).forEach(([p, b]) => {
+  persons.forEach(p => {
+    const b = bals[p].paid - bals[p].share;
     if (b > 0.005) cred.push([p, b]);
     else if (b < -0.005) debt.push([p, -b]);
   });
@@ -590,14 +905,23 @@ function calcSettlements() {
   return txns;
 }
 
+function openBudgetSheet() {
+  document.getElementById('bu-amt').value = S.budget || '';
+  openSheet('budgetSheet');
+}
+function saveBudget() {
+  S.budget = Math.max(0, parseFloat(document.getElementById('bu-amt').value) || 0);
+  save(); closeSheet('budgetSheet'); renderKosten();
+}
+
 function resetExpForm() {
   const persons = S.trip?.persons || [];
   document.getElementById('ex-desc').value = '';
   document.getElementById('ex-amt').value = '';
   document.getElementById('ex-date').value = today();
-  document.getElementById('ex-paid').innerHTML = persons.map(p => `<option>${p}</option>`).join('');
+  document.getElementById('ex-paid').innerHTML = persons.map(p => `<option>${esc(p)}</option>`).join('');
   document.getElementById('ex-split').innerHTML = persons.map(p =>
-    `<label class="split-check"><input type="checkbox" value="${p}" checked />${p}</label>`).join('');
+    `<label class="split-check"><input type="checkbox" value="${esc(p)}" checked />${esc(p)}</label>`).join('');
   document.getElementById('ex-cat').value = 'Essen & Trinken';
 }
 function saveExp() {
@@ -614,38 +938,46 @@ function deleteExp(id) {
   save(); renderKosten();
 }
 
-// ── TAB 4: TAGEBUCH ──
+// ═══ TAB 4: TAGEBUCH ═══
 const WEATHERS = ['☀️', '⛅', '🌤️', '🌧️', '⛈️', '❄️'];
 const MOODS = ['🥳', '😃', '😊', '😐', '😔', '😴'];
+
+function hasEntry(e) {
+  return !!(e && (e.weather || e.mood || e.activities || e.food || e.highlight || e.photos?.length));
+}
 
 function renderDiary() {
   const el = document.getElementById('v-diary');
   if (!S.trip) {
-    el.innerHTML = `<div class="empty"><div class="ei">📔</div><div class="et">Kein Urlaub geplant</div><p>Lege zuerst eine Reise<br>im Reise-Tab an.</p></div>`;
+    el.innerHTML = `<div class="page-title">Tagebuch 📔</div><div class="empty"><span class="ei">📔</span><div class="et">Kein Urlaub geplant</div><p>Lege zuerst eine Reise<br>im Reise-Tab an.</p></div>`;
     return;
   }
   const days = tripDays();
   if (!days.length) {
-    el.innerHTML = `<div class="empty"><div class="ei">📔</div><p>Keine Urlaubstage gefunden.</p></div>`;
+    el.innerHTML = `<div class="page-title">Tagebuch 📔</div><div class="empty"><span class="ei">📔</span><p>Keine Urlaubstage gefunden.</p></div>`;
     return;
   }
   const now = today();
-  el.innerHTML = days.map((d, idx) => {
+  const filled = days.filter(d => hasEntry(S.diary[d])).length;
+  let html = `<div class="page-title">Tagebuch 📔<span class="pt-sub">${filled}/${days.length} Tage</span></div>`;
+
+  html += days.map((d, idx) => {
     const entry = S.diary[d] || {};
     const isToday = d === now;
-    const preview = [entry.weather, entry.activities ? entry.activities.slice(0, 35) : ''].filter(Boolean).join(' ');
+    const dt = new Date(d + 'T12:00:00');
+    const preview = [entry.weather, entry.activities ? entry.activities.slice(0, 40) : ''].filter(Boolean).join(' ');
 
-    return `<div class="diary-card">
+    return `<div class="diary-card${isToday ? ' today open' : ''}" id="card-${d}">
       <div class="diary-hd" onclick="toggleDay('${d}')">
+        <div class="dh-num"><b>${dt.getDate()}</b><span>${dt.toLocaleDateString('de-DE', { month: 'short' }).replace('.', '')}</span></div>
         <div class="dh-left">
           <div class="dh-date">Tag ${idx + 1}${isToday ? ' <span class="today-badge">Heute</span>' : ''}</div>
-          <div class="dh-sub">${fmtLong(d)}</div>
-          <div class="dh-preview">${preview || 'Noch nichts eingetragen'}</div>
+          <div class="dh-preview">${esc(preview) || fmtLong(d)}</div>
         </div>
-        <span class="dh-mood">${entry.mood || '📔'}</span>
-        <span class="dh-caret" id="dc-${d}">▼</span>
+        <span class="dh-mood">${entry.mood || (hasEntry(entry) ? '✅' : '📔')}</span>
+        <span class="dh-caret">▼</span>
       </div>
-      <div class="diary-body" id="db-${d}" style="display:none">
+      <div class="diary-body">
         <div class="df">
           <label class="label">🌤 Wetter</label>
           <div class="weather-grid">${WEATHERS.map(w =>
@@ -660,28 +992,40 @@ function renderDiary() {
         </div>
         <div class="df">
           <label class="label">🎯 Was haben wir gemacht?</label>
-          <textarea placeholder="Aktivitäten des Tages..." oninput="setDF('${d}','activities',this.value)">${entry.activities || ''}</textarea>
+          <textarea placeholder="Aktivitäten des Tages..." oninput="setDF('${d}','activities',this.value)">${esc(entry.activities)}</textarea>
         </div>
         <div class="df">
           <label class="label">🍽️ Was haben wir gegessen?</label>
-          <textarea placeholder="Leckeres Essen & Restaurants..." oninput="setDF('${d}','food',this.value)">${entry.food || ''}</textarea>
+          <textarea placeholder="Leckeres Essen & Restaurants..." oninput="setDF('${d}','food',this.value)">${esc(entry.food)}</textarea>
         </div>
         <div class="df">
           <label class="label">✨ Highlight des Tages</label>
-          <input type="text" placeholder="Das Schönste heute war..." value="${(entry.highlight || '').replace(/"/g, '&quot;')}" oninput="setDF('${d}','highlight',this.value)" />
+          <input type="text" placeholder="Das Schönste heute war..." value="${esc(entry.highlight)}" oninput="setDF('${d}','highlight',this.value)" />
         </div>
         <div class="df">
-          <label class="label">📷 Foto des Tages</label>
-          <div id="dph-${d}">${entry.photo ? `<img src="${entry.photo}" class="diary-photo" />` : ''}</div>
-          <label class="file-btn">📷 Foto auswählen<input type="file" accept="image/*" style="display:none" onchange="setPhoto('${d}',this)" /></label>
-          ${entry.photo ? `<button class="btn btn-danger btn-sm" style="margin-left:8px" onclick="removePhoto('${d}')">Löschen</button>` : ''}
+          <label class="label">📷 Fotos des Tages</label>
+          <div class="photo-grid" id="pg-${d}">${photoGridHtml(d)}</div>
+          <label class="file-btn">📷 Fotos hinzufügen<input type="file" accept="image/*" multiple style="display:none" onchange="addPhotos('${d}',this)" /></label>
         </div>
       </div>
     </div>`;
   }).join('');
+  el.innerHTML = html;
+}
 
-  // Auto-expand today
-  if (days.includes(now)) toggleDay(now);
+function photoGridHtml(d) {
+  const photos = S.diary[d]?.photos || [];
+  return photos.map((p, i) => `<div class="photo-cell">
+    <img src="${p}" alt="" onclick="openLightbox('${d}',${i})" />
+    <button class="photo-x" onclick="removePhoto('${d}',${i})">✕</button>
+  </div>`).join('');
+}
+
+function openLightbox(d, i) {
+  const p = S.diary[d]?.photos?.[i];
+  if (!p) return;
+  document.getElementById('lightboxImg').src = p;
+  document.getElementById('lightbox').classList.add('open');
 }
 
 function tripDays() {
@@ -697,12 +1041,7 @@ function tripDays() {
 }
 
 function toggleDay(d) {
-  const body = document.getElementById('db-' + d);
-  const caret = document.getElementById('dc-' + d);
-  if (!body) return;
-  const open = body.style.display !== 'none';
-  body.style.display = open ? 'none' : 'block';
-  if (caret) caret.textContent = open ? '▼' : '▲';
+  document.getElementById('card-' + d)?.classList.toggle('open');
 }
 
 function setDF(d, field, val) {
@@ -710,53 +1049,57 @@ function setDF(d, field, val) {
   S.diary[d][field] = val;
   save();
   const entry = S.diary[d];
-  // Update preview text in header
-  const card = document.getElementById('db-' + d)?.closest('.diary-card');
+  const card = document.getElementById('card-' + d);
   if (card) {
     const prev = card.querySelector('.dh-preview');
     if (prev) {
-      const p = [entry.weather, entry.activities ? entry.activities.slice(0, 35) : ''].filter(Boolean).join(' ');
-      prev.textContent = p || 'Noch nichts eingetragen';
+      const p = [entry.weather, entry.activities ? entry.activities.slice(0, 40) : ''].filter(Boolean).join(' ');
+      prev.textContent = p || fmtLong(d);
     }
     const moodEl = card.querySelector('.dh-mood');
-    if (moodEl) moodEl.textContent = entry.mood || '📔';
+    if (moodEl) moodEl.textContent = entry.mood || (hasEntry(entry) ? '✅' : '📔');
+    if (field === 'weather') card.querySelectorAll('.wopt').forEach(b => b.classList.toggle('sel', b.textContent.trim() === val));
+    if (field === 'mood') card.querySelectorAll('.mopt').forEach(b => b.classList.toggle('sel', b.textContent.trim() === val));
   }
-  // Toggle selection state
-  const body = document.getElementById('db-' + d);
-  if (field === 'weather' && body) body.querySelectorAll('.wopt').forEach(b => b.classList.toggle('sel', b.textContent.trim() === val));
-  if (field === 'mood' && body) body.querySelectorAll('.mopt').forEach(b => b.classList.toggle('sel', b.textContent.trim() === val));
 }
 
-function setPhoto(d, input) {
-  const file = input.files[0];
-  if (!file) return;
-  const imgEl = new Image();
-  const objUrl = URL.createObjectURL(file);
-  imgEl.onload = () => {
-    const MAX = 900;
-    let w = imgEl.width, h = imgEl.height;
-    if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
-    const c = document.createElement('canvas');
-    c.width = w; c.height = h;
-    c.getContext('2d').drawImage(imgEl, 0, 0, w, h);
-    URL.revokeObjectURL(objUrl);
-    const data = c.toDataURL('image/jpeg', 0.72);
-    if (!S.diary[d]) S.diary[d] = {};
-    S.diary[d].photo = data;
-    save();
-    const wrap = document.getElementById('dph-' + d);
-    if (wrap) wrap.innerHTML = `<img src="${data}" class="diary-photo" />`;
-  };
-  imgEl.src = objUrl;
+function addPhotos(d, input) {
+  const files = [...input.files];
+  input.value = '';
+  if (!files.length) return;
+  files.forEach(file => {
+    const imgEl = new Image();
+    const objUrl = URL.createObjectURL(file);
+    imgEl.onload = () => {
+      const MAX = 900;
+      let w = imgEl.width, h = imgEl.height;
+      if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(imgEl, 0, 0, w, h);
+      URL.revokeObjectURL(objUrl);
+      const data = c.toDataURL('image/jpeg', 0.72);
+      if (!S.diary[d]) S.diary[d] = {};
+      S.diary[d].photos = S.diary[d].photos || [];
+      S.diary[d].photos.push(data);
+      save();
+      const grid = document.getElementById('pg-' + d);
+      if (grid) grid.innerHTML = photoGridHtml(d);
+    };
+    imgEl.src = objUrl;
+  });
 }
 
-function removePhoto(d) {
-  if (S.diary[d]) { delete S.diary[d].photo; save(); }
-  const wrap = document.getElementById('dph-' + d);
-  if (wrap) wrap.innerHTML = '';
+function removePhoto(d, i) {
+  const photos = S.diary[d]?.photos;
+  if (!photos) return;
+  photos.splice(i, 1);
+  save();
+  const grid = document.getElementById('pg-' + d);
+  if (grid) grid.innerHTML = photoGridHtml(d);
 }
 
-// ── Init ──
+// ═══ Init ═══
 load();
 render();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
