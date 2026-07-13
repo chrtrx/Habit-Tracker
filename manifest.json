@@ -1,12 +1,12 @@
 {
-  "name": "Urlaubsplaner",
-  "short_name": "Urlaub",
-  "description": "Plane deinen Urlaub: Countdown, Packliste, Kosten & Tagebuch.",
+  "name": "Fernweh – Urlaubsplaner",
+  "short_name": "Fernweh",
+  "description": "Euer gemeinsamer Urlaubsplaner: Countdown, Route, Packliste, Kosten & Tagebuch.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f8fafc",
+  "background_color": "#f4f8fb",
   "theme_color": "#0ea5e9",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },

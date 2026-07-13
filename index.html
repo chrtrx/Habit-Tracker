@@ -6,9 +6,12 @@
   <meta name="theme-color" content="#0ea5e9">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Fernweh">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <title>Urlaubsplaner</title>
+  <title>Fernweh</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap">
   <script src="https://unpkg.com/globe.gl@2.34.5/dist/globe.gl.min.js" defer onload="if(typeof tab!=='undefined'&&tab==='karte')renderKarte()"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -206,38 +209,55 @@
     .amount-row .prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-2); font-weight: 700; pointer-events: none; }
     .amount-row input { padding-left: 25px; }
 
-    /* ═══ TAGEBUCH ═══ */
-    .diary-card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 10px; animation: rise .35s ease both; }
-    .diary-hd { padding: 13px 16px; display: flex; align-items: center; cursor: pointer; gap: 10px; }
-    .diary-hd:active { background: var(--bg); }
-    .dh-num { width: 40px; height: 40px; border-radius: 13px; background: var(--sky-l); color: var(--sky-d); display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1; }
-    .dh-num b { font-size: 16px; font-weight: 900; }
-    .dh-num span { font-size: 8.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; margin-top: 1px; }
-    .diary-card.today .dh-num { background: var(--sky); color: #fff; }
+    /* ═══ TAGEBUCH – Papier-Look ═══ */
+    :root { --paper: #fffdf6; --paper-line: #e7ddc2; --paper-edge: #efe6d0; --ink: #3d3524; --ink-soft: #8a7d5a; }
+    .diary-card { background: var(--paper); border: 1px solid var(--paper-edge); border-radius: var(--radius); box-shadow: 0 2px 6px rgba(120,95,40,.10); overflow: hidden; margin-bottom: 11px; animation: rise .35s ease both; }
+    .diary-hd { padding: 13px 16px; display: flex; align-items: center; cursor: pointer; gap: 11px; }
+    .diary-hd:active { background: #f7f1e0; }
+    .dh-num { width: 42px; height: 42px; border-radius: 12px; background: #fff; border: 1.5px solid var(--paper-edge); color: var(--rose); display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1; box-shadow: 0 1px 3px rgba(120,95,40,.12); }
+    .dh-num b { font-size: 17px; font-weight: 900; }
+    .dh-num span { font-size: 8.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; margin-top: 1px; color: var(--ink-soft); }
+    .diary-card.today .dh-num { background: var(--sky); border-color: var(--sky); color: #fff; }
+    .diary-card.today .dh-num span { color: #e0f2fe; }
     .dh-left { flex: 1; min-width: 0; }
-    .dh-date { font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: 6px; }
-    .today-badge { background: var(--sky); color: #fff; font-size: 10px; font-weight: 800; padding: 1.5px 7px; border-radius: 10px; }
-    .dh-preview { font-size: 12px; color: var(--text-2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dh-date { font-family: 'Caveat', cursive; font-weight: 700; font-size: 21px; line-height: 1.1; color: var(--ink); display: flex; align-items: center; gap: 7px; }
+    .today-badge { background: var(--sky); color: #fff; font-size: 10px; font-weight: 800; padding: 1.5px 7px; border-radius: 10px; font-family: -apple-system, sans-serif; }
+    .dh-preview { font-size: 12px; color: var(--ink-soft); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .dh-mood { font-size: 24px; flex-shrink: 0; }
     .dh-caret { font-size: 11px; color: var(--text-3); flex-shrink: 0; transition: transform .25s; }
     .diary-card.open .dh-caret { transform: rotate(180deg); }
-    .diary-body { padding: 14px 16px 16px; border-top: 1px solid var(--border); display: none; }
+    .diary-body { padding: 15px 16px 18px; border-top: 1.5px dashed var(--paper-line); display: none; }
     .diary-card.open .diary-body { display: block; }
-    .df { margin-bottom: 15px; }
+    .df { margin-bottom: 17px; }
     .df:last-child { margin-bottom: 0; }
+    .diary-body .label { font-family: 'Caveat', cursive; font-size: 20px; font-weight: 700; color: var(--ink-soft); text-transform: none; letter-spacing: 0; margin-bottom: 2px; }
+    .diary-body textarea {
+      background: transparent; border: none; border-radius: 0; padding: 0 2px 6px;
+      font-family: Georgia, 'Times New Roman', serif; font-size: 17px; color: var(--ink); line-height: 30px; min-height: 92px;
+      background-image: repeating-linear-gradient(transparent 0px, transparent 29px, var(--paper-line) 29px, var(--paper-line) 30px);
+      background-attachment: local; field-sizing: content; box-shadow: none;
+    }
+    .diary-body input[type=text] {
+      background: transparent; border: none; border-bottom: 1.5px dashed var(--paper-line); border-radius: 0; padding: 4px 2px;
+      font-family: Georgia, 'Times New Roman', serif; font-size: 17px; color: var(--ink); box-shadow: none;
+    }
+    .diary-body textarea:focus, .diary-body input[type=text]:focus { box-shadow: none; border-color: var(--ink-soft); }
+    .diary-body ::placeholder { color: #c4b78f; font-style: italic; }
     .weather-grid { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 6px; }
-    .wopt { width: 42px; height: 42px; border-radius: 12px; border: 2px solid var(--border); background: var(--bg); font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color .15s, background .15s, transform .1s; }
+    .wopt { width: 42px; height: 42px; border-radius: 12px; border: 2px solid var(--paper-edge); background: #fff; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color .15s, background .15s, transform .1s; }
     .wopt:active { transform: scale(.9); }
     .wopt.sel { border-color: var(--sky); background: var(--sky-l); }
     .mood-grid { display: flex; gap: 7px; margin-top: 6px; }
-    .mopt { flex: 1; height: 44px; border-radius: 12px; border: 2px solid var(--border); background: var(--bg); font-size: 21px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color .15s, background .15s, transform .1s; }
+    .mopt { flex: 1; height: 44px; border-radius: 12px; border: 2px solid var(--paper-edge); background: #fff; font-size: 21px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color .15s, background .15s, transform .1s; }
     .mopt:active { transform: scale(.9); }
     .mopt.sel { border-color: var(--amber); background: var(--amber-l); }
-    .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 8px; }
-    .photo-cell { position: relative; aspect-ratio: 1; border-radius: 11px; overflow: hidden; }
+    /* Fotos als Polaroids */
+    .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 10px; padding: 4px 2px; }
+    .photo-cell { position: relative; aspect-ratio: 1; background: #fff; border: 5px solid #fff; border-bottom-width: 16px; border-radius: 3px; box-shadow: 0 3px 9px rgba(80,60,20,.22); transform: rotate(-2.2deg); }
+    .photo-cell:nth-child(even) { transform: rotate(1.8deg); }
     .photo-cell img { width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer; }
-    .photo-x { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; background: rgba(15,23,42,.6); color: #fff; border: none; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-    .file-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--sky-l); color: var(--sky-d); border: none; border-radius: 10px; padding: 8px 13px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 8px; font-family: inherit; }
+    .photo-x { position: absolute; top: -8px; right: -8px; width: 22px; height: 22px; border-radius: 50%; background: rgba(15,23,42,.65); color: #fff; border: none; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .file-btn { display: inline-flex; align-items: center; gap: 6px; background: #fff; color: var(--ink-soft); border: 1.5px dashed var(--paper-line); border-radius: 10px; padding: 8px 13px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 10px; font-family: inherit; }
     .lightbox { position: fixed; inset: 0; background: rgba(15,23,42,.92); z-index: 400; display: none; align-items: center; justify-content: center; padding: 20px; }
     .lightbox.open { display: flex; }
     .lightbox img { max-width: 100%; max-height: 90vh; border-radius: 12px; }
@@ -435,6 +455,13 @@
   </div>
 </div>
 
+<!-- News Sheet (Was ist neu) -->
+<div class="overlay" id="newsSheet" onclick="bgClose(event,'newsSheet')">
+  <div class="sheet">
+    <div class="sheet-inner" id="newsBody"></div>
+  </div>
+</div>
+
 <!-- Memory Sheet (Erinnerungen) -->
 <div class="overlay" id="memSheet" onclick="bgClose(event,'memSheet')">
   <div class="sheet">
@@ -514,6 +541,60 @@ function save() {
     clearTimeout(pushTimer);
     pushTimer = setTimeout(syncPush, 1500);
   }
+}
+
+// ═══ Was ist neu? ═══
+const APP_VERSION = '2.1';
+const CHANGELOG = [
+  {
+    v: '2.1', title: 'Gemeinsame Kasse & Tagebuch-Look', items: [
+      '👫 <b>Gemeinsame Kasse</b> bei den Kosten: vom gemeinsamen Konto bezahlt = niemand schuldet niemandem etwas',
+      '📖 Tagebuch im echten <b>Papier-Look</b> mit linierten Seiten, Handschrift und Polaroid-Fotos',
+      '🏝️ Aufgeräumte Startseite mit kompakter Sync-Zeile',
+      '✈️ Neuer Name <b>Fernweh</b> und neues App-Icon',
+      '✨ Diese „Was ist neu?"-Liste'
+    ]
+  },
+  {
+    v: '2.0', title: 'Weltkugel, Foto-Sync & Erinnerungen', items: [
+      '🌍 <b>3D-Weltkugel</b> mit Flugbögen statt flacher Karte',
+      '📷 <b>Fotos synchronisieren</b> jetzt auf beide Handys',
+      '💳 Kosten: Personen-Chips für „Wer hat bezahlt?"',
+      '🎞️ <b>Erinnerungs-Album</b>: beendete Reisen bleiben ansehbar',
+      '🔒 Zoom-Wackeln behoben'
+    ]
+  },
+  {
+    v: '1.5', title: 'Gemeinsam planen & Route', items: [
+      '👫 <b>Live-Sync</b>: Reise per Link teilen, ohne Konto',
+      '🗺️ Route-Tab mit Stopps, Ortssuche und GPS',
+      '💸 Schulden per Tap als beglichen markieren'
+    ]
+  },
+  {
+    v: '1.0', title: 'Der Urlaubsplaner ist da', items: [
+      '⏳ Countdown bis zum Urlaub',
+      '🧳 Packliste mit Vorlagen und Konfetti',
+      '💰 Kosten teilen mit Ausgleichsrechner',
+      '📔 Urlaubstagebuch mit Fotos'
+    ]
+  }
+];
+function openNews() {
+  document.getElementById('newsBody').innerHTML = `
+    <div class="sheet-hd">
+      <span class="sheet-title">✨ Was ist neu?</span>
+      <button class="close-btn" onclick="closeSheet('newsSheet')">✕</button>
+    </div>` +
+    CHANGELOG.map((c, idx) => `<div class="card" style="padding:14px 16px${idx === 0 ? ';border:2px solid var(--sky-l)' : ''}">
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">
+        <span style="background:${idx === 0 ? 'var(--sky)' : 'var(--border)'};color:${idx === 0 ? '#fff' : 'var(--text-2)'};font-size:11px;font-weight:800;padding:2px 8px;border-radius:10px">v${c.v}</span>
+        <span style="font-weight:800;font-size:14.5px">${c.title}</span>
+      </div>
+      ${c.items.map(i => `<div style="font-size:13.5px;padding:3px 0;line-height:1.45">${i}</div>`).join('')}
+    </div>`).join('');
+  openSheet('newsSheet');
+  localStorage.setItem('urlaub-seenver', APP_VERSION);
 }
 
 // ═══ Navigation ═══
@@ -822,16 +903,13 @@ function renderReise() {
       </div>
     </div>
 
-    ${syncCardHtml()}
-
-    <div class="card">
-      <div class="card-hd"><span class="card-title">Auf einen Blick</span></div>
-      <div class="cost-stats" style="margin-bottom:0">
-        <div class="cs-box" style="box-shadow:none;background:var(--bg);cursor:pointer" onclick="go('pack')"><div class="cs-num">${packDone}/${packTotal}</div><div class="cs-lbl">🧳 Gepackt</div></div>
-        <div class="cs-box" style="box-shadow:none;background:var(--bg);cursor:pointer" onclick="go('kosten')"><div class="cs-num">${fmtEur(spent)}</div><div class="cs-lbl">💰 Ausgaben</div></div>
-        <div class="cs-box" style="box-shadow:none;background:var(--bg);cursor:pointer" onclick="go('diary')"><div class="cs-num">${diaryFilled}/${totalDays + 1}</div><div class="cs-lbl">📔 Tagebuch</div></div>
-      </div>
+    <div class="cost-stats">
+      <div class="cs-box" style="cursor:pointer" onclick="go('pack')"><div class="cs-num">${packDone}/${packTotal}</div><div class="cs-lbl">🧳 Gepackt</div></div>
+      <div class="cs-box" style="cursor:pointer" onclick="go('kosten')"><div class="cs-num">${fmtEur(spent)}</div><div class="cs-lbl">💰 Ausgaben</div></div>
+      <div class="cs-box" style="cursor:pointer" onclick="go('diary')"><div class="cs-num">${diaryFilled}/${totalDays + 1}</div><div class="cs-lbl">📔 Tagebuch</div></div>
     </div>
+
+    ${syncCardHtml()}
 
     ${ended ? `<button class="btn btn-primary btn-full" style="margin-bottom:10px" onclick="archiveTrip()">🎞️ Reise als Erinnerung speichern</button>` : ''}
 
@@ -843,6 +921,10 @@ function renderReise() {
     </div>
 
     ${memoriesHtml()}
+
+    <div style="text-align:center;margin-top:20px;font-size:12px;color:var(--text-3)">
+      ✈️ Fernweh v${APP_VERSION} · <a style="color:var(--sky-d);font-weight:700;cursor:pointer" onclick="openNews()">Was ist neu?</a>
+    </div>
   `;
 
   if (!started && !ended) {
@@ -1242,12 +1324,13 @@ function renderKosten() {
     html += exps.slice().reverse().map(e => {
       const ds = e.date ? new Date(e.date + 'T12:00:00').toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) : '';
       const split = (e.splitWith || []).join(', ') || 'alle';
+      const payer = e.paidBy === JOINT ? JOINT_LABEL : esc(e.paidBy);
       return `<div class="exp-item${e.transfer ? ' transfer' : ''}"${e.transfer ? '' : ` onclick="editExp('${e.id}')" style="cursor:pointer"`}>
         <div class="exp-ava">${EXP_ICONS[e.category] || '💶'}</div>
         <div class="exp-info">
           <div class="exp-desc">${esc(e.desc)}</div>
-          <div class="exp-meta">${e.transfer ? 'Ausgleichszahlung' : esc(e.paidBy)}${ds ? ' · ' + ds : ''}${e.transfer ? '' : ' · ' + esc(e.category)}</div>
-          ${e.transfer ? '' : `<div class="exp-meta">Aufgeteilt: ${esc(split)}</div>`}
+          <div class="exp-meta">${e.transfer ? 'Ausgleichszahlung' : payer}${ds ? ' · ' + ds : ''}${e.transfer ? '' : ' · ' + esc(e.category)}</div>
+          ${e.transfer || e.paidBy === JOINT ? '' : `<div class="exp-meta">Aufgeteilt: ${esc(split)}</div>`}
         </div>
         <div class="exp-right">
           <span class="exp-amt">${fmtEur(+e.amount)}</span>
@@ -1264,6 +1347,7 @@ function calcBalances() {
   const bal = {};
   persons.forEach(p => (bal[p] = { paid: 0, share: 0 }));
   S.expenses.forEach(e => {
+    if (e.paidBy === JOINT) return; // Gemeinsame Kasse: niemand schuldet niemandem etwas
     const split = e.splitWith?.length ? e.splitWith : persons;
     const share = +e.amount / split.length;
     if (bal[e.paidBy]) bal[e.paidBy].paid += +e.amount;
@@ -1305,11 +1389,16 @@ function saveBudget() {
 
 let editingExpId = null;
 let expPersons = [], expPayer = -1, expSplit = new Set();
+const JOINT = '__gemeinsam__';
+const JOINT_LABEL = '👫 Gemeinsame Kasse';
 
 function pInitials(p) { return p.trim().slice(0, 2).toUpperCase(); }
 function renderPayerChips() {
+  const jointIdx = expPersons.length;
   document.getElementById('ex-paid').innerHTML = expPersons.map((p, i) =>
-    `<button type="button" class="psel-chip${expPayer === i ? ' sel' : ''}" onclick="setPayer(${i})"><span class="pa">${esc(pInitials(p))}</span>${esc(p)}${expPayer === i ? ' ✓' : ''}</button>`).join('');
+    `<button type="button" class="psel-chip${expPayer === i ? ' sel' : ''}" onclick="setPayer(${i})"><span class="pa">${esc(pInitials(p))}</span>${esc(p)}${expPayer === i ? ' ✓' : ''}</button>`).join('')
+    + `<button type="button" class="psel-chip${expPayer === jointIdx ? ' sel' : ''}" onclick="setPayer(${jointIdx})">${JOINT_LABEL}${expPayer === jointIdx ? ' ✓' : ''}</button>`
+    + `<div style="width:100%;font-size:11.5px;color:var(--text-3);margin-top:2px">Gemeinsame Kasse = vom gemeinsamen Konto bezahlt, niemand schuldet niemandem etwas.</div>`;
 }
 function renderSplitChips() {
   document.getElementById('ex-split').innerHTML = expPersons.map((p, i) =>
@@ -1331,7 +1420,7 @@ function resetExpForm(exp) {
   document.getElementById('ex-desc').value = exp ? exp.desc : '';
   document.getElementById('ex-amt').value = exp ? exp.amount : '';
   document.getElementById('ex-date').value = exp?.date || today();
-  expPayer = exp ? expPersons.indexOf(exp.paidBy) : -1;
+  expPayer = exp ? (exp.paidBy === JOINT ? expPersons.length : expPersons.indexOf(exp.paidBy)) : -1;
   const splitNames = exp ? (exp.splitWith?.length ? exp.splitWith : expPersons) : expPersons;
   expSplit = new Set(expPersons.map((p, i) => splitNames.includes(p) ? i : -1).filter(i => i >= 0));
   renderPayerChips();
@@ -1351,7 +1440,7 @@ function saveExp() {
   if (expPayer < 0) { alert('Bitte antippen, wer bezahlt hat. 💳'); return; }
   if (!expSplit.size) { alert('Bitte auswählen, für wen die Ausgabe war. 🤝'); return; }
   const splitWith = [...expSplit].sort().map(i => expPersons[i]);
-  const data = { desc, amount, date: document.getElementById('ex-date').value, paidBy: expPersons[expPayer], splitWith, category: document.getElementById('ex-cat').value };
+  const data = { desc, amount, date: document.getElementById('ex-date').value, paidBy: expPayer === expPersons.length ? JOINT : expPersons[expPayer], splitWith, category: document.getElementById('ex-cat').value };
   if (editingExpId) {
     const exp = S.expenses.find(e => e.id === editingExpId);
     if (exp) Object.assign(exp, data);
@@ -1738,29 +1827,45 @@ async function shareSync() {
   catch { prompt('Diesen Link teilen:', text + url); }
 }
 
+let syncDetailsOpen = false;
+function toggleSyncDetails() {
+  syncDetailsOpen = !syncDetailsOpen;
+  const d = document.getElementById('syncDetails');
+  const c = document.getElementById('syncCaret');
+  if (d) d.style.display = syncDetailsOpen ? 'block' : 'none';
+  if (c) c.style.transform = syncDetailsOpen ? 'rotate(180deg)' : '';
+}
 function syncCardHtml() {
   if (sync) {
-    return `<div class="card">
-      <div class="card-hd" style="margin-bottom:6px">
-        <span class="card-title">👫 Gemeinsam planen</span>
-        <span id="syncDot" style="font-size:12px;font-weight:700;color:var(--text-2)">🟢 Synchron</span>
+    return `<div class="card" style="padding:11px 14px">
+      <div style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="toggleSyncDetails()">
+        <span style="font-size:19px">👫</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:800;font-size:13.5px">Gemeinsam planen</div>
+          <div id="syncDot" style="font-size:11.5px;font-weight:700;color:var(--text-2)">🟢 Synchron</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();shareSync()">💌</button>
+        <span id="syncCaret" class="dh-caret" style="transition:transform .25s${syncDetailsOpen ? ';transform:rotate(180deg)' : ''}">▼</span>
       </div>
-      <p style="font-size:12.5px;color:var(--text-2);margin-bottom:8px">Änderungen an Reise, Route, Packliste, Kosten &amp; Tagebuch – inklusive Fotos – landen automatisch auf beiden Handys.</p>
-      <div style="font-size:12px;background:var(--bg);border-radius:8px;padding:7px 10px;margin-bottom:10px;word-break:break-all"><b>Code:</b> <span style="font-family:monospace">${esc(syncCode())}</span></div>
-      <div class="tool-row" style="margin-top:0">
-        <button class="btn btn-primary btn-sm" onclick="shareSync()">💌 Link teilen</button>
-        <button class="btn btn-ghost btn-sm" onclick="syncPull()">🔄 Aktualisieren</button>
-        <button class="btn btn-danger btn-sm" onclick="stopSync()">Beenden</button>
+      <div id="syncDetails" style="display:${syncDetailsOpen ? 'block' : 'none'};margin-top:10px">
+        <p style="font-size:12px;color:var(--text-2);margin-bottom:8px">Reise, Route, Packliste, Kosten &amp; Tagebuch – inklusive Fotos – landen automatisch auf beiden Handys.</p>
+        <div style="font-size:12px;background:var(--bg);border-radius:8px;padding:7px 10px;margin-bottom:9px;word-break:break-all"><b>Code:</b> <span style="font-family:monospace">${esc(syncCode())}</span></div>
+        <div class="tool-row" style="margin-top:0">
+          <button class="btn btn-ghost btn-sm" onclick="syncPull()">🔄 Aktualisieren</button>
+          <button class="btn btn-danger btn-sm" onclick="stopSync()">Beenden</button>
+        </div>
       </div>
     </div>`;
   }
-  return `<div class="card">
-    <div class="card-hd" style="margin-bottom:6px"><span class="card-title">👫 Gemeinsam planen</span></div>
-    <p style="font-size:12.5px;color:var(--text-2);margin-bottom:10px">Teile die Reise mit deiner Freundin: Packliste, Kosten &amp; Tagebuch werden live auf beiden Handys synchronisiert — ohne Konto, ohne Anmeldung.</p>
-    <button class="btn btn-primary btn-sm" onclick="startSync()">🔗 Live-Sync starten</button>
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <input type="text" id="joinCode" placeholder="Oder Code eingeben…" style="flex:1;font-size:13px;padding:8px 10px" />
-      <button class="btn btn-ghost btn-sm" onclick="joinSync(document.getElementById('joinCode').value)">Beitreten</button>
+  return `<div class="card" style="padding:12px 14px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:19px">👫</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:800;font-size:13.5px">Gemeinsam planen</div>
+        <div style="font-size:11.5px;color:var(--text-2)">Alles live auf beiden Handys – ohne Konto</div>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="startSync()">🔗 Starten</button>
+      <button class="btn btn-ghost btn-sm" onclick="joinPrompt()">Code</button>
     </div>
   </div>`;
 }
@@ -1775,6 +1880,12 @@ const joinMatch = location.hash.match(/#join=([a-zA-Z0-9.]+)/);
 if (joinMatch) {
   history.replaceState(null, '', location.pathname + location.search);
   if (confirm('Geteilte Reise laden? Deine aktuellen Daten auf diesem Gerät werden ersetzt.')) joinSync(joinMatch[1]);
+}
+
+// „Was ist neu?" einmalig nach jedem Update zeigen (nicht beim allerersten Start)
+if (localStorage.getItem('urlaub-seenver') !== APP_VERSION) {
+  if (S.trip || S.packing.length || Object.keys(S.diary).length) setTimeout(openNews, 600);
+  else localStorage.setItem('urlaub-seenver', APP_VERSION);
 }
 
 if (sync) syncPull();
