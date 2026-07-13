@@ -1,4 +1,4 @@
-const CACHE = 'streak-v26';
+const CACHE = 'urlaub-v3';
 const ASSETS = [
   './',
   './index.html',
