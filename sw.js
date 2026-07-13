@@ -1,4 +1,4 @@
-const CACHE = 'urlaub-v3';
+const CACHE = 'urlaub-v4';
 const ASSETS = [
   './',
   './index.html',
@@ -24,6 +24,8 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  // API-Aufrufe (Live-Sync) nie cachen – immer live ans Netz
+  if (new URL(e.request.url).origin !== self.location.origin) return;
   e.respondWith(
     caches.match(e.request).then(cached =>
       cached || fetch(e.request).then(resp => {

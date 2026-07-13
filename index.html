@@ -430,8 +430,13 @@ function load() {
   });
 }
 function save() {
+  if (!applyingRemote) S.updatedAt = Date.now();
   try { localStorage.setItem(SKEY, JSON.stringify(S)); }
   catch { alert('Speicher voll! Bitte lösche einige Fotos im Tagebuch.'); }
+  if (sync && !applyingRemote) {
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(syncPush, 1500);
+  }
 }
 
 // ═══ Navigation ═══
@@ -486,6 +491,7 @@ function renderReise() {
       <div class="et">Noch kein Urlaub geplant</div>
       <p>Lege deine Reise an und<br>zähle die Tage!</p>
       <button class="btn btn-primary" style="margin-top:20px" onclick="openTripSheet()">Reise anlegen ✈️</button>
+      <p style="margin-top:16px"><button class="btn btn-ghost btn-sm" onclick="joinPrompt()">🔗 Geteilte Reise beitreten</button></p>
     </div>`;
     return;
   }
@@ -553,6 +559,8 @@ function renderReise() {
         ${t.persons?.length ? `<div class="bpass-cell"><div class="bc-v">${t.persons.length} 👥</div><div class="bc-l">Reisende</div></div>` : ''}
       </div>
     </div>
+
+    ${syncCardHtml()}
 
     <div class="card">
       <div class="card-hd"><span class="card-title">Auf einen Blick</span></div>
@@ -1134,9 +1142,172 @@ function removePhoto(d, i) {
   if (grid) grid.innerHTML = photoGridHtml(d);
 }
 
+// ═══ LIVE-SYNC (gemeinsam planen) ═══
+const SYNC_KEY = 'urlaub-sync';
+const SYNC_API = 'https://extendsclass.com/api/json-storage/bin';
+let sync = null;            // { bin, key }
+let pushTimer = null;
+let applyingRemote = false;
+let syncBusy = false;
+
+function loadSyncCfg() { try { const d = localStorage.getItem(SYNC_KEY); if (d) sync = JSON.parse(d); } catch {} }
+function saveSyncCfg() { sync ? localStorage.setItem(SYNC_KEY, JSON.stringify(sync)) : localStorage.removeItem(SYNC_KEY); }
+function syncCode() { return sync ? sync.bin + '.' + sync.key : ''; }
+
+function setSyncStatus(st) {
+  const el = document.getElementById('syncDot');
+  if (!el) return;
+  el.textContent = st === 'ok' ? '🟢 Synchron' : st === 'sync' ? '🔄 Synchronisiere…' : '⚠️ Offline';
+}
+
+// Fotos werden nicht mitgesendet (Größenlimit) – sie bleiben pro Gerät
+function syncPayload() {
+  const c = JSON.parse(JSON.stringify(S));
+  Object.values(c.diary || {}).forEach(e => { delete e.photos; });
+  return JSON.stringify(c);
+}
+function applyRemote(remote) {
+  applyingRemote = true;
+  const localPhotos = {};
+  Object.entries(S.diary || {}).forEach(([d, e]) => { if (e.photos?.length) localPhotos[d] = e.photos; });
+  S = Object.assign({ trip: null, budget: 0, packing: [], expenses: [], diary: {} }, remote);
+  Object.entries(localPhotos).forEach(([d, ph]) => { S.diary[d] = S.diary[d] || {}; S.diary[d].photos = ph; });
+  save();
+  applyingRemote = false;
+  render();
+}
+
+async function syncApi(method, body) {
+  const r = await fetch(SYNC_API + '/' + sync.bin, {
+    method,
+    headers: Object.assign({ 'Security-key': sync.key }, body ? { 'Content-Type': 'application/json' } : {}),
+    body
+  });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+
+async function syncPush() {
+  if (!sync) return;
+  setSyncStatus('sync');
+  try { await syncApi('PUT', syncPayload()); setSyncStatus('ok'); }
+  catch { setSyncStatus('err'); }
+}
+
+async function syncPull() {
+  if (!sync || syncBusy) return;
+  syncBusy = true;
+  setSyncStatus('sync');
+  try {
+    const remote = await syncApi('GET');
+    if ((remote.updatedAt || 0) > (S.updatedAt || 0)) applyRemote(remote);
+    setSyncStatus('ok');
+  } catch { setSyncStatus('err'); }
+  syncBusy = false;
+}
+
+async function startSync() {
+  const key = [...crypto.getRandomValues(new Uint8Array(12))].map(b => b.toString(16).padStart(2, '0')).join('');
+  try {
+    const r = await fetch(SYNC_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Security-key': key, 'Private': 'true' },
+      body: syncPayload()
+    });
+    const j = await r.json();
+    if (!r.ok || !j.id) throw 0;
+    sync = { bin: j.id, key };
+    saveSyncCfg();
+    renderReise();
+    shareSync();
+  } catch {
+    alert('Sync konnte nicht gestartet werden. Bitte Internetverbindung prüfen und erneut versuchen.');
+  }
+}
+
+async function joinSync(code) {
+  code = (code || '').trim();
+  const m = code.match(/^([a-zA-Z0-9]+)\.([a-f0-9]+)$/);
+  if (!m) { alert('Ungültiger Code. Format: xxxxxxx.xxxxxxxxxxxx'); return; }
+  const prev = sync;
+  sync = { bin: m[1], key: m[2] };
+  try {
+    const remote = await syncApi('GET');
+    saveSyncCfg();
+    applyRemote(remote);
+    go('reise');
+    alert('Verbunden! Ihr plant jetzt gemeinsam. 🎉');
+  } catch {
+    sync = prev;
+    alert('Code nicht gefunden oder falsch geschrieben.');
+  }
+}
+
+function joinPrompt() {
+  const c = prompt('Sync-Code eingeben (z.B. aus dem geteilten Link hinter #join=):');
+  if (c) joinSync(c);
+}
+
+function stopSync() {
+  if (!confirm('Live-Sync beenden? Deine Daten bleiben auf diesem Handy erhalten.')) return;
+  sync = null;
+  saveSyncCfg();
+  renderReise();
+}
+
+async function shareSync() {
+  const url = location.origin + location.pathname + '#join=' + syncCode();
+  const text = 'Plane unseren Urlaub mit! 🏝️ Öffne den Link, dann teilen wir Packliste, Kosten & Tagebuch: ';
+  if (navigator.share) {
+    try { await navigator.share({ title: 'Urlaubsplaner', text, url }); return; } catch {}
+  }
+  try { await navigator.clipboard.writeText(text + url); alert('Link kopiert! Schick ihn deiner Freundin. 💌'); }
+  catch { prompt('Diesen Link teilen:', text + url); }
+}
+
+function syncCardHtml() {
+  if (sync) {
+    return `<div class="card">
+      <div class="card-hd" style="margin-bottom:6px">
+        <span class="card-title">👫 Gemeinsam planen</span>
+        <span id="syncDot" style="font-size:12px;font-weight:700;color:var(--text-2)">🟢 Synchron</span>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-2);margin-bottom:8px">Änderungen an Reise, Packliste, Kosten &amp; Tagebuch landen automatisch auf beiden Handys. Fotos bleiben auf dem eigenen Gerät.</p>
+      <div style="font-size:12px;background:var(--bg);border-radius:8px;padding:7px 10px;margin-bottom:10px;word-break:break-all"><b>Code:</b> <span style="font-family:monospace">${esc(syncCode())}</span></div>
+      <div class="tool-row" style="margin-top:0">
+        <button class="btn btn-primary btn-sm" onclick="shareSync()">💌 Link teilen</button>
+        <button class="btn btn-ghost btn-sm" onclick="syncPull()">🔄 Aktualisieren</button>
+        <button class="btn btn-danger btn-sm" onclick="stopSync()">Beenden</button>
+      </div>
+    </div>`;
+  }
+  return `<div class="card">
+    <div class="card-hd" style="margin-bottom:6px"><span class="card-title">👫 Gemeinsam planen</span></div>
+    <p style="font-size:12.5px;color:var(--text-2);margin-bottom:10px">Teile die Reise mit deiner Freundin: Packliste, Kosten &amp; Tagebuch werden live auf beiden Handys synchronisiert — ohne Konto, ohne Anmeldung.</p>
+    <button class="btn btn-primary btn-sm" onclick="startSync()">🔗 Live-Sync starten</button>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <input type="text" id="joinCode" placeholder="Oder Code eingeben…" style="flex:1;font-size:13px;padding:8px 10px" />
+      <button class="btn btn-ghost btn-sm" onclick="joinSync(document.getElementById('joinCode').value)">Beitreten</button>
+    </div>
+  </div>`;
+}
+
 // ═══ Init ═══
 load();
+loadSyncCfg();
 render();
+
+// Beitritt über geteilten Link (#join=CODE)
+const joinMatch = location.hash.match(/#join=([a-zA-Z0-9.]+)/);
+if (joinMatch) {
+  history.replaceState(null, '', location.pathname + location.search);
+  if (confirm('Geteilte Reise laden? Deine aktuellen Daten auf diesem Gerät werden ersetzt.')) joinSync(joinMatch[1]);
+}
+
+if (sync) syncPull();
+setInterval(() => { if (sync && document.visibilityState === 'visible') syncPull(); }, 45000);
+document.addEventListener('visibilitychange', () => { if (sync && document.visibilityState === 'visible') syncPull(); });
+
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
 </script>
 </body>
