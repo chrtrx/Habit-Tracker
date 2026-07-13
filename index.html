@@ -2,15 +2,14 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
   <meta name="theme-color" content="#0ea5e9">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <title>Urlaubsplaner</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer onload="if(typeof tab!=='undefined'&&tab==='karte')renderKarte()"></script>
+  <script src="https://unpkg.com/globe.gl@2.34.5/dist/globe.gl.min.js" defer onload="if(typeof tab!=='undefined'&&tab==='karte')renderKarte()"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -36,7 +35,7 @@
       --tab-h: 64px;
       --safe: env(safe-area-inset-bottom, 0px);
     }
-    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.5; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.5; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 
     #app { display: flex; flex-direction: column; min-height: 100%; max-width: 480px; margin: 0 auto; }
     #content { flex: 1; padding: 14px 16px calc(var(--tab-h) + var(--safe) + 24px); overflow-x: hidden; }
@@ -69,7 +68,7 @@
 
     /* Inputs */
     input[type=text], input[type=number], input[type=date], select, textarea {
-      width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 11px 12px; font-size: 15px; color: var(--text); background: var(--surface); outline: none; transition: border-color .15s, box-shadow .15s; font-family: inherit; appearance: none; -webkit-appearance: none;
+      width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 11px 12px; font-size: 16px; color: var(--text); background: var(--surface); outline: none; transition: border-color .15s, box-shadow .15s; font-family: inherit; appearance: none; -webkit-appearance: none;
     }
     input:focus, select:focus, textarea:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(14,165,233,.12); }
     textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
@@ -198,9 +197,11 @@
     .settle-ok { width: 30px; height: 30px; border-radius: 50%; background: var(--green-l); color: var(--green); border: none; font-size: 14px; font-weight: 800; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
     .exp-item.transfer { background: var(--green-l); }
     .exp-item.transfer .exp-ava { background: rgba(255,255,255,.7); }
-    .split-check { display: flex; align-items: center; gap: 8px; padding: 8px 0; font-size: 14px; border-bottom: 1px solid var(--border); }
-    .split-check:last-child { border-bottom: none; }
-    .split-check input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--sky); flex-shrink: 0; }
+    .psel { display: flex; flex-wrap: wrap; gap: 8px; }
+    .psel-chip { display: inline-flex; align-items: center; gap: 7px; border: 2px solid var(--border); background: var(--bg); border-radius: 22px; padding: 8px 14px 8px 9px; font-size: 14px; font-weight: 700; cursor: pointer; transition: border-color .15s, background .15s; font-family: inherit; color: var(--text); }
+    .psel-chip .pa { width: 22px; height: 22px; border-radius: 50%; background: var(--text-3); color: #fff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+    .psel-chip.sel { border-color: var(--sky); background: var(--sky-l); color: var(--sky-d); }
+    .psel-chip.sel .pa { background: var(--sky); }
     .amount-row { position: relative; }
     .amount-row .prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-2); font-weight: 700; pointer-events: none; }
     .amount-row input { padding-left: 25px; }
@@ -247,8 +248,9 @@
     @media (min-width: 480px) { .fab { right: calc((100vw - 480px) / 2 + 16px); } }
 
     /* ═══ ROUTE / KARTE ═══ */
-    .map-card { background: var(--surface); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 12px; animation: rise .35s ease both; }
-    #map { height: 300px; width: 100%; z-index: 1; }
+    .map-card { background: #eaf4fb; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); margin-bottom: 12px; animation: rise .35s ease both; }
+    #map { height: 360px; width: 100%; z-index: 1; position: relative; }
+    #map canvas { touch-action: none; }
     .step-marker { width: 28px; height: 28px; border-radius: 50%; background: var(--sky); border: 2.5px solid #fff; color: #fff; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(2,132,199,.5); }
     .step-item { display: flex; align-items: center; gap: 11px; background: var(--surface); border-radius: var(--radius-sm); padding: 11px 12px; margin-bottom: 7px; box-shadow: var(--shadow); cursor: pointer; }
     .step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--sky-l); color: var(--sky-d); font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -278,7 +280,7 @@
   </div>
   <nav>
     <button class="active" data-tab="reise" onclick="go('reise')"><span class="ni">🏝️</span>Reise</button>
-    <button data-tab="karte" onclick="go('karte')"><span class="ni">🗺️</span>Route</button>
+    <button data-tab="karte" onclick="go('karte')"><span class="ni">🌍</span>Route</button>
     <button data-tab="pack" onclick="go('pack')"><span class="ni">🧳</span>Packen</button>
     <button data-tab="kosten" onclick="go('kosten')"><span class="ni">💰</span>Kosten</button>
     <button data-tab="diary" onclick="go('diary')"><span class="ni">📔</span>Tagebuch</button>
@@ -390,12 +392,12 @@
         </div>
       </div>
       <div class="frow">
-        <label class="label">Bezahlt von</label>
-        <select id="ex-paid"></select>
+        <label class="label">💳 Wer hat bezahlt? <span style="font-weight:500;color:var(--text-3)">(1 antippen)</span></label>
+        <div class="psel" id="ex-paid"></div>
       </div>
       <div class="frow">
-        <label class="label">Aufteilen mit</label>
-        <div id="ex-split"></div>
+        <label class="label">🤝 Für wen war das? <span style="font-weight:500;color:var(--text-3)">(alle antippen, die mitzahlen)</span></label>
+        <div class="psel" id="ex-split"></div>
       </div>
       <div class="frow">
         <label class="label">Kategorie</label>
@@ -433,6 +435,13 @@
   </div>
 </div>
 
+<!-- Memory Sheet (Erinnerungen) -->
+<div class="overlay" id="memSheet" onclick="bgClose(event,'memSheet')">
+  <div class="sheet">
+    <div class="sheet-inner" id="memBody"></div>
+  </div>
+</div>
+
 <!-- Step Sheet (Route) -->
 <div class="overlay" id="stepSheet" onclick="bgClose(event,'stepSheet')">
   <div class="sheet">
@@ -466,14 +475,36 @@
 <script>
 // ═══ State ═══
 const SKEY = 'urlaub-v1';
-let S = { trip: null, budget: 0, packing: [], expenses: [], diary: {}, steps: [] };
+let S = { trip: null, budget: 0, packing: [], expenses: [], diary: {}, steps: [], archive: [] };
+
+// Foto-Cache: Bilddaten bleiben lokal, in S stehen nur kleine Referenzen {id, bin}
+const PCKEY = 'urlaub-photos';
+let PC = {};
+function loadPC() { try { PC = JSON.parse(localStorage.getItem(PCKEY)) || {}; } catch { PC = {}; } }
+function savePC() {
+  try { localStorage.setItem(PCKEY, JSON.stringify(PC)); }
+  catch { alert('Fotospeicher voll! Bitte lösche alte Fotos.'); }
+}
+
+function migratePhotos() {
+  let touched = false;
+  const fix = e => {
+    if (!e) return;
+    if (e.photo) { e.photos = e.photos || []; e.photos.push(e.photo); delete e.photo; touched = true; }
+    if (e.photos) e.photos = e.photos.map(p => {
+      if (typeof p === 'string') { const id = 'p' + uid(); PC[id] = p; touched = true; return { id, bin: null }; }
+      return p;
+    });
+  };
+  Object.values(S.diary || {}).forEach(fix);
+  (S.archive || []).forEach(a => Object.values(a.diary || {}).forEach(fix));
+  if (touched) savePC();
+}
 
 function load() {
-  try { const d = localStorage.getItem(SKEY); if (d) S = Object.assign({ trip: null, budget: 0, packing: [], expenses: [], diary: {}, steps: [] }, JSON.parse(d)); } catch {}
-  // Migration: single photo → photos array
-  Object.values(S.diary || {}).forEach(e => {
-    if (e.photo) { e.photos = e.photos || []; e.photos.push(e.photo); delete e.photo; }
-  });
+  try { const d = localStorage.getItem(SKEY); if (d) S = Object.assign({ trip: null, budget: 0, packing: [], expenses: [], diary: {}, steps: [], archive: [] }, JSON.parse(d)); } catch {}
+  loadPC();
+  migratePhotos();
 }
 function save() {
   if (!applyingRemote) S.updatedAt = Date.now();
@@ -552,7 +583,7 @@ function renderKarte() {
   const km = routeKm(steps);
   const countries = new Set(steps.map(s => s.country).filter(Boolean)).size;
 
-  let html = `<div class="page-title">Route 🗺️${steps.length ? `<span class="pt-sub">${steps.length} Stopps</span>` : ''}</div>
+  let html = `<div class="page-title">Route 🌍${steps.length ? `<span class="pt-sub">${steps.length} Stopps</span>` : ''}</div>
   <div class="cost-stats">
     <div class="cs-box"><div class="cs-num">${steps.length}</div><div class="cs-lbl">📍 Orte</div></div>
     <div class="cs-box"><div class="cs-num">${km}</div><div class="cs-lbl">🛣️ Kilometer</div></div>
@@ -580,33 +611,67 @@ function renderKarte() {
 function initMap(steps) {
   const div = document.getElementById('map');
   if (!div) return;
-  if (!window.L) {
-    div.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-2);font-size:13px;text-align:center;padding:20px">🌐 Für die Karte wird Internet gebraucht.<br>Deine Stopps-Liste funktioniert trotzdem.</div>';
+  if (!window.Globe) {
+    div.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-2);font-size:13px;text-align:center;padding:20px">🌐 Für die Weltkugel wird Internet gebraucht.<br>Deine Stopps-Liste funktioniert trotzdem.</div>';
     return;
   }
-  if (map) { map.remove(); map = null; }
-  map = L.map('map', { scrollWheelZoom: false });
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap' }).addTo(map);
-  const pts = steps.map(s => [+s.lat, +s.lon]);
-  steps.forEach((s, i) => {
-    L.marker([+s.lat, +s.lon], { icon: L.divIcon({ className: '', html: `<div class="step-marker">${i + 1}</div>`, iconSize: [28, 28], iconAnchor: [14, 14] }) })
-      .addTo(map)
-      .bindPopup(`<b>${esc(s.name)}</b>${s.date ? '<br>' + fmtDate(s.date) : ''}${s.note ? '<br>' + esc(s.note) : ''}`);
-  });
-  if (pts.length > 1) {
-    L.polyline(pts, { color: '#0ea5e9', weight: 3, dashArray: '6 9' }).addTo(map);
-    map.fitBounds(pts, { padding: [34, 34] });
-  } else if (pts.length === 1) {
-    map.setView(pts[0], 10);
-  } else {
-    map.setView([48.7, 9.1], 4);
+  if (map) { try { map._destructor(); } catch {} map = null; }
+  div.innerHTML = '';
+  const pts = steps.map((s, i) => ({ lat: +s.lat, lng: +s.lon, i, name: s.name }));
+  const arcs = [];
+  for (let i = 1; i < pts.length; i++) {
+    arcs.push({ startLat: pts[i - 1].lat, startLng: pts[i - 1].lng, endLat: pts[i].lat, endLng: pts[i].lng });
+  }
+  try {
+    map = Globe()(div)
+      .width(div.clientWidth)
+      .height(360)
+      .backgroundColor('#eaf4fb')
+      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+      .atmosphereColor('#7dd3fc')
+      .atmosphereAltitude(0.18)
+      .pointsData(pts)
+      .pointColor(() => '#f59e0b')
+      .pointAltitude(0.015)
+      .pointRadius(0.45)
+      .arcsData(arcs)
+      .arcColor(() => '#0ea5e9')
+      .arcStroke(0.6)
+      .arcAltitudeAutoScale(0.4)
+      .arcDashLength(0.5)
+      .arcDashGap(0.2)
+      .arcDashAnimateTime(2200)
+      .htmlElementsData(pts)
+      .htmlElement(d => {
+        const el = document.createElement('div');
+        el.className = 'step-marker';
+        el.textContent = d.i + 1;
+        el.title = d.name;
+        return el;
+      })
+      .htmlAltitude(0.02);
+    const ctl = map.controls();
+    ctl.autoRotate = pts.length === 0;
+    ctl.autoRotateSpeed = 0.7;
+    ctl.enableZoom = true;
+    if (pts.length) {
+      const cLat = pts.reduce((s, p) => s + p.lat, 0) / pts.length;
+      const cLng = pts.reduce((s, p) => s + p.lng, 0) / pts.length;
+      map.pointOfView({ lat: cLat, lng: cLng, altitude: pts.length > 1 ? 1.2 : 1.0 }, 0);
+    } else {
+      map.pointOfView({ lat: 30, lng: 10, altitude: 2.2 }, 0);
+    }
+  } catch {
+    map = null;
+    div.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-2);font-size:13px;text-align:center;padding:20px">Die Weltkugel kann auf diesem Gerät nicht angezeigt werden.</div>';
   }
 }
 
 function focusStep(id) {
-  const s = (S.steps || []).find(x => x.id === id);
+  const steps = sortedSteps();
+  const s = steps.find(x => x.id === id);
   if (!s || !map) return;
-  map.setView([+s.lat, +s.lon], 12);
+  map.pointOfView({ lat: +s.lat, lng: +s.lon, altitude: 0.5 }, 900);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function deleteStep(id) {
@@ -689,7 +754,7 @@ function renderReise() {
       <p>Lege deine Reise an und<br>zähle die Tage!</p>
       <button class="btn btn-primary" style="margin-top:20px" onclick="openTripSheet()">Reise anlegen ✈️</button>
       <p style="margin-top:16px"><button class="btn btn-ghost btn-sm" onclick="joinPrompt()">🔗 Geteilte Reise beitreten</button></p>
-    </div>`;
+    </div>${memoriesHtml()}`;
     return;
   }
   const t = S.trip;
@@ -768,12 +833,16 @@ function renderReise() {
       </div>
     </div>
 
+    ${ended ? `<button class="btn btn-primary btn-full" style="margin-bottom:10px" onclick="archiveTrip()">🎞️ Reise als Erinnerung speichern</button>` : ''}
+
     <div class="tool-row">
       <button class="btn btn-ghost btn-sm" onclick="openTripSheet()">✏️ Bearbeiten</button>
       <button class="btn btn-ghost btn-sm" onclick="exportData()">💾 Backup</button>
       <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()">📥 Import</button>
       <input type="file" id="importFile" accept=".json,application/json" style="display:none" onchange="importData(this)" />
     </div>
+
+    ${memoriesHtml()}
   `;
 
   if (!started && !ended) {
@@ -793,6 +862,108 @@ function renderReise() {
     tick();
     cdTimer = setInterval(tick, 1000);
   }
+}
+
+// ═══ Erinnerungen (abgeschlossene Reisen) ═══
+function archiveTrip() {
+  if (!S.trip) return;
+  if (!confirm('Reise ins Erinnerungs-Album verschieben?\nTagebuch, Fotos, Route und Kosten bleiben dort für immer ansehbar – danach kannst du eine neue Reise anlegen.')) return;
+  S.archive = S.archive || [];
+  S.archive.unshift({ id: uid(), trip: S.trip, budget: S.budget, expenses: S.expenses, diary: S.diary, steps: S.steps, savedAt: Date.now() });
+  S.trip = null; S.budget = 0; S.expenses = []; S.diary = {}; S.steps = [];
+  S.packing.forEach(i => { i.packed = false; });
+  save();
+  renderReise();
+}
+
+function memoriesHtml() {
+  const arch = S.archive || [];
+  if (!arch.length) return '';
+  return `<div class="section-label" style="margin-top:18px">🎞️ Erinnerungen</div>` + arch.map(a => {
+    const days = daysBetween(a.trip.startDate, a.trip.endDate) + 1;
+    const photos = Object.values(a.diary || {}).reduce((n, e) => n + (e.photos?.length || 0), 0);
+    return `<div class="card" style="display:flex;align-items:center;gap:13px;cursor:pointer;padding:14px 16px;margin-bottom:9px" onclick="openMemory('${a.id}')">
+      <div style="font-size:30px">📸</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:800;font-size:15px">${esc(a.trip.destination)}</div>
+        <div style="font-size:12px;color:var(--text-2)">${fmtDate(a.trip.startDate)} – ${fmtDate(a.trip.endDate)} · ${days} Tage${photos ? ' · ' + photos + ' Fotos' : ''}</div>
+      </div>
+      <span style="font-size:12px;color:var(--text-3)">▶</span>
+    </div>`;
+  }).join('');
+}
+
+function openMemory(id) {
+  const a = (S.archive || []).find(x => x.id === id);
+  if (!a) return;
+  const t = a.trip;
+  const days = daysBetween(t.startDate, t.endDate) + 1;
+  const steps = (a.steps || []).slice().sort((x, y) => (x.date || '').localeCompare(y.date || ''));
+  const km = routeKm(steps);
+  const spent = (a.expenses || []).filter(e => !e.transfer).reduce((s, e) => s + +e.amount, 0);
+  const allPhotos = [];
+  Object.keys(a.diary || {}).sort().forEach(d => (a.diary[d].photos || []).forEach(p => allPhotos.push(p)));
+  const diaryDays = Object.keys(a.diary || {}).sort().filter(d => {
+    const e = a.diary[d];
+    return e.weather || e.mood || e.activities || e.food || e.highlight || e.photos?.length;
+  });
+
+  let html = `
+    <div class="sheet-hd">
+      <span class="sheet-title">📸 ${esc(t.destination)}</span>
+      <button class="close-btn" onclick="closeSheet('memSheet')">✕</button>
+    </div>
+    <div class="hero" style="padding:20px;margin-bottom:12px">
+      <div class="hero-kicker">Erinnerung</div>
+      <div class="hero-dest" style="font-size:24px">${esc(t.name)}</div>
+      <div class="hero-sub" style="text-align:left;margin-top:4px">${fmtDate(t.startDate)} – ${fmtDate(t.endDate)}</div>
+    </div>
+    <div class="cost-stats" style="grid-template-columns:repeat(4,1fr)">
+      <div class="cs-box"><div class="cs-num">${days}</div><div class="cs-lbl">Tage</div></div>
+      <div class="cs-box"><div class="cs-num">${steps.length}</div><div class="cs-lbl">Orte</div></div>
+      <div class="cs-box"><div class="cs-num">${km}</div><div class="cs-lbl">km</div></div>
+      <div class="cs-box"><div class="cs-num">${fmtEur(spent)}</div><div class="cs-lbl">Kosten</div></div>
+    </div>`;
+
+  if (allPhotos.length) {
+    html += `<div class="section-label">📷 Alle Fotos</div>
+      <div class="photo-grid" style="margin-bottom:14px">${allPhotos.map(p => memPhotoCell(p)).join('')}</div>`;
+  }
+  if (steps.length) {
+    html += `<div class="section-label">🗺️ Route</div>` + steps.map((s, i) =>
+      `<div class="step-item" style="cursor:default"><div class="step-num">${i + 1}</div>
+        <div style="flex:1;min-width:0"><div class="step-name">${esc(s.name)}</div><div class="step-meta">${s.date ? fmtDate(s.date) : ''}${s.note ? ' · ' + esc(s.note) : ''}</div></div>
+      </div>`).join('');
+  }
+  if (diaryDays.length) {
+    html += `<div class="section-label">📔 Tagebuch</div>` + diaryDays.map(d => {
+      const e = a.diary[d];
+      return `<div class="card" style="padding:14px 16px">
+        <div style="font-weight:800;font-size:13.5px;margin-bottom:5px">${e.weather || ''} ${e.mood || ''} ${fmtLong(d)}</div>
+        ${e.activities ? `<div style="font-size:13px;margin-bottom:4px">🎯 ${esc(e.activities)}</div>` : ''}
+        ${e.food ? `<div style="font-size:13px;margin-bottom:4px">🍽️ ${esc(e.food)}</div>` : ''}
+        ${e.highlight ? `<div style="font-size:13px;color:var(--sky-d);font-weight:700">✨ ${esc(e.highlight)}</div>` : ''}
+        ${e.photos?.length ? `<div class="photo-grid" style="margin-top:8px">${e.photos.map(p => memPhotoCell(p)).join('')}</div>` : ''}
+      </div>`;
+    }).join('');
+  }
+  html += `<button class="btn btn-danger btn-full" style="margin-top:14px" onclick="deleteMemory('${a.id}')">🗑 Erinnerung löschen</button>`;
+  document.getElementById('memBody').innerHTML = html;
+  openSheet('memSheet');
+}
+
+function memPhotoCell(p) {
+  if (PC[p.id]) return `<div class="photo-cell"><img src="${PC[p.id]}" alt="" onclick="openLightboxP('${p.id}')" /></div>`;
+  fetchPhoto(p);
+  return `<div class="photo-cell photo-ph" data-pid="${p.id}" style="display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:22px">⏳</div>`;
+}
+
+function deleteMemory(id) {
+  if (!confirm('Diese Erinnerung endgültig löschen?')) return;
+  S.archive = (S.archive || []).filter(a => a.id !== id);
+  save();
+  closeSheet('memSheet');
+  renderReise();
 }
 
 let tempPersons = [];
@@ -847,8 +1018,8 @@ function importData(input) {
       const d = JSON.parse(r.result);
       if (typeof d !== 'object' || d === null || !('trip' in d)) throw 0;
       if (!confirm('Backup importieren? Aktuelle Daten werden ersetzt.')) return;
-      S = Object.assign({ trip: null, budget: 0, packing: [], expenses: [], diary: {} }, d);
-      save(); render();
+      S = Object.assign({ trip: null, budget: 0, packing: [], expenses: [], diary: {}, steps: [], archive: [] }, d);
+      migratePhotos(); save(); render();
     } catch { alert('Ungültige Backup-Datei.'); }
   };
   r.readAsText(file);
@@ -983,7 +1154,8 @@ function renderKosten() {
   const perPerson = persons.length ? total / persons.length : 0;
   const settlements = calcSettlements();
 
-  let html = `<div class="page-title">Kosten 💰</div>`;
+  let html = `<div class="page-title">Kosten 💰</div>
+  <button class="btn btn-primary" style="width:100%;margin-bottom:12px" onclick="fabAction()">＋ Neue Ausgabe eintragen</button>`;
 
   // Budget
   if (S.budget > 0) {
@@ -1132,17 +1304,38 @@ function saveBudget() {
 }
 
 let editingExpId = null;
+let expPersons = [], expPayer = -1, expSplit = new Set();
+
+function pInitials(p) { return p.trim().slice(0, 2).toUpperCase(); }
+function renderPayerChips() {
+  document.getElementById('ex-paid').innerHTML = expPersons.map((p, i) =>
+    `<button type="button" class="psel-chip${expPayer === i ? ' sel' : ''}" onclick="setPayer(${i})"><span class="pa">${esc(pInitials(p))}</span>${esc(p)}${expPayer === i ? ' ✓' : ''}</button>`).join('');
+}
+function renderSplitChips() {
+  document.getElementById('ex-split').innerHTML = expPersons.map((p, i) =>
+    `<button type="button" class="psel-chip${expSplit.has(i) ? ' sel' : ''}" onclick="toggleSplit(${i})"><span class="pa">${esc(pInitials(p))}</span>${esc(p)}${expSplit.has(i) ? ' ✓' : ''}</button>`).join('')
+    + `<button type="button" class="psel-chip${expSplit.size === expPersons.length ? ' sel' : ''}" onclick="splitAll()">👥 Alle</button>`;
+}
+function setPayer(i) { expPayer = i; renderPayerChips(); }
+function toggleSplit(i) { expSplit.has(i) ? expSplit.delete(i) : expSplit.add(i); renderSplitChips(); }
+function splitAll() {
+  if (expSplit.size === expPersons.length) expSplit.clear();
+  else expPersons.forEach((_, i) => expSplit.add(i));
+  renderSplitChips();
+}
+
 function resetExpForm(exp) {
-  const persons = S.trip?.persons || [];
+  expPersons = S.trip?.persons || [];
   editingExpId = exp ? exp.id : null;
   document.getElementById('ex-title').textContent = exp ? 'Ausgabe bearbeiten ✏️' : 'Ausgabe eintragen 💶';
   document.getElementById('ex-desc').value = exp ? exp.desc : '';
   document.getElementById('ex-amt').value = exp ? exp.amount : '';
   document.getElementById('ex-date').value = exp?.date || today();
-  document.getElementById('ex-paid').innerHTML = persons.map(p => `<option${exp && exp.paidBy === p ? ' selected' : ''}>${esc(p)}</option>`).join('');
-  const splitSet = exp ? new Set(exp.splitWith?.length ? exp.splitWith : persons) : null;
-  document.getElementById('ex-split').innerHTML = persons.map(p =>
-    `<label class="split-check"><input type="checkbox" value="${esc(p)}"${!splitSet || splitSet.has(p) ? ' checked' : ''} />${esc(p)}</label>`).join('');
+  expPayer = exp ? expPersons.indexOf(exp.paidBy) : -1;
+  const splitNames = exp ? (exp.splitWith?.length ? exp.splitWith : expPersons) : expPersons;
+  expSplit = new Set(expPersons.map((p, i) => splitNames.includes(p) ? i : -1).filter(i => i >= 0));
+  renderPayerChips();
+  renderSplitChips();
   document.getElementById('ex-cat').value = exp?.category && EXP_ICONS[exp.category] ? exp.category : 'Essen & Trinken';
 }
 function editExp(id) {
@@ -1154,9 +1347,11 @@ function editExp(id) {
 function saveExp() {
   const desc = document.getElementById('ex-desc').value.trim();
   const amount = parseFloat(document.getElementById('ex-amt').value);
-  if (!desc || isNaN(amount) || amount <= 0) { alert('Beschreibung und Betrag eingeben.'); return; }
-  const splitWith = [...document.querySelectorAll('#ex-split input:checked')].map(i => i.value);
-  const data = { desc, amount, date: document.getElementById('ex-date').value, paidBy: document.getElementById('ex-paid').value, splitWith, category: document.getElementById('ex-cat').value };
+  if (!desc || isNaN(amount) || amount <= 0) { alert('Bitte Beschreibung und Betrag eingeben.'); return; }
+  if (expPayer < 0) { alert('Bitte antippen, wer bezahlt hat. 💳'); return; }
+  if (!expSplit.size) { alert('Bitte auswählen, für wen die Ausgabe war. 🤝'); return; }
+  const splitWith = [...expSplit].sort().map(i => expPersons[i]);
+  const data = { desc, amount, date: document.getElementById('ex-date').value, paidBy: expPersons[expPayer], splitWith, category: document.getElementById('ex-cat').value };
   if (editingExpId) {
     const exp = S.expenses.find(e => e.id === editingExpId);
     if (exp) Object.assign(exp, data);
@@ -1254,19 +1449,67 @@ function renderDiary() {
   el.innerHTML = html;
 }
 
+function photoCell(d, p, i) {
+  if (PC[p.id]) {
+    return `<div class="photo-cell"><img src="${PC[p.id]}" alt="" onclick="openLightboxP('${p.id}')" /><button class="photo-x" onclick="removePhoto('${d}',${i})">✕</button></div>`;
+  }
+  fetchPhoto(p);
+  return `<div class="photo-cell photo-ph" data-pid="${p.id}" data-day="${d}" style="display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:22px">⏳</div>`;
+}
 function photoGridHtml(d) {
-  const photos = S.diary[d]?.photos || [];
-  return photos.map((p, i) => `<div class="photo-cell">
-    <img src="${p}" alt="" onclick="openLightbox('${d}',${i})" />
-    <button class="photo-x" onclick="removePhoto('${d}',${i})">✕</button>
-  </div>`).join('');
+  return (S.diary[d]?.photos || []).map((p, i) => photoCell(d, p, i)).join('');
 }
 
-function openLightbox(d, i) {
-  const p = S.diary[d]?.photos?.[i];
-  if (!p) return;
-  document.getElementById('lightboxImg').src = p;
+function openLightboxP(pid) {
+  if (!PC[pid]) return;
+  document.getElementById('lightboxImg').src = PC[pid];
   document.getElementById('lightbox').classList.add('open');
+}
+
+// Fehlende Fotos vom Sync-Speicher nachladen
+const photoFetching = new Set();
+async function fetchPhoto(p) {
+  if (!sync || !p.bin || PC[p.id] || photoFetching.has(p.id)) return;
+  photoFetching.add(p.id);
+  try {
+    const r = await fetch(SYNC_API + '/' + p.bin, { headers: { 'Security-key': sync.key } });
+    if (r.ok) {
+      const j = await r.json();
+      if (j && j.d) { PC[p.id] = j.d; savePC(); photoLoaded(p); }
+    }
+  } catch {}
+  photoFetching.delete(p.id);
+}
+function photoLoaded(p) {
+  document.querySelectorAll(`.photo-ph[data-pid="${p.id}"]`).forEach(el => {
+    const d = el.dataset.day;
+    if (d) {
+      const g = document.getElementById('pg-' + d);
+      if (g) { g.innerHTML = photoGridHtml(d); return; }
+    }
+    el.outerHTML = `<div class="photo-cell"><img src="${PC[p.id]}" alt="" onclick="openLightboxP('${p.id}')" /></div>`;
+  });
+}
+
+// Eigene Fotos hochladen, damit der Partner sie sehen kann (je Foto ein eigenes Bin)
+let uploadingPhotos = false;
+async function uploadPendingPhotos() {
+  if (!sync || uploadingPhotos) return;
+  uploadingPhotos = true;
+  let changed = false;
+  try {
+    const entries = [...Object.values(S.diary || {}), ...(S.archive || []).flatMap(a => Object.values(a.diary || {}))];
+    for (const e of entries) {
+      for (const p of (e.photos || [])) {
+        if (!p || p.bin || !PC[p.id]) continue;
+        const r = await fetch(SYNC_API, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Security-key': sync.key, 'Private': 'true' }, body: JSON.stringify({ d: PC[p.id] }) });
+        const j = await r.json().catch(() => null);
+        if (r.ok && j?.id) { p.bin = j.id; changed = true; }
+      }
+    }
+  } catch {}
+  uploadingPhotos = false;
+  if (changed) save();
 }
 
 function tripDays() {
@@ -1313,17 +1556,22 @@ function addPhotos(d, input) {
     const imgEl = new Image();
     const objUrl = URL.createObjectURL(file);
     imgEl.onload = () => {
-      const MAX = 900;
+      const MAX = 800;
       let w = imgEl.width, h = imgEl.height;
       if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
       const c = document.createElement('canvas');
       c.width = w; c.height = h;
       c.getContext('2d').drawImage(imgEl, 0, 0, w, h);
       URL.revokeObjectURL(objUrl);
-      const data = c.toDataURL('image/jpeg', 0.72);
+      // Unter ~90 KB bleiben, damit jedes Foto in ein Sync-Paket passt
+      let q = 0.62, data = c.toDataURL('image/jpeg', q);
+      while (data.length > 90000 && q > 0.32) { q -= 0.1; data = c.toDataURL('image/jpeg', q); }
+      const id = 'p' + uid();
+      PC[id] = data;
+      savePC();
       if (!S.diary[d]) S.diary[d] = {};
       S.diary[d].photos = S.diary[d].photos || [];
-      S.diary[d].photos.push(data);
+      S.diary[d].photos.push({ id, bin: null });
       save();
       const grid = document.getElementById('pg-' + d);
       if (grid) grid.innerHTML = photoGridHtml(d);
@@ -1335,7 +1583,12 @@ function addPhotos(d, input) {
 function removePhoto(d, i) {
   const photos = S.diary[d]?.photos;
   if (!photos) return;
-  photos.splice(i, 1);
+  const [p] = photos.splice(i, 1);
+  if (p) {
+    delete PC[p.id];
+    savePC();
+    if (p.bin && sync) fetch(SYNC_API + '/' + p.bin, { method: 'DELETE', headers: { 'Security-key': sync.key } }).catch(() => {});
+  }
   save();
   const grid = document.getElementById('pg-' + d);
   if (grid) grid.innerHTML = photoGridHtml(d);
@@ -1359,21 +1612,38 @@ function setSyncStatus(st) {
   el.textContent = st === 'ok' ? '🟢 Synchron' : st === 'sync' ? '🔄 Synchronisiere…' : '⚠️ Offline';
 }
 
-// Fotos werden nicht mitgesendet (Größenlimit) – sie bleiben pro Gerät
+// Payload enthält nur Foto-Referenzen ({id, bin}), die Bilddaten liegen in eigenen Bins
 function syncPayload() {
-  const c = JSON.parse(JSON.stringify(S));
-  Object.values(c.diary || {}).forEach(e => { delete e.photos; });
-  return JSON.stringify(c);
+  return JSON.stringify(S);
 }
 function applyRemote(remote) {
   applyingRemote = true;
-  const localPhotos = {};
-  Object.entries(S.diary || {}).forEach(([d, e]) => { if (e.photos?.length) localPhotos[d] = e.photos; });
-  S = Object.assign({ trip: null, budget: 0, packing: [], expenses: [], diary: {}, steps: [] }, remote);
-  Object.entries(localPhotos).forEach(([d, ph]) => { S.diary[d] = S.diary[d] || {}; S.diary[d].photos = ph; });
+  // Eigene, noch nicht hochgeladene Fotos dürfen nicht verloren gehen
+  const localPending = {};
+  Object.entries(S.diary || {}).forEach(([d, e]) => {
+    (e.photos || []).forEach(p => {
+      if (p && typeof p === 'object' && !p.bin && PC[p.id]) (localPending[d] = localPending[d] || []).push(p);
+    });
+  });
+  S = Object.assign({ trip: null, budget: 0, packing: [], expenses: [], diary: {}, steps: [], archive: [] }, remote);
+  migratePhotos();
+  Object.entries(localPending).forEach(([d, list]) => {
+    S.diary[d] = S.diary[d] || {};
+    S.diary[d].photos = S.diary[d].photos || [];
+    list.forEach(p => { if (!S.diary[d].photos.some(q => q.id === p.id)) S.diary[d].photos.push(p); });
+  });
+  // Verwaiste Cache-Einträge aufräumen (z. B. vom Partner gelöschte Fotos)
+  const refIds = new Set();
+  const collect = e => (e?.photos || []).forEach(p => p?.id && refIds.add(p.id));
+  Object.values(S.diary || {}).forEach(collect);
+  (S.archive || []).forEach(a => Object.values(a.diary || {}).forEach(collect));
+  let purged = false;
+  Object.keys(PC).forEach(k => { if (!refIds.has(k)) { delete PC[k]; purged = true; } });
+  if (purged) savePC();
   save();
   applyingRemote = false;
   render();
+  uploadPendingPhotos();
 }
 
 async function syncApi(method, body) {
@@ -1389,7 +1659,11 @@ async function syncApi(method, body) {
 async function syncPush() {
   if (!sync) return;
   setSyncStatus('sync');
-  try { await syncApi('PUT', syncPayload()); setSyncStatus('ok'); }
+  try {
+    await uploadPendingPhotos();
+    await syncApi('PUT', syncPayload());
+    setSyncStatus('ok');
+  }
   catch { setSyncStatus('err'); }
 }
 
@@ -1471,7 +1745,7 @@ function syncCardHtml() {
         <span class="card-title">👫 Gemeinsam planen</span>
         <span id="syncDot" style="font-size:12px;font-weight:700;color:var(--text-2)">🟢 Synchron</span>
       </div>
-      <p style="font-size:12.5px;color:var(--text-2);margin-bottom:8px">Änderungen an Reise, Packliste, Kosten &amp; Tagebuch landen automatisch auf beiden Handys. Fotos bleiben auf dem eigenen Gerät.</p>
+      <p style="font-size:12.5px;color:var(--text-2);margin-bottom:8px">Änderungen an Reise, Route, Packliste, Kosten &amp; Tagebuch – inklusive Fotos – landen automatisch auf beiden Handys.</p>
       <div style="font-size:12px;background:var(--bg);border-radius:8px;padding:7px 10px;margin-bottom:10px;word-break:break-all"><b>Code:</b> <span style="font-family:monospace">${esc(syncCode())}</span></div>
       <div class="tool-row" style="margin-top:0">
         <button class="btn btn-primary btn-sm" onclick="shareSync()">💌 Link teilen</button>
