@@ -1,4 +1,4 @@
-const CACHE = 'urlaub-v8';
+const CACHE = 'urlaub-v9';
 const ASSETS = [
   './',
   './index.html',
