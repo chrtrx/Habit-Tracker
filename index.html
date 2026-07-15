@@ -235,7 +235,7 @@
       background: transparent; border: none; border-radius: 0; padding: 0 2px 6px;
       font-family: Georgia, 'Times New Roman', serif; font-size: 17px; color: var(--ink); line-height: 30px; min-height: 92px;
       background-image: repeating-linear-gradient(transparent 0px, transparent 29px, var(--paper-line) 29px, var(--paper-line) 30px);
-      background-attachment: local; field-sizing: content; box-shadow: none;
+      background-attachment: local; field-sizing: content; overflow: hidden; box-shadow: none;
     }
     .diary-body input[type=text] {
       background: transparent; border: none; border-bottom: 1.5px dashed var(--paper-line); border-radius: 0; padding: 4px 2px;
@@ -544,8 +544,17 @@ function save() {
 }
 
 // ═══ Was ist neu? ═══
-const APP_VERSION = '2.1';
+const APP_VERSION = '2.2';
 const CHANGELOG = [
+  {
+    v: '2.2', title: 'Stabiler & schneller', items: [
+      '💾 <b>Backup enthält jetzt auch alle Fotos</b> – vorher gingen sie beim Umzug verloren',
+      '⚡ Weltkugel & Schriften werden gecacht: schnellerer Start, funktioniert offline',
+      '📶 Sync aktualisiert sofort, sobald das Internet zurückkommt',
+      '📝 Tagebuch-Felder wachsen beim Schreiben automatisch mit (auch auf dem iPhone)',
+      '🔧 Kleinere Fehlerbehebungen'
+    ]
+  },
   {
     v: '2.1', title: 'Gemeinsame Kasse & Tagebuch-Look', items: [
       '👫 <b>Gemeinsame Kasse</b> bei den Kosten: vom gemeinsamen Konto bezahlt = niemand schuldet niemandem etwas',
@@ -601,6 +610,7 @@ function openNews() {
 let tab = 'reise';
 function go(t) {
   tab = t;
+  if (t !== 'reise') clearInterval(cdTimer);
   document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
   document.querySelectorAll('.views > div').forEach(v => v.classList.remove('active'));
   document.getElementById('v-' + t).classList.add('active');
@@ -1035,7 +1045,7 @@ function openMemory(id) {
 }
 
 function memPhotoCell(p) {
-  if (PC[p.id]) return `<div class="photo-cell"><img src="${PC[p.id]}" alt="" onclick="openLightboxP('${p.id}')" /></div>`;
+  if (PC[p.id]) return `<div class="photo-cell"><img loading="lazy" src="${PC[p.id]}" alt="" onclick="openLightboxP('${p.id}')" /></div>`;
   fetchPhoto(p);
   return `<div class="photo-cell photo-ph" data-pid="${p.id}" style="display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:22px">⏳</div>`;
 }
@@ -1084,10 +1094,12 @@ function saveTrip() {
 
 // ═══ Backup / Restore ═══
 function exportData() {
-  const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
+  // Fotos (PC) müssen mit ins Backup – in S stehen nur Referenzen
+  const payload = { app: 'fernweh-backup', version: 2, data: S, photos: PC };
+  const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'urlaubsplaner-backup-' + today() + '.json';
+  a.download = 'fernweh-backup-' + today() + '.json';
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
@@ -1098,9 +1110,12 @@ function importData(input) {
   r.onload = () => {
     try {
       const d = JSON.parse(r.result);
-      if (typeof d !== 'object' || d === null || !('trip' in d)) throw 0;
+      if (typeof d !== 'object' || d === null) throw 0;
+      const isNew = d.app === 'fernweh-backup' && d.data;
+      if (!isNew && !('trip' in d)) throw 0;
       if (!confirm('Backup importieren? Aktuelle Daten werden ersetzt.')) return;
-      S = Object.assign({ trip: null, budget: 0, packing: [], expenses: [], diary: {}, steps: [], archive: [] }, d);
+      S = Object.assign({ trip: null, budget: 0, packing: [], expenses: [], diary: {}, steps: [], archive: [] }, isNew ? d.data : d);
+      if (isNew && d.photos) { PC = Object.assign({}, PC, d.photos); savePC(); }
       migratePhotos(); save(); render();
     } catch { alert('Ungültige Backup-Datei.'); }
   };
@@ -1517,11 +1532,11 @@ function renderDiary() {
         </div>
         <div class="df">
           <label class="label">🎯 Was haben wir gemacht?</label>
-          <textarea placeholder="Aktivitäten des Tages..." oninput="setDF('${d}','activities',this.value)">${esc(entry.activities)}</textarea>
+          <textarea placeholder="Aktivitäten des Tages..." oninput="autoGrow(this);setDF('${d}','activities',this.value)">${esc(entry.activities)}</textarea>
         </div>
         <div class="df">
           <label class="label">🍽️ Was haben wir gegessen?</label>
-          <textarea placeholder="Leckeres Essen & Restaurants..." oninput="setDF('${d}','food',this.value)">${esc(entry.food)}</textarea>
+          <textarea placeholder="Leckeres Essen & Restaurants..." oninput="autoGrow(this);setDF('${d}','food',this.value)">${esc(entry.food)}</textarea>
         </div>
         <div class="df">
           <label class="label">✨ Highlight des Tages</label>
@@ -1536,11 +1551,12 @@ function renderDiary() {
     </div>`;
   }).join('');
   el.innerHTML = html;
+  requestAnimationFrame(() => document.querySelectorAll('.diary-card.open').forEach(growAllIn));
 }
 
 function photoCell(d, p, i) {
   if (PC[p.id]) {
-    return `<div class="photo-cell"><img src="${PC[p.id]}" alt="" onclick="openLightboxP('${p.id}')" /><button class="photo-x" onclick="removePhoto('${d}',${i})">✕</button></div>`;
+    return `<div class="photo-cell"><img loading="lazy" src="${PC[p.id]}" alt="" onclick="openLightboxP('${p.id}')" /><button class="photo-x" onclick="removePhoto('${d}',${i})">✕</button></div>`;
   }
   fetchPhoto(p);
   return `<div class="photo-cell photo-ph" data-pid="${p.id}" data-day="${d}" style="display:flex;align-items:center;justify-content:center;background:var(--bg);font-size:22px">⏳</div>`;
@@ -1613,8 +1629,19 @@ function tripDays() {
   return days;
 }
 
+// iOS kennt kein field-sizing:content – Textfelder wachsen per JS mit
+function autoGrow(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.max(92, el.scrollHeight) + 'px';
+}
+function growAllIn(card) {
+  card?.querySelectorAll('textarea').forEach(t => autoGrow(t));
+}
 function toggleDay(d) {
-  document.getElementById('card-' + d)?.classList.toggle('open');
+  const card = document.getElementById('card-' + d);
+  if (!card) return;
+  card.classList.toggle('open');
+  if (card.classList.contains('open')) growAllIn(card);
 }
 
 function setDF(d, field, val) {
@@ -1891,6 +1918,8 @@ if (localStorage.getItem('urlaub-seenver') !== APP_VERSION) {
 if (sync) syncPull();
 setInterval(() => { if (sync && document.visibilityState === 'visible') syncPull(); }, 45000);
 document.addEventListener('visibilitychange', () => { if (sync && document.visibilityState === 'visible') syncPull(); });
+window.addEventListener('online', () => { if (sync) { syncPull(); syncPush(); } });
+window.addEventListener('offline', () => setSyncStatus('err'));
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
 </script>
